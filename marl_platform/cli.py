@@ -1,6 +1,10 @@
 """CLI entry point for the MARL platform."""
 
+from pathlib import Path
+
 import typer
+
+from marl_platform.orchestrator import run_experiment
 
 app = typer.Typer(
     name="platform",
@@ -9,13 +13,45 @@ app = typer.Typer(
 )
 
 
+def resolve_config_path(experiment: str, config_dir: str) -> Path:
+    """Resolve experiment name to config file path.
+
+    Handles:
+    - "exp_v1" -> "{config_dir}/exp_v1.yaml"
+    - "exp_v1.yaml" -> "{config_dir}/exp_v1.yaml"
+    - "/absolute/path.yaml" -> use as-is
+    """
+    path = Path(experiment)
+
+    if path.is_absolute():
+        return path
+
+    if not experiment.endswith(".yaml"):
+        experiment = f"{experiment}.yaml"
+
+    return Path(config_dir) / experiment
+
+
 @app.command()
 def run(
     experiment: str = typer.Argument(..., help="Experiment name (resolves to experiments/configs/<name>.yaml)"),
     config_dir: str = typer.Option("experiments/configs", help="Override config directory"),
 ) -> None:
     """Run an experiment from config file."""
-    raise NotImplementedError("run command not yet implemented")
+    config_path = resolve_config_path(experiment, config_dir)
+
+    if not config_path.exists():
+        typer.echo(f"Error: Config file not found")
+        typer.echo(f"  Path: {config_path}")
+        typer.echo(f"  Fix: Create the config file or check the experiment name")
+        raise typer.Exit(1)
+
+    typer.echo(f"Running experiment: {experiment}")
+    typer.echo(f"Config: {config_path}")
+
+    output_dir = run_experiment(str(config_path))
+
+    typer.echo(f"Output: {output_dir}")
 
 
 @app.command()
