@@ -4,6 +4,7 @@ from pathlib import Path
 
 import typer
 
+from marl_platform.analysis import generate_report
 from marl_platform.orchestrator import run_experiment
 
 app = typer.Typer(
@@ -11,6 +12,21 @@ app = typer.Typer(
     help="Research platform for MARL experiment workflows.",
     add_completion=False,
 )
+
+
+def resolve_experiment_path(experiment: str, results_dir: str) -> Path:
+    """Resolve experiment ID to results directory path.
+
+    Handles:
+    - "exp_v1_20240115" -> "{results_dir}/exp_v1_20240115/"
+    - "/absolute/path/" -> use as-is
+    """
+    path = Path(experiment)
+
+    if path.is_absolute():
+        return path
+
+    return Path(results_dir) / experiment
 
 
 def resolve_config_path(experiment: str, config_dir: str) -> Path:
@@ -58,9 +74,35 @@ def run(
 def report(
     experiment: str = typer.Argument(..., help="Experiment ID (resolves to results/<id>/)"),
     reference: str = typer.Option(None, help="Reference experiment for comparison"),
+    results_dir: str = typer.Option("results", help="Override results directory"),
 ) -> None:
     """Generate report for an experiment."""
-    raise NotImplementedError("report command not yet implemented")
+    experiment_path = resolve_experiment_path(experiment, results_dir)
+
+    if not experiment_path.exists():
+        typer.echo("Error: Experiment not found")
+        typer.echo(f"  Path: {experiment_path}/")
+        typer.echo("  Fix: Check the experiment ID or run `ls results/` to see available experiments")
+        raise typer.Exit(1)
+
+    reference_path = None
+    if reference:
+        reference_path = resolve_experiment_path(reference, results_dir)
+        if not reference_path.exists():
+            typer.echo("Error: Reference experiment not found")
+            typer.echo(f"  Path: {reference_path}/")
+            typer.echo("  Fix: Check the reference ID or run `ls results/` to see available experiments")
+            raise typer.Exit(1)
+
+    if reference_path:
+        typer.echo("Generating report with comparison...")
+        typer.echo(f"Reference: {reference_path}/")
+    else:
+        typer.echo(f"Generating report for: {experiment}")
+
+    report_path = generate_report(str(experiment_path), str(reference_path) if reference_path else None)
+
+    typer.echo(f"Report saved to: {report_path}")
 
 
 @app.command()
