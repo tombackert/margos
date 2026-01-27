@@ -1,0 +1,104 @@
+{
+	"BUILD_DIR" : "/Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers/my_ipc_controller_autogen",
+	"CMAKE_BINARY_DIR" : "/Users/tom.backert/Repos/marl-platform/argos_plugins/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/Users/tom.backert/Repos/marl-platform/argos_plugins/controllers",
+	"CMAKE_EXECUTABLE" : "/opt/homebrew/bin/cmake",
+	"CMAKE_LIST_FILES" : 
+	[
+		"/Users/tom.backert/Repos/marl-platform/argos_plugins/controllers/CMakeLists.txt"
+	],
+	"CMAKE_SOURCE_DIR" : "/Users/tom.backert/Repos/marl-platform/argos_plugins",
+	"CROSS_CONFIG" : false,
+	"DEP_FILE" : "/Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers/my_ipc_controller_autogen/deps",
+	"DEP_FILE_RULE_NAME" : "my_ipc_controller_autogen/timestamp",
+	"HEADERS" : 
+	[
+		[
+			"/Users/tom.backert/Repos/marl-platform/argos_plugins/controllers/my_ipc_controller.h",
+			"Mu",
+			"EWIEGA46WW/moc_my_ipc_controller.cpp",
+			null
+		]
+	],
+	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
+	"INCLUDE_DIR" : "/Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers/my_ipc_controller_autogen/include",
+	"MOC_COMPILATION_FILE" : "/Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers/my_ipc_controller_autogen/mocs_compilation.cpp",
+	"MOC_DEFINITIONS" : [ "GL_SILENCE_DEPRECATION", "my_ipc_controller_EXPORTS" ],
+	"MOC_DEPEND_FILTERS" : 
+	[
+		[
+			"Q_PLUGIN_METADATA",
+			"[\n][ \t]*Q_PLUGIN_METADATA[ \t]*\\([^\\)]*FILE[ \t]*\"([^\"]+)\""
+		]
+	],
+	"MOC_INCLUDES" : 
+	[
+		"/Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers",
+		"/Users/tom.backert/Repos/marl-platform/argos_plugins/controllers",
+		"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework",
+		"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers",
+		"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/GLUT.framework/Headers",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtWidgets.framework/Headers",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtWidgets.framework",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtCore.framework/Headers",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtCore.framework",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtGui.framework/Headers",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtGui.framework",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtDBus.framework/Headers",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtDBus.framework",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtOpenGLWidgets.framework/Headers",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtOpenGLWidgets.framework",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtOpenGL.framework/Headers",
+		"/opt/homebrew/Cellar/qt/6.9.0/lib/QtOpenGL.framework",
+		"/opt/homebrew/include/lua",
+		"/Users/tom.backert/Repos/marl-platform/argos_plugins/common",
+		"/opt/homebrew/include",
+		"/usr/local/include",
+		"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include",
+		"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1",
+		"/Library/Developer/CommandLineTools/usr/lib/clang/17/include",
+		"/Library/Developer/CommandLineTools/usr/include"
+	],
+	"MOC_MACRO_NAMES" : 
+	[
+		"Q_OBJECT",
+		"Q_GADGET",
+		"Q_NAMESPACE",
+		"Q_NAMESPACE_EXPORT",
+		"Q_GADGET_EXPORT",
+		"Q_ENUM_NS"
+	],
+	"MOC_OPTIONS" : [],
+	"MOC_PATH_PREFIX" : false,
+	"MOC_PREDEFS_CMD" : 
+	[
+		"/usr/bin/c++",
+		"-std=c++17",
+		"-w",
+		"-dM",
+		"-E",
+		"/opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp"
+	],
+	"MOC_PREDEFS_FILE" : "/Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers/my_ipc_controller_autogen/moc_predefs.h",
+	"MOC_RELAXED_MODE" : false,
+	"MOC_SKIP" : [],
+	"MULTI_CONFIG" : false,
+	"PARALLEL" : 8,
+	"PARSE_CACHE_FILE" : "/Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers/CMakeFiles/my_ipc_controller_autogen.dir/ParseCache.txt",
+	"QT_MOC_EXECUTABLE" : "/opt/homebrew/Cellar/qt/6.9.0/share/qt/libexec/moc",
+	"QT_UIC_EXECUTABLE" : "",
+	"QT_VERSION_MAJOR" : 6,
+	"QT_VERSION_MINOR" : 9,
+	"SETTINGS_FILE" : "/Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers/CMakeFiles/my_ipc_controller_autogen.dir/AutogenUsed.txt",
+	"SOURCES" : 
+	[
+		[
+			"/Users/tom.backert/Repos/marl-platform/argos_plugins/controllers/my_ipc_controller.cpp",
+			"Mu",
+			null
+		]
+	],
+	"USE_BETTER_GRAPH" : true,
+	"VERBOSITY" : 0
+}

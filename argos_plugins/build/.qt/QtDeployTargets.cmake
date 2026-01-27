@@ -1,0 +1,4 @@
+set(__QT_DEPLOY_TARGET_my_ipc_controller_FILE /Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers/libmy_ipc_controller.dylib)
+set(__QT_DEPLOY_TARGET_my_ipc_controller_TYPE SHARED_LIBRARY)
+set(__QT_DEPLOY_TARGET_zoo_loop_functions_FILE /Users/tom.backert/Repos/marl-platform/argos_plugins/build/loop_functions/libzoo_loop_functions.dylib)
+set(__QT_DEPLOY_TARGET_zoo_loop_functions_TYPE SHARED_LIBRARY)

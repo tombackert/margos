@@ -1,0 +1,9 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/tom.backert/Repos/marl-platform/argos_plugins/build/cmake_install.cmake",
+		"/Users/tom.backert/Repos/marl-platform/argos_plugins/build/controllers/cmake_install.cmake",
+		"/Users/tom.backert/Repos/marl-platform/argos_plugins/build/loop_functions/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
