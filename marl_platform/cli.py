@@ -15,6 +15,7 @@ from marl_platform.utils.errors import (
     PlatformError,
     display_error,
 )
+from marl_platform.utils.progress import mock_progress
 
 app = typer.Typer(
     name="platform",
@@ -84,7 +85,8 @@ def run(
         typer.echo(f"Running experiment: {experiment}")
         typer.echo(f"Config: {config_path}")
 
-        output_dir = run_experiment(str(config_path))
+        with mock_progress("Starting training..."):
+            output_dir = run_experiment(str(config_path))
 
         typer.echo(f"Output: {output_dir}")
     except PlatformError as e:
@@ -112,12 +114,13 @@ def report(
                 raise ExperimentNotFoundError(str(reference_path))
 
         if reference_path:
-            typer.echo("Generating report with comparison...")
+            typer.echo(f"Generating report for: {experiment}")
             typer.echo(f"Reference: {reference_path}/")
         else:
             typer.echo(f"Generating report for: {experiment}")
 
-        report_path = generate_report(str(experiment_path), str(reference_path) if reference_path else None)
+        with mock_progress("Generating report..."):
+            report_path = generate_report(str(experiment_path), str(reference_path) if reference_path else None)
 
         typer.echo(f"Report saved to: {report_path}")
     except PlatformError as e:
@@ -145,7 +148,8 @@ def export(
 
         typer.echo(f"Exporting experiment: {experiment}")
 
-        bundle_path = export_bundle(str(experiment_path), str(output_path))
+        with mock_progress("Creating bundle..."):
+            bundle_path = export_bundle(str(experiment_path), str(output_path))
 
         typer.echo(f"Bundle created: {bundle_path}")
     except PlatformError as e:
@@ -182,7 +186,8 @@ def import_(
 
         typer.echo(f"Importing bundle: {bundle_path}")
 
-        imported_path = import_bundle(str(bundle_path))
+        with mock_progress("Importing bundle..."):
+            imported_path = import_bundle(str(bundle_path))
 
         typer.echo(f"Imported to: {imported_path}")
     except PlatformError as e:
