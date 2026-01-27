@@ -1,0 +1,12 @@
+experiment:
+  name: "test_exp"
+  seed: 42
+
+scenario:
+  file: "scenarios/test.argos"
+
+training:
+  script: "training/test.py"
+
+output:
+  dir: "results/"
