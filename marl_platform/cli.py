@@ -5,7 +5,7 @@ from pathlib import Path
 import typer
 
 from marl_platform.analysis import generate_report
-from marl_platform.export import export_bundle
+from marl_platform.export import export_bundle, import_bundle
 from marl_platform.orchestrator import run_experiment
 
 app = typer.Typer(
@@ -133,12 +133,40 @@ def export(
     typer.echo(f"Bundle created: {bundle_path}")
 
 
+def resolve_bundle_path(bundle: str, bundles_dir: str) -> Path:
+    """Resolve bundle filename to full path.
+
+    Handles:
+    - "exp_v1.zip" -> "{bundles_dir}/exp_v1.zip"
+    - "/absolute/path.zip" -> use as-is
+    """
+    path = Path(bundle)
+
+    if path.is_absolute():
+        return path
+
+    return Path(bundles_dir) / bundle
+
+
 @app.command("import")
 def import_(
-    bundle: str = typer.Argument(..., help="Bundle file path"),
+    bundle: str = typer.Argument(..., help="Bundle file to import"),
+    bundles_dir: str = typer.Option("bundles", help="Bundles directory (override default)"),
 ) -> None:
     """Import experiment bundle."""
-    raise NotImplementedError("import command not yet implemented")
+    bundle_path = resolve_bundle_path(bundle, bundles_dir)
+
+    if not bundle_path.exists():
+        typer.echo("Error: Bundle not found")
+        typer.echo(f"  Path: {bundle_path}")
+        typer.echo("  Fix: Check the filename or run `ls bundles/` to see available bundles")
+        raise typer.Exit(1)
+
+    typer.echo(f"Importing bundle: {bundle_path}")
+
+    imported_path = import_bundle(str(bundle_path))
+
+    typer.echo(f"Imported to: {imported_path}")
 
 
 if __name__ == "__main__":
