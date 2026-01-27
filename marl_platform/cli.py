@@ -13,6 +13,7 @@ from marl_platform.utils.errors import (
     ConfigNotFoundError,
     ExperimentNotFoundError,
     PlatformError,
+    TrainingError,
     display_error,
 )
 from marl_platform.utils.progress import mock_progress
