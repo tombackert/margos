@@ -19,6 +19,12 @@ dependencies = [
 dev = [
     "pytest>=7.0",
     "ruff>=0.1.0",
+    "types-PyYAML>=6.0",
+]
+ml = [
+    "torch>=2.0",
+    "numpy>=1.24",
+    "ray[rllib]>=2.0",
 ]
 
 [project.scripts]

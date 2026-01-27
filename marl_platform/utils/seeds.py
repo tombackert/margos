@@ -2,6 +2,7 @@
 
 import logging
 import random
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -50,14 +51,14 @@ def set_all_seeds(seed: int) -> None:
         logger.debug("PyTorch not installed, skipping torch seeding")
 
 
-def get_seed_state() -> dict:
+def get_seed_state() -> dict[str, Any]:
     """Capture current RNG states for debugging.
 
     Returns:
         Dict with states from each available RNG source.
         Missing packages are marked as "not installed".
     """
-    state = {
+    state: dict[str, Any] = {
         "random": random.getstate(),
     }
 

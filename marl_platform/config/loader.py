@@ -51,9 +51,13 @@ def load_config(path: str) -> PlatformConfig:
         return PlatformConfig(**raw_config)
     except PydanticValidationError as e:
         errors = e.errors()
-        first_error = errors[0] if errors else {}
-        field_path = ".".join(str(loc) for loc in first_error.get("loc", []))
-        error_msg = first_error.get("msg", "Unknown validation error")
+        if errors:
+            first_error = errors[0]
+            field_path = ".".join(str(loc) for loc in first_error.get("loc", ()))
+            error_msg = first_error.get("msg", "Unknown validation error")
+        else:
+            field_path = ""
+            error_msg = "Unknown validation error"
 
         raise ValidationError(
             message=f"Config validation failed: {error_msg}",
