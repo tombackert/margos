@@ -5,6 +5,7 @@ from pathlib import Path
 import typer
 
 from marl_platform.analysis import generate_report
+from marl_platform.export import export_bundle
 from marl_platform.orchestrator import run_experiment
 
 app = typer.Typer(
@@ -108,10 +109,28 @@ def report(
 @app.command()
 def export(
     experiment: str = typer.Argument(..., help="Experiment ID to export"),
-    output: str = typer.Option(None, help="Output bundle path"),
+    output: str = typer.Option(None, help="Output bundle path (default: bundles/<experiment>.zip)"),
+    results_dir: str = typer.Option("results", help="Override results directory"),
 ) -> None:
     """Export experiment to shareable bundle."""
-    raise NotImplementedError("export command not yet implemented")
+    experiment_path = resolve_experiment_path(experiment, results_dir)
+
+    if not experiment_path.exists():
+        typer.echo("Error: Experiment not found")
+        typer.echo(f"  Path: {experiment_path}/")
+        typer.echo("  Fix: Check the experiment ID or run `ls results/` to see available experiments")
+        raise typer.Exit(1)
+
+    if output is None:
+        output_path = Path("bundles") / f"{experiment}.zip"
+    else:
+        output_path = Path("bundles") / output if not Path(output).is_absolute() else Path(output)
+
+    typer.echo(f"Exporting experiment: {experiment}")
+
+    bundle_path = export_bundle(str(experiment_path), str(output_path))
+
+    typer.echo(f"Bundle created: {bundle_path}")
 
 
 @app.command("import")
