@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<!-- Minimal test scenario for unit tests -->
+<argos-configuration>
+  <framework>
+    <experiment length="100" ticks_per_second="10" random_seed="0"/>
+  </framework>
+</argos-configuration>

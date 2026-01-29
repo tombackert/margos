@@ -60,6 +60,17 @@ class ValidationError(PlatformError):
         )
 
 
+class TrainingError(PlatformError):
+    """Raised when training script execution fails."""
+
+    def __init__(self, message: str, context: dict | None = None, fix: str | None = None):
+        super().__init__(
+            message=message,
+            context=context,
+            fix=fix or "Check the training script for errors",
+        )
+
+
 def display_error(error: PlatformError, verbose: bool = False) -> None:
     """Format and display error to user."""
     typer.echo(f"Error: {error.message}")

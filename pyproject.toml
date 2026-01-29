@@ -19,6 +19,15 @@ dependencies = [
 dev = [
     "pytest>=7.0",
     "ruff>=0.1.0",
+    "types-PyYAML>=6.0",
+]
+ml = [
+    "torch>=2.0",
+    "numpy>=1.24",
+    "ray[rllib]>=2.0",
+    "pyzmq>=25.0",
+    "pettingzoo>=1.24",
+    "gymnasium>=0.29",
 ]
 
 [project.scripts]
@@ -30,3 +39,8 @@ where = ["."]
 [tool.ruff]
 line-length = 88
 target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true

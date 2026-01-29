@@ -4,3 +4,7 @@ marl_platform.egg-info/
 __pycache__/
 .mypy_cache/
 *.pyc
+.venv/
+ATZ/
+results/*
+argos_plugins/build/*
