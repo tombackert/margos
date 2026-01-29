@@ -162,8 +162,8 @@ void CZooLoopFunctions::PreStep() {
                 m_vecControllers[i]->SetAction(command);
             }
         }
-    } else if (Enabled(ELogLevel::WARN)) {
-        LoopLog(ELogLevel::WARN, "No actions in payload; skipping updates");
+    } else {
+        LoopLog(ELogLevel::DEBUG, "No actions in payload; skipping updates");
     }
 }
 
@@ -233,7 +233,7 @@ void CZooLoopFunctions::Reset() {
     // reward
     (void)CollectObservations();
     m_bFirstStep = true;  // re-arm first-step reward suppression
-    LoopLog(ELogLevel::INFO,
+    LoopLog(ELogLevel::DEBUG,
             "Reset: baseline established (rewards suppressed next step)");
 }
 
@@ -406,7 +406,7 @@ void CZooLoopFunctions::RandomizeStartPositions() {
         body.MoveTo(pos, qOrient, false);
     }
     m_bPositionsRandomized = true;
-    LoopLog(ELogLevel::INFO,
+    LoopLog(ELogLevel::DEBUG,
             std::string("RandomizeStartPositions: placed ") +
                 std::to_string(vecChosen.size()) +
                 " robots (min_sep=" + std::to_string(m_fMinSeparation) + ")");

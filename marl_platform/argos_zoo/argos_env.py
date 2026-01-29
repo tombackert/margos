@@ -150,8 +150,12 @@ class ArgosEnv(ParallelEnv):
         self._reward_state: TDict[str, Any] = {}
 
     def _log_stream(self, stream, prefix):
+        """Forward subprocess output to logger (respects quiet mode)."""
         for line in iter(stream.readline, ""):
-            print(f"[{prefix}] {line.strip()}", flush=True)
+            line = line.strip()
+            if line:
+                # Use logger which respects quiet mode (effective_level=ERROR when quiet)
+                self.logger.debug(f"[{prefix}] {line}")
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):

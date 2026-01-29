@@ -92,10 +92,9 @@ void CMyIPCController::ControlStep() {
  * Reset method. Resets the current action to "stop".
  */
 void CMyIPCController::Reset() {
-    CppLog(ELogLevel::DEBUG, "Reset()");
     m_sCurrentAction = "stop";
     m_sLastAppliedAction = "stop";
-    CppLog(ELogLevel::INFO, "Controller reset");
+    CppLog(ELogLevel::DEBUG, "Controller reset");
 }
 
 /*

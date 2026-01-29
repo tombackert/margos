@@ -58,16 +58,37 @@ class MetricsLogger(DefaultCallbacks):
         Returns:
             Dict containing the metrics to log.
         """
-        # RLlib result structure can vary by version
+        # RLlib result structure varies by version and API stack
         # Try multiple possible keys for compatibility
         metrics: dict[str, Any] = {
             "iteration": result.get("training_iteration"),
-            "episode_reward_mean": result.get("episode_reward_mean"),
-            "episode_reward_min": result.get("episode_reward_min"),
-            "episode_reward_max": result.get("episode_reward_max"),
-            "episode_len_mean": result.get("episode_len_mean"),
             "timestamp": datetime.now().isoformat(timespec="seconds"),
         }
+
+        # Episode rewards - try old and new API stack locations
+        env_runners = result.get("env_runners", {})
+        sampler_results = result.get("sampler_results", {})
+
+        metrics["episode_reward_mean"] = (
+            result.get("episode_reward_mean")
+            or env_runners.get("episode_reward_mean")
+            or sampler_results.get("episode_reward_mean")
+        )
+        metrics["episode_reward_min"] = (
+            result.get("episode_reward_min")
+            or env_runners.get("episode_reward_min")
+            or sampler_results.get("episode_reward_min")
+        )
+        metrics["episode_reward_max"] = (
+            result.get("episode_reward_max")
+            or env_runners.get("episode_reward_max")
+            or sampler_results.get("episode_reward_max")
+        )
+        metrics["episode_len_mean"] = (
+            result.get("episode_len_mean")
+            or env_runners.get("episode_len_mean")
+            or sampler_results.get("episode_len_mean")
+        )
 
         # Try to get policy loss from various locations in result dict
         info = result.get("info", {})

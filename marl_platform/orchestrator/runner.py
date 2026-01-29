@@ -1,6 +1,7 @@
 """Training orchestrator - coordinates the full experiment pipeline."""
 
 import importlib.util
+import inspect
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -10,6 +11,7 @@ from marl_platform.config import load_config, resolve_paths, save_frozen_config,
 from marl_platform.logging import create_logger
 from marl_platform.utils.errors import ConfigNotFoundError, TrainingError, ValidationError
 from marl_platform.utils.fingerprint import capture_fingerprint, save_fingerprint
+from marl_platform.utils.progress import TrainingProgress
 from marl_platform.utils.seeds import set_all_seeds
 
 
@@ -115,6 +117,9 @@ def execute_training_script(
     Training script must export:
         main(config: dict, callbacks: list, output_dir: str)
 
+    Optionally accepts:
+        main(config: dict, callbacks: list, output_dir: str, progress: TrainingProgress)
+
     Args:
         script_path: Path to training script
         config: PlatformConfig object
@@ -166,11 +171,22 @@ def execute_training_script(
             fix="Ensure training script exports: def main(config, callbacks, output_dir)",
         )
 
+    # Check if main() accepts a progress parameter
+    main_sig = inspect.signature(module.main)
+    accepts_progress = "progress" in main_sig.parameters
+
+    # Create progress reporter
+    progress = TrainingProgress()
+
     # Execute training
     try:
         # Convert config to dict for training script
         config_dict = config.model_dump()
-        module.main(config_dict, callbacks, str(output_dir))
+
+        if accepts_progress:
+            module.main(config_dict, callbacks, str(output_dir), progress=progress)
+        else:
+            module.main(config_dict, callbacks, str(output_dir))
 
     except Exception as e:
         raise TrainingError(
@@ -178,3 +194,6 @@ def execute_training_script(
             context={"script": str(script_path), "error": str(e)},
             fix="Check the training script for runtime errors",
         )
+    finally:
+        # Ensure progress bar is cleaned up
+        progress.finish()

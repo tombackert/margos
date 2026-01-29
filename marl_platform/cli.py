@@ -85,10 +85,11 @@ def run(
 
         typer.echo(f"Running experiment: {experiment}")
         typer.echo(f"Config: {config_path}")
+        typer.echo("")
 
-        with mock_progress("Starting training..."):
-            output_dir = run_experiment(str(config_path))
+        output_dir = run_experiment(str(config_path))
 
+        typer.echo("")
         typer.echo(f"Output: {output_dir}")
     except PlatformError as e:
         display_error(e, verbose=_verbose)
