@@ -5,17 +5,23 @@ from typing import Optional
 
 import typer
 
-from marl_platform.analysis import generate_report
-from marl_platform.export import export_bundle, import_bundle
+from marl_platform.analysis import compare_runs, generate_report
+from marl_platform.export import (
+    compare_fingerprints,
+    export_bundle,
+    format_fingerprint_comparison,
+    get_bundle_fingerprint,
+    import_bundle,
+)
 from marl_platform.orchestrator import run_experiment
 from marl_platform.utils.errors import (
     BundleNotFoundError,
     ConfigNotFoundError,
     ExperimentNotFoundError,
     PlatformError,
-    TrainingError,
     display_error,
 )
+from marl_platform.utils.fingerprint import capture_fingerprint
 from marl_platform.utils.progress import mock_progress
 
 app = typer.Typer(
@@ -102,7 +108,12 @@ def report(
     reference: Optional[str] = typer.Option(None, help="Reference experiment for comparison"),
     results_dir: str = typer.Option("results", help="Override results directory"),
 ) -> None:
-    """Generate report for an experiment."""
+    """Generate report for an experiment.
+
+    Examples:
+        platform report exp_v1_20240115
+        platform report exp_v1_20240115 --reference exp_v1_20240114
+    """
     try:
         experiment_path = resolve_experiment_path(experiment, results_dir)
 
@@ -117,12 +128,18 @@ def report(
 
         if reference_path:
             typer.echo(f"Generating report for: {experiment}")
-            typer.echo(f"Reference: {reference_path}/")
+            typer.echo(f"Reference: {reference}")
         else:
             typer.echo(f"Generating report for: {experiment}")
 
         with mock_progress("Generating report..."):
             report_path = generate_report(str(experiment_path), str(reference_path) if reference_path else None)
+
+        # Display summary
+        summary_path = Path(report_path) / "summary.txt"
+        if summary_path.exists():
+            typer.echo("")
+            typer.echo(summary_path.read_text())
 
         typer.echo(f"Report saved to: {report_path}")
     except PlatformError as e:
@@ -136,22 +153,22 @@ def export(
     output: Optional[str] = typer.Option(None, help="Output bundle path (default: bundles/<experiment>.zip)"),
     results_dir: str = typer.Option("results", help="Override results directory"),
 ) -> None:
-    """Export experiment to shareable bundle."""
+    """Export experiment to shareable bundle.
+
+    Examples:
+        platform export exp_v1_20240115
+        platform export exp_v1_20240115 --output my_bundle.zip
+    """
     try:
         experiment_path = resolve_experiment_path(experiment, results_dir)
 
         if not experiment_path.exists():
             raise ExperimentNotFoundError(str(experiment_path))
 
-        if output is None:
-            output_path = Path("bundles") / f"{experiment}.zip"
-        else:
-            output_path = Path("bundles") / output if not Path(output).is_absolute() else Path(output)
-
         typer.echo(f"Exporting experiment: {experiment}")
 
         with mock_progress("Creating bundle..."):
-            bundle_path = export_bundle(str(experiment_path), str(output_path))
+            bundle_path = export_bundle(str(experiment_path), output)
 
         typer.echo(f"Bundle created: {bundle_path}")
     except PlatformError as e:
@@ -179,7 +196,12 @@ def import_(
     bundle: str = typer.Argument(..., help="Bundle file to import"),
     bundles_dir: str = typer.Option("bundles", help="Bundles directory (override default)"),
 ) -> None:
-    """Import experiment bundle."""
+    """Import experiment bundle.
+
+    Examples:
+        platform import exp_v1.zip
+        platform import /path/to/bundle.zip
+    """
     try:
         bundle_path = resolve_bundle_path(bundle, bundles_dir)
 
@@ -192,6 +214,14 @@ def import_(
             imported_path = import_bundle(str(bundle_path))
 
         typer.echo(f"Imported to: {imported_path}")
+
+        # Compare fingerprints
+        bundle_fp = get_bundle_fingerprint(imported_path)
+        if bundle_fp:
+            current_fp = capture_fingerprint()
+            comparison = compare_fingerprints(bundle_fp, current_fp)
+            typer.echo(format_fingerprint_comparison(comparison))
+
     except PlatformError as e:
         display_error(e, verbose=_verbose)
         raise typer.Exit(1)
