@@ -1,5 +1,0 @@
-my_ipc_controller_autogen/timestamp: \
-	/Users/tom.backert/Repos/marl-platform/argos_plugins/controllers/CMakeLists.txt \
-	/Users/tom.backert/Repos/marl-platform/argos_plugins/controllers/my_ipc_controller.cpp \
-	/Users/tom.backert/Repos/marl-platform/argos_plugins/controllers/my_ipc_controller.h \
-	/opt/homebrew/bin/cmake
