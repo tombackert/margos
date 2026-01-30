@@ -7,7 +7,7 @@ scenario:
 
 training:
   script: "training/aggregation.py"
-  iterations: 100  # Short for testing
+  iterations: 500  # Short for testing
 
 output:
   dir: "results/"

@@ -88,7 +88,6 @@ def main(
     from ray.tune.registry import register_env
 
     from marl_platform.argos_zoo import ArgosEnv, aggregation_reward, prepare_scenario
-    from marl_platform.logging import MetricsLogger
 
     # Prepare scenario file with library paths
     scenario_template = config["scenario"]["file"]
@@ -114,11 +113,21 @@ def main(
 
     register_env("aggregation", env_creator)
 
-    # Create callback factory
-    output_path = Path(output_dir)
+    # Create a combined callback that delegates to all callbacks from orchestrator
+    # (includes MetricsLogger + TensorBoardLogger if enabled)
+    from ray.rllib.algorithms.callbacks import DefaultCallbacks
 
-    def make_callbacks() -> MetricsLogger:
-        return MetricsLogger(output_dir=output_path)
+    class CombinedCallbacks(DefaultCallbacks):
+        """Wraps multiple callback instances and delegates to all of them."""
+
+        def __init__(self, *args: Any, **kwargs: Any):
+            super().__init__(*args, **kwargs)
+            self._callbacks = callbacks  # Capture callbacks from outer scope
+
+        def on_train_result(self, *, algorithm: Any, result: dict, **kwargs: Any) -> None:
+            super().on_train_result(algorithm=algorithm, result=result, **kwargs)
+            for cb in self._callbacks:
+                cb.on_train_result(algorithm=algorithm, result=result, **kwargs)
 
     # Build algorithm with stable API
     algo_config = PPOConfig()
@@ -128,7 +137,7 @@ def main(
     )
     algo_config = algo_config.environment("aggregation")
     algo_config = algo_config.framework("torch")
-    algo_config = algo_config.callbacks(make_callbacks)
+    algo_config = algo_config.callbacks(CombinedCallbacks)
     algo_config = algo_config.env_runners(
         num_env_runners=0,
         rollout_fragment_length=50,
@@ -139,11 +148,22 @@ def main(
 
     # Configure TensorBoard logging if enabled
     if tensorboard_enabled:
-        tensorboard_dir = Path(output_dir) / "tensorboard"
+        tensorboard_dir = Path(output_dir).resolve() / "tensorboard"
         tensorboard_dir.mkdir(parents=True, exist_ok=True)
-        # Log TensorBoard directory location
-        print(f"TensorBoard logs: {tensorboard_dir}")
-        print(f"Run: tensorboard --logdir {tensorboard_dir}")
+
+        # Print prominent TensorBoard instructions
+        print("")
+        print("=" * 60)
+        print("TENSORBOARD ENABLED")
+        print("=" * 60)
+        print(f"Log directory: {tensorboard_dir}")
+        print("")
+        print("To view live training progress, run in a new terminal:")
+        print(f"  tensorboard --logdir {tensorboard_dir}")
+        print("")
+        print("Then open: http://localhost:6006")
+        print("=" * 60)
+        print("")
 
     algo = algo_config.build()
 

@@ -240,31 +240,42 @@ def generate_report(
 
 
 def format_comparison(comparison: dict) -> str:
-    """Format comparison result for summary.
+    """Format comparison result for summary as a table.
 
     Args:
         comparison: Result dict from compare_runs().
 
     Returns:
-        Formatted comparison text.
+        Formatted comparison text with table.
     """
     status = "PASSED" if comparison["passed"] else "FAILED"
+
+    # Build table
+    header = "| Metric       | Run          | Reference    | Deviation | Match |"
+    separator = "|--------------|--------------|--------------|-----------|-------|"
+
+    final_match = "Yes" if comparison["final_reward_match"] else "No"
+    auc_match = "Yes" if comparison["auc_match"] else "No"
+
+    final_row = (
+        f"| Final Reward | {comparison['final_reward_run']:12.4f} | "
+        f"{comparison['final_reward_ref']:12.4f} | {comparison['final_reward_deviation']:9.2%} | {final_match:5} |"
+    )
+    auc_row = (
+        f"| AUC          | {comparison['auc_run']:12.4f} | "
+        f"{comparison['auc_ref']:12.4f} | {comparison['auc_deviation']:9.2%} | {auc_match:5} |"
+    )
+
     lines = [
         "Reproducibility Comparison",
-        "-" * 40,
+        "-" * 70,
         f"Status: {status}",
         "",
-        "Final Reward:",
-        f"  Run:       {comparison['final_reward_run']:.4f}",
-        f"  Reference: {comparison['final_reward_ref']:.4f}",
-        f"  Deviation: {comparison['final_reward_deviation']:.2%}",
-        f"  Match:     {'Yes' if comparison['final_reward_match'] else 'No'}",
-        "",
-        "AUC (Area Under Curve):",
-        f"  Run:       {comparison['auc_run']:.4f}",
-        f"  Reference: {comparison['auc_ref']:.4f}",
-        f"  Deviation: {comparison['auc_deviation']:.2%}",
-        f"  Match:     {'Yes' if comparison['auc_match'] else 'No'}",
+        header,
+        separator,
+        final_row,
+        auc_row,
+        separator,
         "",
     ]
     return "\n".join(lines)

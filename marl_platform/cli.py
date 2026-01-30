@@ -29,6 +29,29 @@ from marl_platform.utils.progress import OperationProgress
 console = Console()
 
 
+# Autocompletion functions for tab completion
+def complete_config_names(incomplete: str) -> list[str]:
+    """Autocomplete config names for tab completion."""
+    configs = list_configs()
+    imported = list_imported()
+    all_names = configs + imported
+    return [name for name in all_names if name.startswith(incomplete)]
+
+
+def complete_result_names(incomplete: str) -> list[str]:
+    """Autocomplete result names for tab completion."""
+    results = list_results()
+    imported = list_imported()
+    all_names = results + imported
+    return [name for name in all_names if name.startswith(incomplete)]
+
+
+def complete_bundle_names(incomplete: str) -> list[str]:
+    """Autocomplete bundle names for tab completion."""
+    bundles = list_bundles()
+    return [name for name in bundles if name.startswith(incomplete)]
+
+
 def list_configs(config_dir: str = "experiments/configs") -> list[str]:
     """List available config files."""
     config_path = Path(config_dir)
@@ -67,30 +90,48 @@ def list_bundles(bundles_dir: str = "bundles") -> list[str]:
     return sorted([f.name for f in bundles_path.glob("*.zip")])
 
 
-def select_from_list(items: list[str], prompt: str) -> str:
-    """Prompt user to select from a numbered list."""
+def select_from_list(items: list[str], prompt: str, allow_exit: bool = True) -> str | None:
+    """Prompt user to select from a numbered list.
+
+    Args:
+        items: List of items to choose from
+        prompt: Header text to display
+        allow_exit: If True, allows 'q' or '0' to exit and returns None
+
+    Returns:
+        Selected item or None if user exits
+    """
     if not items:
         raise typer.Exit(1)
 
     console.print(f"\n[bold]{prompt}[/bold]")
     for i, item in enumerate(items, 1):
         console.print(f"  [{i}] {item}")
+    if allow_exit:
+        console.print(f"  [dim][0] Cancel / Exit[/dim]")
     console.print()
 
     while True:
-        choice = typer.prompt("Select number", default="1")
+        choice = typer.prompt("Select number (or 'q' to cancel)", default="1")
+
+        # Check for exit
+        if allow_exit and choice.lower() in ("q", "0", "quit", "exit", "cancel"):
+            return None
+
         try:
             idx = int(choice) - 1
             if 0 <= idx < len(items):
                 return items[idx]
+            if idx == -1 and allow_exit:  # User entered 0
+                return None
             console.print(f"[red]Please enter a number between 1 and {len(items)}[/red]")
         except ValueError:
-            console.print("[red]Please enter a valid number[/red]")
+            console.print("[red]Please enter a valid number (or 'q' to cancel)[/red]")
 
 app = typer.Typer(
     name="platform",
     help="Research platform for MARL experiment workflows.\n\nUsage: platform [run | report | export | import | show]",
-    add_completion=True,  # Enable shell completion
+    add_completion=False,  # Disabled - shell completion install is too slow
 )
 
 # Global state for verbose flag
@@ -142,7 +183,11 @@ def resolve_config_path(experiment: str, config_dir: str) -> Path:
 
 @app.command()
 def run(
-    experiment: Optional[str] = typer.Argument(None, help="Experiment name (resolves to experiments/configs/<name>.yaml)"),
+    experiment: Optional[str] = typer.Argument(
+        None,
+        help="Experiment name (resolves to experiments/configs/<name>.yaml)",
+        autocompletion=complete_config_names,
+    ),
     config_dir: str = typer.Option("experiments/configs", help="Override config directory"),
     imported_dir: str = typer.Option("experiments/imported", help="Imported experiments directory"),
     tensorboard: bool = typer.Option(False, "--tensorboard", "-tb", help="Enable TensorBoard logging"),
@@ -169,13 +214,32 @@ def run(
                 raise typer.Exit(1)
 
             console.print("\n[bold]Available experiments:[/bold]")
+            console.print("[dim]  Configs (experiments/configs/):[/dim]")
+            config_start = 1
             for idx, (source, name) in enumerate(all_options, 1):
-                label = "[config]" if source == "config" else "[imported]"
-                console.print(f"  [{idx}] {name} {label}")
+                if source == "config":
+                    console.print(f"  [{idx}] {name}")
+                else:
+                    break
+                config_start = idx + 1
+
+            if any(s == "imported" for s, _ in all_options):
+                console.print("[dim]  Imported (experiments/imported/):[/dim]")
+                for idx, (source, name) in enumerate(all_options, 1):
+                    if source == "imported":
+                        console.print(f"  [{idx}] {name} [yellow](imported)[/yellow]")
+
+            console.print(f"  [dim][0] Cancel / Exit[/dim]")
             console.print()
 
             while True:
-                choice = typer.prompt("Select number", default="1")
+                choice = typer.prompt("Select number (or 'q' to cancel)", default="1")
+
+                # Check for exit
+                if choice.lower() in ("q", "0", "quit", "exit", "cancel"):
+                    console.print("[dim]Cancelled.[/dim]")
+                    raise typer.Exit(0)
+
                 try:
                     idx = int(choice) - 1
                     if 0 <= idx < len(all_options):
@@ -183,7 +247,7 @@ def run(
                         break
                     console.print(f"[red]Please enter a number between 1 and {len(all_options)}[/red]")
                 except ValueError:
-                    console.print("[red]Please enter a valid number[/red]")
+                    console.print("[red]Please enter a valid number (or 'q' to cancel)[/red]")
 
             if source == "imported":
                 config_path = Path(imported_dir) / experiment / "config.yaml"
@@ -238,8 +302,17 @@ def resolve_experiment_path_extended(experiment: str, results_dir: str, imported
 
 @app.command()
 def report(
-    experiment: Optional[str] = typer.Argument(None, help="Experiment ID (resolves to results/<id>/)"),
-    reference: Optional[str] = typer.Option(None, help="Reference experiment for comparison"),
+    experiment: Optional[str] = typer.Argument(
+        None,
+        help="Experiment ID (resolves to results/<id>/)",
+        autocompletion=complete_result_names,
+    ),
+    reference: Optional[str] = typer.Option(
+        None,
+        help="Reference experiment for comparison",
+        autocompletion=complete_result_names,
+    ),
+    compare: bool = typer.Option(False, "--compare", "-c", help="Enable comparison mode (select reference interactively)"),
     results_dir: str = typer.Option("results", help="Override results directory"),
     imported_dir: str = typer.Option("experiments/imported", help="Imported experiments directory"),
 ) -> None:
@@ -248,31 +321,47 @@ def report(
     Examples:
         platform report exp_v1_20240115
         platform report exp_v1_20240115 --reference exp_v1_20240114
+        platform report --compare  # Interactive selection for both
     """
     try:
+        # Build list of all available experiments
+        results = list_results(results_dir)
+        imported = list_imported(imported_dir)
+
+        all_options = []
+        for r in results:
+            all_options.append(("results", r))
+        for i in imported:
+            all_options.append(("imported", i))
+
         # Interactive selection if no experiment provided
         if experiment is None:
-            results = list_results(results_dir)
-            imported = list_imported(imported_dir)
-
-            all_options = []
-            for r in results:
-                all_options.append(("results", r))
-            for i in imported:
-                all_options.append(("imported", i))
-
             if not all_options:
                 typer.echo("No experiments found in results or imported directories.")
                 raise typer.Exit(1)
 
-            console.print("\n[bold]Available experiments:[/bold]")
+            console.print("\n[bold]Select experiment for report:[/bold]")
+            console.print("[dim]  Results (results/):[/dim]")
             for idx, (source, name) in enumerate(all_options, 1):
-                label = "[results]" if source == "results" else "[imported]"
-                console.print(f"  [{idx}] {name} {label}")
+                if source == "results":
+                    console.print(f"  [{idx}] {name}")
+
+            if any(s == "imported" for s, _ in all_options):
+                console.print("[dim]  Imported (experiments/imported/):[/dim]")
+                for idx, (source, name) in enumerate(all_options, 1):
+                    if source == "imported":
+                        console.print(f"  [{idx}] {name} [yellow](imported)[/yellow]")
+
+            console.print(f"  [dim][0] Cancel / Exit[/dim]")
             console.print()
 
             while True:
-                choice = typer.prompt("Select number", default="1")
+                choice = typer.prompt("Select number (or 'q' to cancel)", default="1")
+
+                if choice.lower() in ("q", "0", "quit", "exit", "cancel"):
+                    console.print("[dim]Cancelled.[/dim]")
+                    raise typer.Exit(0)
+
                 try:
                     idx = int(choice) - 1
                     if 0 <= idx < len(all_options):
@@ -280,18 +369,57 @@ def report(
                         break
                     console.print(f"[red]Please enter a number between 1 and {len(all_options)}[/red]")
                 except ValueError:
-                    console.print("[red]Please enter a valid number[/red]")
+                    console.print("[red]Please enter a valid number (or 'q' to cancel)[/red]")
 
         experiment_path = resolve_experiment_path_extended(experiment, results_dir, imported_dir)
 
         if not experiment_path.exists():
             raise ExperimentNotFoundError(str(experiment_path))
 
+        # Interactive reference selection if --compare flag or no reference provided
         reference_path = None
         if reference:
             reference_path = resolve_experiment_path_extended(reference, results_dir, imported_dir)
             if not reference_path.exists():
                 raise ExperimentNotFoundError(str(reference_path))
+        elif compare:
+            # Filter out the selected experiment from options
+            ref_options = [(s, n) for s, n in all_options if n != experiment]
+
+            if not ref_options:
+                typer.echo("No other experiments available for comparison.")
+            else:
+                console.print("\n[bold]Select reference experiment for comparison:[/bold]")
+                console.print("[dim]  Results (results/):[/dim]")
+                for idx, (source, name) in enumerate(ref_options, 1):
+                    if source == "results":
+                        console.print(f"  [{idx}] {name}")
+
+                if any(s == "imported" for s, _ in ref_options):
+                    console.print("[dim]  Imported (experiments/imported/):[/dim]")
+                    for idx, (source, name) in enumerate(ref_options, 1):
+                        if source == "imported":
+                            console.print(f"  [{idx}] {name} [yellow](imported)[/yellow]")
+
+                console.print(f"  [dim][0] Skip comparison[/dim]")
+                console.print()
+
+                while True:
+                    choice = typer.prompt("Select reference (or 'q' to skip)", default="0")
+
+                    if choice.lower() in ("q", "0", "quit", "skip", "cancel"):
+                        console.print("[dim]Skipping comparison.[/dim]")
+                        break
+
+                    try:
+                        idx = int(choice) - 1
+                        if 0 <= idx < len(ref_options):
+                            _, ref_name = ref_options[idx]
+                            reference_path = resolve_experiment_path_extended(ref_name, results_dir, imported_dir)
+                            break
+                        console.print(f"[red]Please enter a number between 1 and {len(ref_options)}[/red]")
+                    except ValueError:
+                        console.print("[red]Please enter a valid number (or 'q' to skip)[/red]")
 
         if reference_path:
             typer.echo(f"Generating report for: {experiment}")
@@ -320,7 +448,11 @@ def report(
 
 @app.command()
 def export(
-    experiment: Optional[str] = typer.Argument(None, help="Experiment ID to export"),
+    experiment: Optional[str] = typer.Argument(
+        None,
+        help="Experiment ID to export",
+        autocompletion=complete_result_names,
+    ),
     output: Optional[str] = typer.Option(None, help="Output bundle path (default: bundles/<experiment>.zip)"),
     results_dir: str = typer.Option("results", help="Override results directory"),
 ) -> None:
@@ -339,6 +471,9 @@ def export(
                 raise typer.Exit(1)
 
             experiment = select_from_list(results, "Available experiments:")
+            if experiment is None:
+                console.print("[dim]Cancelled.[/dim]")
+                raise typer.Exit(0)
 
         experiment_path = resolve_experiment_path(experiment, results_dir)
 
@@ -377,7 +512,11 @@ def resolve_bundle_path(bundle: str, bundles_dir: str) -> Path:
 
 @app.command("import")
 def import_(
-    bundle: Optional[str] = typer.Argument(None, help="Bundle file to import"),
+    bundle: Optional[str] = typer.Argument(
+        None,
+        help="Bundle file to import",
+        autocompletion=complete_bundle_names,
+    ),
     bundles_dir: str = typer.Option("bundles", help="Bundles directory (override default)"),
 ) -> None:
     """Import experiment bundle.
@@ -395,6 +534,9 @@ def import_(
                 raise typer.Exit(1)
 
             bundle = select_from_list(bundles, "Available bundles:")
+            if bundle is None:
+                console.print("[dim]Cancelled.[/dim]")
+                raise typer.Exit(0)
 
         bundle_path = resolve_bundle_path(bundle, bundles_dir)
 

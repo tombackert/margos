@@ -1,13 +1,31 @@
 # Backlog
 
-- Autocomplete on exp names is not working. I want an autocomplete by hitting tab or something. I want autocomplete active from the start. No manual install from user required. Also no need for customization. 
-- Reproducibility comparison has not clear format: should be a table with following format: "| Metric | Run | Reference | Derivation | Match |"
-- No exit option in choose-mode: Currently you cant exit the "choose-mode" --> Once you hit "platform run" your are givin the available configs and you have to run before exiting. We need esc/q function 
-- You still have to copy paste the name of the reference experiment when you want to run a reproducibility comparison
-- Imported and user-created experiments should be in seperate dirs. Currently its confusing where they separate. Need to think together about a way that feels natural. Imported exp should also be marked as such when in exp choose mode 
-- Tensorboard only logs, I need a link appearing to the tensorboard client which shows all the live logging. Ray provides this automatically, so no need for implementing ourselfs. We just need to harness the ray functionality. Check/run the ray trainingsscript in ATZ legacy for reference.
+## Open
 
-## Completed in feature/backlog-fixes
+- Rays logging is much more powerfull (logs all available metrics by default), but not logging to our codebase.
+- Options should all have a short version (--help == -h, etc.)
+- Autocomplete not working
+
+## Later
+
+- Clean up training script -> script not purely training logic currently
+
+## Completed in feature/sprint3-analysis-export (Round 3)
+
+- [x] Removed --install-completion flag (too slow) - set `add_completion=False` in Typer app
+- [x] Fixed repro table alignment - Deviation column now uses `:9.2%` format for proper alignment
+- [x] Fixed TensorBoard not working - training script now uses callbacks from orchestrator via `CombinedCallbacks` wrapper
+
+## Completed in feature/backlog-fixes (Round 2)
+
+- [x] Autocomplete on exp names - Added tab completion via Typer's autocompletion feature (use Tab to complete experiment names)
+- [x] Reproducibility comparison has clear table format: "| Metric | Run | Reference | Deviation | Match |"
+- [x] Exit option in choose-mode: Enter '0' or 'q' to cancel and exit selection
+- [x] Reference experiment selection: Use `platform report --compare` for interactive reference selection
+- [x] Imported vs user-created experiments clearly separated in selection with [yellow](imported)[/yellow] labels and grouped sections
+- [x] TensorBoard shows clear link: Prints instructions with `tensorboard --logdir <path>` and `http://localhost:6006`
+
+## Completed in feature/backlog-fixes (Round 1)
 
 - [x] Show usage explainer as: "Usage: platform [run | report | export | import]"
 - [x] We need autocomplete on experiment filenames or a faster way of choosing target file (currently typing date-strings in filenames) -> Added scrollable list selection when no argument provided

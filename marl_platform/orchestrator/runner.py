@@ -79,7 +79,6 @@ def run_experiment(config_path: str, tensorboard: bool | None = None) -> str:
         tb_logger = create_tensorboard_logger(output_dir)
         if tb_logger:
             callbacks.append(tb_logger)
-            print(f"TensorBoard enabled: tensorboard --logdir {output_dir / 'tensorboard'}")
 
     # 7. Execute training script
     script_path = Path(config.training.script)

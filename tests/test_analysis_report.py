@@ -345,7 +345,7 @@ class TestFormatComparison:
         result = format_comparison(comparison)
 
         assert "PASSED" in result
-        assert "Match:     Yes" in result
+        assert "| Yes" in result  # Table format has "| Yes"
 
     def test_formats_failed_comparison(self) -> None:
         """Formats failed comparison result."""
@@ -364,7 +364,7 @@ class TestFormatComparison:
         result = format_comparison(comparison)
 
         assert "FAILED" in result
-        assert "Match:     No" in result
+        assert "| No" in result  # Table format has "| No"
 
     def test_includes_deviation_percentages(self) -> None:
         """Includes deviation as percentage."""
