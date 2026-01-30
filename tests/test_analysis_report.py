@@ -333,40 +333,50 @@ class TestFormatComparison:
         comparison = {
             "final_reward_match": True,
             "final_reward_deviation": 0.005,
+            "final_reward_run": 100.5,
+            "final_reward_ref": 100.0,
             "auc_match": True,
             "auc_deviation": 0.003,
+            "auc_run": 1003.0,
+            "auc_ref": 1000.0,
             "passed": True,
         }
 
         result = format_comparison(comparison)
 
         assert "PASSED" in result
-        assert "Final Reward Match: Yes" in result
-        assert "AUC Match: Yes" in result
+        assert "Match:     Yes" in result
 
     def test_formats_failed_comparison(self) -> None:
         """Formats failed comparison result."""
         comparison = {
             "final_reward_match": False,
             "final_reward_deviation": 0.15,
+            "final_reward_run": 115.0,
+            "final_reward_ref": 100.0,
             "auc_match": True,
             "auc_deviation": 0.005,
+            "auc_run": 1005.0,
+            "auc_ref": 1000.0,
             "passed": False,
         }
 
         result = format_comparison(comparison)
 
         assert "FAILED" in result
-        assert "Final Reward Match: No" in result
-        assert "AUC Match: Yes" in result
+        assert "Match:     No" in result
 
     def test_includes_deviation_percentages(self) -> None:
         """Includes deviation as percentage."""
         comparison = {
             "final_reward_match": True,
             "final_reward_deviation": 0.0075,
+            "final_reward_run": 100.75,
+            "final_reward_ref": 100.0,
             "auc_match": True,
             "auc_deviation": 0.0025,
+            "auc_run": 1002.5,
+            "auc_ref": 1000.0,
             "passed": True,
         }
 
@@ -374,6 +384,27 @@ class TestFormatComparison:
 
         assert "0.75%" in result
         assert "0.25%" in result
+
+    def test_includes_actual_values(self) -> None:
+        """Includes actual run and reference values."""
+        comparison = {
+            "final_reward_match": True,
+            "final_reward_deviation": 0.01,
+            "final_reward_run": 101.0,
+            "final_reward_ref": 100.0,
+            "auc_match": True,
+            "auc_deviation": 0.01,
+            "auc_run": 505.0,
+            "auc_ref": 500.0,
+            "passed": True,
+        }
+
+        result = format_comparison(comparison)
+
+        assert "101.0000" in result
+        assert "100.0000" in result
+        assert "505.0000" in result
+        assert "500.0000" in result
 
 
 class TestGenerateReport:

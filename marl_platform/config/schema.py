@@ -28,6 +28,7 @@ class TrainingConfig(BaseModel):
 
     script: str = Field(..., min_length=1, description="Path to training script")
     iterations: int = Field(default=100, ge=1, description="Number of training iterations")
+    tensorboard: bool = Field(default=False, description="Enable TensorBoard logging")
 
 
 class OutputConfig(BaseModel):

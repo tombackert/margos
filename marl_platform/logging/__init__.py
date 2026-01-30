@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .callbacks import MetricsLogger
+from .callbacks import MetricsLogger, TensorBoardLogger, TENSORBOARD_AVAILABLE
 
 
 def create_logger(output_dir: Path | str) -> MetricsLogger:
@@ -17,6 +17,20 @@ def create_logger(output_dir: Path | str) -> MetricsLogger:
         Configured MetricsLogger instance.
     """
     return MetricsLogger(output_dir)
+
+
+def create_tensorboard_logger(output_dir: Path | str) -> TensorBoardLogger | None:
+    """Factory function to create configured TensorBoardLogger.
+
+    Args:
+        output_dir: Directory where TensorBoard logs will be written.
+
+    Returns:
+        Configured TensorBoardLogger instance, or None if TensorBoard unavailable.
+    """
+    if not TENSORBOARD_AVAILABLE:
+        return None
+    return TensorBoardLogger(output_dir)
 
 
 def read_metrics(log_path: Path | str) -> list[dict[str, Any]]:
@@ -45,6 +59,9 @@ def read_metrics(log_path: Path | str) -> list[dict[str, Any]]:
 
 __all__ = [
     "MetricsLogger",
+    "TensorBoardLogger",
+    "TENSORBOARD_AVAILABLE",
     "create_logger",
+    "create_tensorboard_logger",
     "read_metrics",
 ]

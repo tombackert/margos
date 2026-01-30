@@ -8,14 +8,14 @@ from pathlib import Path
 from typing import Any
 
 from marl_platform.config import load_config, resolve_paths, save_frozen_config, hash_config
-from marl_platform.logging import create_logger
+from marl_platform.logging import create_logger, create_tensorboard_logger
 from marl_platform.utils.errors import ConfigNotFoundError, TrainingError, ValidationError
 from marl_platform.utils.fingerprint import capture_fingerprint, save_fingerprint
 from marl_platform.utils.progress import TrainingProgress
 from marl_platform.utils.seeds import set_all_seeds
 
 
-def run_experiment(config_path: str) -> str:
+def run_experiment(config_path: str, tensorboard: bool | None = None) -> str:
     """Execute full training pipeline.
 
     Steps:
@@ -29,6 +29,7 @@ def run_experiment(config_path: str) -> str:
 
     Args:
         config_path: Path to experiment config YAML
+        tensorboard: Override tensorboard setting from config (if provided)
 
     Returns:
         output_dir: Path to results directory
@@ -50,6 +51,10 @@ def run_experiment(config_path: str) -> str:
     experiments_dir = config_path_obj.parent.parent
     config = resolve_paths(config, experiments_dir)
 
+    # Apply tensorboard override if provided
+    if tensorboard is not None:
+        config.training.tensorboard = tensorboard
+
     # 2. Create output directory
     output_dir = create_output_dir(config)
 
@@ -68,6 +73,13 @@ def run_experiment(config_path: str) -> str:
     # 6. Setup logging
     logger = create_logger(output_dir)
     callbacks = [logger]
+
+    # Add TensorBoard logging if enabled
+    if config.training.tensorboard:
+        tb_logger = create_tensorboard_logger(output_dir)
+        if tb_logger:
+            callbacks.append(tb_logger)
+            print(f"TensorBoard enabled: tensorboard --logdir {output_dir / 'tensorboard'}")
 
     # 7. Execute training script
     script_path = Path(config.training.script)

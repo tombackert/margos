@@ -3,6 +3,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
+from typing import Callable
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -182,24 +183,39 @@ def generate_summary(experiment_dir: Path, metrics: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def generate_report(experiment_dir: str, reference_dir: str | None = None) -> str:
+def generate_report(
+    experiment_dir: str,
+    reference_dir: str | None = None,
+    progress_callback: Callable[[int, int, str], None] | None = None,
+) -> str:
     """Generate analysis report for experiment.
 
     Args:
         experiment_dir: Path to experiment results directory.
         reference_dir: Optional path to reference experiment for comparison.
+        progress_callback: Optional callback(current, total, description) for progress.
 
     Returns:
         Path to generated report directory.
     """
     from marl_platform.analysis.compare import compare_runs
 
+    def update_progress(current: int, total: int, desc: str = "") -> None:
+        if progress_callback:
+            progress_callback(current, total, desc)
+
+    total_steps = 4 if reference_dir else 3
+
     exp_path = Path(experiment_dir)
     report_dir = exp_path / "report"
     report_dir.mkdir(parents=True, exist_ok=True)
 
+    update_progress(1, total_steps, "Reading metrics")
+
     log_path = exp_path / "logs" / "metrics.jsonl"
     metrics = read_metrics(log_path)
+
+    update_progress(2, total_steps, "Generating learning curve")
 
     # Generate learning curve plot
     plot_path = report_dir / "learning_curve.png"
@@ -210,8 +226,11 @@ def generate_report(experiment_dir: str, reference_dir: str | None = None) -> st
 
     # Add comparison if reference provided
     if reference_dir:
+        update_progress(3, total_steps, "Comparing with reference")
         comparison = compare_runs(experiment_dir, reference_dir)
         summary_text += format_comparison(comparison)
+
+    update_progress(total_steps, total_steps, "Writing report")
 
     # Write summary
     summary_path = report_dir / "summary.txt"
@@ -234,10 +253,18 @@ def format_comparison(comparison: dict) -> str:
         "Reproducibility Comparison",
         "-" * 40,
         f"Status: {status}",
-        f"Final Reward Match: {'Yes' if comparison['final_reward_match'] else 'No'} "
-        f"(deviation: {comparison['final_reward_deviation']:.2%})",
-        f"AUC Match: {'Yes' if comparison['auc_match'] else 'No'} "
-        f"(deviation: {comparison['auc_deviation']:.2%})",
+        "",
+        "Final Reward:",
+        f"  Run:       {comparison['final_reward_run']:.4f}",
+        f"  Reference: {comparison['final_reward_ref']:.4f}",
+        f"  Deviation: {comparison['final_reward_deviation']:.2%}",
+        f"  Match:     {'Yes' if comparison['final_reward_match'] else 'No'}",
+        "",
+        "AUC (Area Under Curve):",
+        f"  Run:       {comparison['auc_run']:.4f}",
+        f"  Reference: {comparison['auc_ref']:.4f}",
+        f"  Deviation: {comparison['auc_deviation']:.2%}",
+        f"  Match:     {'Yes' if comparison['auc_match'] else 'No'}",
         "",
     ]
     return "\n".join(lines)

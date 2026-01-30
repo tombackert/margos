@@ -1,9 +1,9 @@
 """Export bundle creation."""
 
-import shutil
 import zipfile
 from datetime import datetime
 from pathlib import Path
+from typing import Callable
 
 import yaml
 
@@ -38,17 +38,26 @@ def create_manifest(experiment_dir: Path) -> dict:
     }
 
 
-def export_bundle(experiment_dir: str, output_path: str | None = None) -> str:
+def export_bundle(
+    experiment_dir: str,
+    output_path: str | None = None,
+    progress_callback: Callable[[int, int, str], None] | None = None,
+) -> str:
     """Create shareable bundle from experiment.
 
     Args:
         experiment_dir: Path to experiment results directory.
         output_path: Path for output bundle file (default: bundles/<exp_name>.zip).
+        progress_callback: Optional callback(current, total, description) for progress.
 
     Returns:
         Path to created bundle.
     """
     exp_path = Path(experiment_dir)
+
+    def update_progress(current: int, total: int, desc: str = "") -> None:
+        if progress_callback:
+            progress_callback(current, total, desc)
 
     if not exp_path.exists():
         raise BundleError(
@@ -72,6 +81,8 @@ def export_bundle(experiment_dir: str, output_path: str | None = None) -> str:
         "logs/metrics.jsonl",
     ]
 
+    update_progress(1, 6, "Validating files")
+
     # Check required files exist
     for req_file in required_files:
         file_path = exp_path / req_file
@@ -87,11 +98,15 @@ def export_bundle(experiment_dir: str, output_path: str | None = None) -> str:
     with open(config_path) as f:
         config = yaml.safe_load(f)
 
+    update_progress(2, 6, "Creating manifest")
+
     # Create bundle ZIP
     with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zf:
         # Add manifest
         manifest = create_manifest(exp_path)
         zf.writestr("manifest.yaml", yaml.dump(manifest, default_flow_style=False))
+
+        update_progress(3, 6, "Adding config files")
 
         # Add config
         zf.write(config_path, "config.yaml")
@@ -103,6 +118,8 @@ def export_bundle(experiment_dir: str, output_path: str | None = None) -> str:
         config_hash_path = exp_path / "config_hash.txt"
         if config_hash_path.exists():
             zf.write(config_hash_path, "config_hash.txt")
+
+        update_progress(4, 6, "Adding logs")
 
         # Add logs directory
         logs_dir = exp_path / "logs"
@@ -125,6 +142,8 @@ def export_bundle(experiment_dir: str, output_path: str | None = None) -> str:
             if train_path.exists():
                 zf.write(train_path, "train.py")
 
+        update_progress(5, 6, "Adding checkpoints")
+
         # Add checkpoints directory (included by default per L5)
         checkpoints_dir = exp_path / "checkpoints"
         if checkpoints_dir.exists():
@@ -132,5 +151,7 @@ def export_bundle(experiment_dir: str, output_path: str | None = None) -> str:
                 if item.is_file():
                     arcname = f"checkpoints/{item.relative_to(checkpoints_dir)}"
                     zf.write(item, arcname)
+
+    update_progress(6, 6, "Complete")
 
     return str(output_path)

@@ -73,7 +73,11 @@ def compare_runs(
     return {
         "final_reward_match": final_match,
         "final_reward_deviation": final_deviation,
+        "final_reward_run": run_final,
+        "final_reward_ref": ref_final,
         "auc_match": auc_match,
         "auc_deviation": auc_deviation,
+        "auc_run": run_auc,
+        "auc_ref": ref_auc,
         "passed": final_match and auc_match,
     }

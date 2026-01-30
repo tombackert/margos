@@ -64,19 +64,23 @@ def main(
         output_dir: Path for checkpoints
         progress: Optional TrainingProgress for reporting progress
     """
+    # Check if tensorboard is enabled
+    tensorboard_enabled = config.get("training", {}).get("tensorboard", False)
+
     # Initialize Ray with minimal logging before any other Ray imports
     import ray
     if not ray.is_initialized():
         ray.init(
-            logging_level=logging.ERROR,
-            log_to_driver=False,
-            configure_logging=False,
+            logging_level=logging.WARNING if tensorboard_enabled else logging.ERROR,
+            log_to_driver=tensorboard_enabled,
+            configure_logging=tensorboard_enabled,
         )
 
-    # Suppress all Ray-related loggers and install deprecation filter
-    for name in ["ray", "ray.rllib", "ray.tune", "ray.data", "ray.train"]:
-        logging.getLogger(name).setLevel(logging.ERROR)
-    _install_logging_filter()
+    # Suppress all Ray-related loggers and install deprecation filter (unless tensorboard enabled)
+    if not tensorboard_enabled:
+        for name in ["ray", "ray.rllib", "ray.tune", "ray.data", "ray.train"]:
+            logging.getLogger(name).setLevel(logging.ERROR)
+        _install_logging_filter()
 
     # Delayed imports to ensure seeds are set first
     from ray.rllib.algorithms.ppo import PPOConfig
@@ -132,6 +136,14 @@ def main(
     algo_config.train_batch_size = 200
     algo_config.sgd_minibatch_size = 64
     algo_config.num_sgd_iter = 5
+
+    # Configure TensorBoard logging if enabled
+    if tensorboard_enabled:
+        tensorboard_dir = Path(output_dir) / "tensorboard"
+        tensorboard_dir.mkdir(parents=True, exist_ok=True)
+        # Log TensorBoard directory location
+        print(f"TensorBoard logs: {tensorboard_dir}")
+        print(f"Run: tensorboard --logdir {tensorboard_dir}")
 
     algo = algo_config.build()
 

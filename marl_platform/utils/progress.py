@@ -197,3 +197,44 @@ def mock_progress(description: str, steps: int = 10, duration: float = MIN_DISPL
         for _ in range(steps):
             time.sleep(step_time)
             progress.update(task, advance=1)
+
+
+class OperationProgress:
+    """Progress reporter for operations with steps.
+
+    Usage:
+        with OperationProgress("Exporting") as progress:
+            export_bundle(path, progress_callback=progress.callback)
+    """
+
+    def __init__(self, description: str) -> None:
+        self._description = description
+        self._progress: Optional[Progress] = None
+        self._task_id: Optional[int] = None
+
+    def __enter__(self) -> "OperationProgress":
+        self._progress = Progress(
+            SpinnerColumn(),
+            TextColumn("[bold blue]{task.description}"),
+            BarColumn(bar_width=30),
+            MofNCompleteColumn(),
+            TextColumn("•"),
+            TimeElapsedColumn(),
+            console=console,
+            refresh_per_second=4,
+        )
+        self._progress.start()
+        self._task_id = self._progress.add_task(self._description, total=1)
+        return self
+
+    def __exit__(self, *args) -> None:
+        if self._progress:
+            self._progress.stop()
+
+    def callback(self, current: int, total: int, description: str = "") -> None:
+        """Progress callback for operations."""
+        if self._progress and self._task_id is not None:
+            update_kwargs = {"completed": current, "total": total}
+            if description:
+                update_kwargs["description"] = f"{self._description}: {description}"
+            self._progress.update(self._task_id, **update_kwargs)
