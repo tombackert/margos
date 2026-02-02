@@ -15,7 +15,7 @@ from marl_platform.utils.progress import TrainingProgress
 from marl_platform.utils.seeds import set_all_seeds
 
 
-def run_experiment(config_path: str, tensorboard: bool | None = None) -> str:
+def run_experiment(config_path: str) -> str:
     """Execute full training pipeline.
 
     Steps:
@@ -29,7 +29,6 @@ def run_experiment(config_path: str, tensorboard: bool | None = None) -> str:
 
     Args:
         config_path: Path to experiment config YAML
-        tensorboard: Override tensorboard setting from config (if provided)
 
     Returns:
         output_dir: Path to results directory
@@ -50,10 +49,6 @@ def run_experiment(config_path: str, tensorboard: bool | None = None) -> str:
     # Resolve paths relative to experiments directory
     experiments_dir = config_path_obj.parent.parent
     config = resolve_paths(config, experiments_dir)
-
-    # Apply tensorboard override if provided
-    if tensorboard is not None:
-        config.training.tensorboard = tensorboard
 
     # 2. Create output directory
     output_dir = create_output_dir(config)

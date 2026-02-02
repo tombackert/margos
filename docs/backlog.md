@@ -2,13 +2,14 @@
 
 ## Open
 
-- Rays logging is much more powerfull (logs all available metrics by default), but not logging to our codebase.
-- Options should all have a short version (--help == -h, etc.)
-- Autocomplete not working
+(None)
 
-## Later
+## Completed in feature/backlog-fixes (Round 4)
 
-- Clean up training script -> script not purely training logic currently
+- [x] Removed non-functional autocomplete - Deleted autocomplete functions, relying on existing list selection
+- [x] Added short options to all CLI commands: `-c` (config-dir), `-i` (imported-dir), `-r` (reference), `-d` (results-dir), `-o` (output), `-b` (bundles-dir)
+- [x] TensorBoard enabled by default - Changed `tensorboard: bool = True` in schema, removed `--tensorboard` CLI flag
+- [x] Cleaned up training script - Moved Ray logging utilities to `marl_platform/utils/ray_logging.py`, simplified `aggregation.py` to pure training logic
 
 ## Completed in feature/sprint3-analysis-export (Round 3)
 

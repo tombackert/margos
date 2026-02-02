@@ -29,29 +29,6 @@ from marl_platform.utils.progress import OperationProgress
 console = Console()
 
 
-# Autocompletion functions for tab completion
-def complete_config_names(incomplete: str) -> list[str]:
-    """Autocomplete config names for tab completion."""
-    configs = list_configs()
-    imported = list_imported()
-    all_names = configs + imported
-    return [name for name in all_names if name.startswith(incomplete)]
-
-
-def complete_result_names(incomplete: str) -> list[str]:
-    """Autocomplete result names for tab completion."""
-    results = list_results()
-    imported = list_imported()
-    all_names = results + imported
-    return [name for name in all_names if name.startswith(incomplete)]
-
-
-def complete_bundle_names(incomplete: str) -> list[str]:
-    """Autocomplete bundle names for tab completion."""
-    bundles = list_bundles()
-    return [name for name in bundles if name.startswith(incomplete)]
-
-
 def list_configs(config_dir: str = "experiments/configs") -> list[str]:
     """List available config files."""
     config_path = Path(config_dir)
@@ -186,16 +163,14 @@ def run(
     experiment: Optional[str] = typer.Argument(
         None,
         help="Experiment name (resolves to experiments/configs/<name>.yaml)",
-        autocompletion=complete_config_names,
     ),
-    config_dir: str = typer.Option("experiments/configs", help="Override config directory"),
-    imported_dir: str = typer.Option("experiments/imported", help="Imported experiments directory"),
-    tensorboard: bool = typer.Option(False, "--tensorboard", "-tb", help="Enable TensorBoard logging"),
+    config_dir: str = typer.Option("experiments/configs", "--config-dir", "-c", help="Override config directory"),
+    imported_dir: str = typer.Option("experiments/imported", "--imported-dir", "-i", help="Imported experiments directory"),
 ) -> None:
     """Run an experiment from config file.
 
     If no experiment name is provided, shows a selection list.
-    Use --tensorboard to enable TensorBoard logging for long training runs.
+    TensorBoard logging is enabled by default (config: training.tensorboard).
     """
     try:
         # Interactive selection if no experiment provided
@@ -266,11 +241,9 @@ def run(
 
         typer.echo(f"Running experiment: {experiment}")
         typer.echo(f"Config: {config_path}")
-        if tensorboard:
-            typer.echo("TensorBoard: enabled")
         typer.echo("")
 
-        output_dir = run_experiment(str(config_path), tensorboard=tensorboard if tensorboard else None)
+        output_dir = run_experiment(str(config_path))
 
         typer.echo("")
         typer.echo(f"Output: {output_dir}")
@@ -305,16 +278,15 @@ def report(
     experiment: Optional[str] = typer.Argument(
         None,
         help="Experiment ID (resolves to results/<id>/)",
-        autocompletion=complete_result_names,
     ),
     reference: Optional[str] = typer.Option(
         None,
+        "--reference", "-r",
         help="Reference experiment for comparison",
-        autocompletion=complete_result_names,
     ),
-    compare: bool = typer.Option(False, "--compare", "-c", help="Enable comparison mode (select reference interactively)"),
-    results_dir: str = typer.Option("results", help="Override results directory"),
-    imported_dir: str = typer.Option("experiments/imported", help="Imported experiments directory"),
+    compare: bool = typer.Option(False, "--compare", help="Enable comparison mode (select reference interactively)"),
+    results_dir: str = typer.Option("results", "--results-dir", "-d", help="Override results directory"),
+    imported_dir: str = typer.Option("experiments/imported", "--imported-dir", "-i", help="Imported experiments directory"),
 ) -> None:
     """Generate report for an experiment.
 
@@ -451,10 +423,9 @@ def export(
     experiment: Optional[str] = typer.Argument(
         None,
         help="Experiment ID to export",
-        autocompletion=complete_result_names,
     ),
-    output: Optional[str] = typer.Option(None, help="Output bundle path (default: bundles/<experiment>.zip)"),
-    results_dir: str = typer.Option("results", help="Override results directory"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output bundle path (default: bundles/<experiment>.zip)"),
+    results_dir: str = typer.Option("results", "--results-dir", "-d", help="Override results directory"),
 ) -> None:
     """Export experiment to shareable bundle.
 
@@ -515,9 +486,8 @@ def import_(
     bundle: Optional[str] = typer.Argument(
         None,
         help="Bundle file to import",
-        autocompletion=complete_bundle_names,
     ),
-    bundles_dir: str = typer.Option("bundles", help="Bundles directory (override default)"),
+    bundles_dir: str = typer.Option("bundles", "--bundles-dir", "-b", help="Bundles directory (override default)"),
 ) -> None:
     """Import experiment bundle.
 
@@ -571,10 +541,10 @@ def show(
         None,
         help="Category to show: configs, results, imported, bundles, or all",
     ),
-    config_dir: str = typer.Option("experiments/configs", help="Config directory"),
-    results_dir: str = typer.Option("results", help="Results directory"),
-    imported_dir: str = typer.Option("experiments/imported", help="Imported experiments directory"),
-    bundles_dir: str = typer.Option("bundles", help="Bundles directory"),
+    config_dir: str = typer.Option("experiments/configs", "--config-dir", "-c", help="Config directory"),
+    results_dir: str = typer.Option("results", "--results-dir", "-d", help="Results directory"),
+    imported_dir: str = typer.Option("experiments/imported", "--imported-dir", "-i", help="Imported experiments directory"),
+    bundles_dir: str = typer.Option("bundles", "--bundles-dir", "-b", help="Bundles directory"),
 ) -> None:
     """Show available configs, experiments, or bundles.
 
