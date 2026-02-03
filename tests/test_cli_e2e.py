@@ -178,14 +178,14 @@ def main(config, callbacks, output_dir):
         assert "Training" in result.stdout or "failed" in result.stdout.lower()
 
 
-class TestReportCommand:
-    """E2E tests for `platform report` command."""
+class TestCompareCommand:
+    """E2E tests for `platform compare` command."""
 
-    def test_report_missing_experiment_shows_error(self, tmp_path: Path) -> None:
+    def test_compare_missing_experiment_shows_error(self, tmp_path: Path) -> None:
         """Missing experiment shows user-friendly error."""
         result = runner.invoke(
             app,
-            ["report", "nonexistent", "--results-dir", str(tmp_path)],
+            ["compare", "nonexistent", "reference", "--results-dir", str(tmp_path)],
         )
 
         assert result.exit_code == 1

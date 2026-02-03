@@ -7,7 +7,8 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from marl_platform.analysis import compare_runs, generate_report
+from marl_platform.analysis import compare_runs
+from marl_platform.analysis.report import format_comparison
 from marl_platform.export import (
     compare_fingerprints,
     export_bundle,
@@ -29,42 +30,58 @@ from marl_platform.utils.progress import OperationProgress
 console = Console()
 
 
+def list_items(
+    directory: str,
+    pattern: str | None = None,
+    is_dir: bool = False,
+    use_stem: bool = False,
+) -> list[str]:
+    """List items in a directory matching criteria.
+
+    Args:
+        directory: Path to directory to list
+        pattern: Glob pattern for files (e.g., "*.yaml"). If None, lists directories.
+        is_dir: If True and pattern is None, list directories only
+        use_stem: If True, return file stems instead of full names
+
+    Returns:
+        List of item names sorted by modification time (oldest first, newest last)
+    """
+    path = Path(directory)
+    if not path.exists():
+        return []
+
+    if pattern:
+        paths = list(path.glob(pattern))
+    else:
+        paths = [d for d in path.iterdir() if d.is_dir()]
+
+    # Sort by modification time (oldest first, newest last)
+    paths.sort(key=lambda p: p.stat().st_mtime)
+
+    if pattern and use_stem:
+        return [p.stem for p in paths]
+    return [p.name for p in paths]
+
+
 def list_configs(config_dir: str = "experiments/configs") -> list[str]:
     """List available config files."""
-    config_path = Path(config_dir)
-    if not config_path.exists():
-        return []
-    return sorted([f.stem for f in config_path.glob("*.yaml")])
+    return list_items(config_dir, pattern="*.yaml", use_stem=True)
 
 
 def list_results(results_dir: str = "results") -> list[str]:
     """List available experiment results."""
-    results_path = Path(results_dir)
-    if not results_path.exists():
-        return []
-    return sorted(
-        [d.name for d in results_path.iterdir() if d.is_dir()],
-        reverse=True,  # Most recent first
-    )
+    return list_items(results_dir, is_dir=True)
 
 
 def list_imported(imported_dir: str = "experiments/imported") -> list[str]:
     """List imported experiments."""
-    imported_path = Path(imported_dir)
-    if not imported_path.exists():
-        return []
-    return sorted(
-        [d.name for d in imported_path.iterdir() if d.is_dir()],
-        reverse=True,
-    )
+    return list_items(imported_dir, is_dir=True)
 
 
 def list_bundles(bundles_dir: str = "bundles") -> list[str]:
     """List available bundles."""
-    bundles_path = Path(bundles_dir)
-    if not bundles_path.exists():
-        return []
-    return sorted([f.name for f in bundles_path.glob("*.zip")])
+    return list_items(bundles_dir, pattern="*.zip")
 
 
 def select_from_list(items: list[str], prompt: str, allow_exit: bool = True) -> str | None:
@@ -105,9 +122,60 @@ def select_from_list(items: list[str], prompt: str, allow_exit: bool = True) -> 
         except ValueError:
             console.print("[red]Please enter a valid number (or 'q' to cancel)[/red]")
 
+
+def select_from_grouped_list(
+    options: list[tuple[str, str]],
+    prompt: str,
+    group_labels: dict[str, str],
+    exit_label: str = "Cancel / Exit",
+) -> tuple[str, str] | None:
+    """Prompt user to select from a grouped numbered list.
+
+    Args:
+        options: List of (source, name) tuples
+        prompt: Header text to display
+        group_labels: Dict mapping source to display label (e.g., {"results": "Results (results/):"})
+        exit_label: Label for the exit option
+
+    Returns:
+        Selected (source, name) tuple or None if user exits
+    """
+    if not options:
+        return None
+
+    console.print(f"\n[bold]{prompt}[/bold]")
+
+    # Display items grouped by source
+    for source, label in group_labels.items():
+        source_items = [(idx, s, name) for idx, (s, name) in enumerate(options, 1) if s == source]
+        if source_items:
+            console.print(f"[dim]  {label}[/dim]")
+            for idx, s, name in source_items:
+                if s == "imported":
+                    console.print(f"  [{idx}] {name} [yellow](imported)[/yellow]")
+                else:
+                    console.print(f"  [{idx}] {name}")
+
+    console.print(f"  [dim][0] {exit_label}[/dim]")
+    console.print()
+
+    while True:
+        choice = typer.prompt("Select number (or 'q' to cancel)", default="1")
+
+        if choice.lower() in ("q", "0", "quit", "exit", "cancel", "skip"):
+            return None
+
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(options):
+                return options[idx]
+            console.print(f"[red]Please enter a number between 1 and {len(options)}[/red]")
+        except ValueError:
+            console.print("[red]Please enter a valid number (or 'q' to cancel)[/red]")
+
 app = typer.Typer(
     name="platform",
-    help="Research platform for MARL experiment workflows.\n\nUsage: platform [run | report | export | import | show]",
+    help="Research platform for MARL experiment workflows.\n\nUsage: platform [run | compare | export | import | show]",
     add_completion=False,  # Disabled - shell completion install is too slow
 )
 
@@ -124,38 +192,35 @@ def main(
     _verbose = verbose
 
 
-def resolve_experiment_path(experiment: str, results_dir: str) -> Path:
-    """Resolve experiment ID to results directory path.
+def resolve_path(name: str, base_dir: str, extension: str | None = None) -> Path:
+    """Resolve a name to a path within a base directory.
 
-    Handles:
-    - "exp_v1_20240115" -> "{results_dir}/exp_v1_20240115/"
-    - "/absolute/path/" -> use as-is
+    Args:
+        name: The name or path to resolve
+        base_dir: The base directory for relative paths
+        extension: Optional extension to add if not present (e.g., ".yaml")
+
+    Returns:
+        Resolved Path object
     """
-    path = Path(experiment)
-
+    path = Path(name)
     if path.is_absolute():
         return path
 
-    return Path(results_dir) / experiment
+    if extension and not name.endswith(extension):
+        name = f"{name}{extension}"
+
+    return Path(base_dir) / name
 
 
 def resolve_config_path(experiment: str, config_dir: str) -> Path:
-    """Resolve experiment name to config file path.
+    """Resolve experiment name to config file path."""
+    return resolve_path(experiment, config_dir, extension=".yaml")
 
-    Handles:
-    - "exp_v1" -> "{config_dir}/exp_v1.yaml"
-    - "exp_v1.yaml" -> "{config_dir}/exp_v1.yaml"
-    - "/absolute/path.yaml" -> use as-is
-    """
-    path = Path(experiment)
 
-    if path.is_absolute():
-        return path
-
-    if not experiment.endswith(".yaml"):
-        experiment = f"{experiment}.yaml"
-
-    return Path(config_dir) / experiment
+def resolve_experiment_path(experiment: str, results_dir: str) -> Path:
+    """Resolve experiment ID to results directory path."""
+    return resolve_path(experiment, results_dir)
 
 
 @app.command()
@@ -173,68 +238,35 @@ def run(
     TensorBoard logging is enabled by default (config: training.tensorboard).
     """
     try:
+        source = "config"  # Default source
+
         # Interactive selection if no experiment provided
         if experiment is None:
             configs = list_configs(config_dir)
             imported = list_imported(imported_dir)
 
-            all_options = []
-            for c in configs:
-                all_options.append(("config", c))
-            for i in imported:
-                all_options.append(("imported", i))
+            all_options = [("config", c) for c in configs] + [("imported", i) for i in imported]
 
             if not all_options:
                 typer.echo("No experiments found in configs or imported directories.")
                 raise typer.Exit(1)
 
-            console.print("\n[bold]Available experiments:[/bold]")
-            console.print("[dim]  Configs (experiments/configs/):[/dim]")
-            config_start = 1
-            for idx, (source, name) in enumerate(all_options, 1):
-                if source == "config":
-                    console.print(f"  [{idx}] {name}")
-                else:
-                    break
-                config_start = idx + 1
+            result = select_from_grouped_list(
+                all_options,
+                "Available experiments:",
+                {"config": "Configs (experiments/configs/):", "imported": "Imported (experiments/imported/):"},
+            )
+            if result is None:
+                console.print("[dim]Cancelled.[/dim]")
+                raise typer.Exit(0)
 
-            if any(s == "imported" for s, _ in all_options):
-                console.print("[dim]  Imported (experiments/imported/):[/dim]")
-                for idx, (source, name) in enumerate(all_options, 1):
-                    if source == "imported":
-                        console.print(f"  [{idx}] {name} [yellow](imported)[/yellow]")
+            source, experiment = result
 
-            console.print(f"  [dim][0] Cancel / Exit[/dim]")
-            console.print()
-
-            while True:
-                choice = typer.prompt("Select number (or 'q' to cancel)", default="1")
-
-                # Check for exit
-                if choice.lower() in ("q", "0", "quit", "exit", "cancel"):
-                    console.print("[dim]Cancelled.[/dim]")
-                    raise typer.Exit(0)
-
-                try:
-                    idx = int(choice) - 1
-                    if 0 <= idx < len(all_options):
-                        source, experiment = all_options[idx]
-                        break
-                    console.print(f"[red]Please enter a number between 1 and {len(all_options)}[/red]")
-                except ValueError:
-                    console.print("[red]Please enter a valid number (or 'q' to cancel)[/red]")
-
-            if source == "imported":
-                config_path = Path(imported_dir) / experiment / "config.yaml"
-            else:
-                config_path = resolve_config_path(experiment, config_dir)
+        # Resolve config path based on source
+        if source == "imported" or (Path(imported_dir) / experiment / "config.yaml").exists():
+            config_path = Path(imported_dir) / experiment / "config.yaml"
         else:
-            # Check if experiment is in imported directory
-            imported_config = Path(imported_dir) / experiment / "config.yaml"
-            if imported_config.exists():
-                config_path = imported_config
-            else:
-                config_path = resolve_config_path(experiment, config_dir)
+            config_path = resolve_config_path(experiment, config_dir)
 
         if not config_path.exists():
             raise ConfigNotFoundError(str(config_path))
@@ -274,37 +306,35 @@ def resolve_experiment_path_extended(experiment: str, results_dir: str, imported
 
 
 @app.command()
-def report(
+def compare(
     experiment: Optional[str] = typer.Argument(
         None,
-        help="Experiment ID (resolves to results/<id>/)",
+        help="Experiment to evaluate",
     ),
-    reference: Optional[str] = typer.Option(
+    reference: Optional[str] = typer.Argument(
         None,
-        "--reference", "-r",
-        help="Reference experiment for comparison",
+        help="Reference experiment",
     ),
-    compare: bool = typer.Option(False, "--compare", help="Enable comparison mode (select reference interactively)"),
     results_dir: str = typer.Option("results", "--results-dir", "-d", help="Override results directory"),
     imported_dir: str = typer.Option("experiments/imported", "--imported-dir", "-i", help="Imported experiments directory"),
 ) -> None:
-    """Generate report for an experiment.
+    """Compare two experiments for reproducibility.
+
+    Compares final reward and AUC between experiments, checking if deviations
+    are within tolerance (default 1%). This serves SRQ3 (reproducibility).
 
     Examples:
-        platform report exp_v1_20240115
-        platform report exp_v1_20240115 --reference exp_v1_20240114
-        platform report --compare  # Interactive selection for both
+        platform compare                           # Interactive selection for both
+        platform compare exp_v1 exp_v2             # Compare exp_v1 against exp_v2
+        platform compare exp_v1                    # Select reference interactively
     """
+    group_labels = {"results": "Results (results/):", "imported": "Imported (experiments/imported/):"}
+
     try:
         # Build list of all available experiments
         results = list_results(results_dir)
         imported = list_imported(imported_dir)
-
-        all_options = []
-        for r in results:
-            all_options.append(("results", r))
-        for i in imported:
-            all_options.append(("imported", i))
+        all_options = [("results", r) for r in results] + [("imported", i) for i in imported]
 
         # Interactive selection if no experiment provided
         if experiment is None:
@@ -312,107 +342,53 @@ def report(
                 typer.echo("No experiments found in results or imported directories.")
                 raise typer.Exit(1)
 
-            console.print("\n[bold]Select experiment for report:[/bold]")
-            console.print("[dim]  Results (results/):[/dim]")
-            for idx, (source, name) in enumerate(all_options, 1):
-                if source == "results":
-                    console.print(f"  [{idx}] {name}")
+            result = select_from_grouped_list(all_options, "Select experiment to evaluate:", group_labels)
+            if result is None:
+                console.print("[dim]Cancelled.[/dim]")
+                raise typer.Exit(0)
 
-            if any(s == "imported" for s, _ in all_options):
-                console.print("[dim]  Imported (experiments/imported/):[/dim]")
-                for idx, (source, name) in enumerate(all_options, 1):
-                    if source == "imported":
-                        console.print(f"  [{idx}] {name} [yellow](imported)[/yellow]")
-
-            console.print(f"  [dim][0] Cancel / Exit[/dim]")
-            console.print()
-
-            while True:
-                choice = typer.prompt("Select number (or 'q' to cancel)", default="1")
-
-                if choice.lower() in ("q", "0", "quit", "exit", "cancel"):
-                    console.print("[dim]Cancelled.[/dim]")
-                    raise typer.Exit(0)
-
-                try:
-                    idx = int(choice) - 1
-                    if 0 <= idx < len(all_options):
-                        source, experiment = all_options[idx]
-                        break
-                    console.print(f"[red]Please enter a number between 1 and {len(all_options)}[/red]")
-                except ValueError:
-                    console.print("[red]Please enter a valid number (or 'q' to cancel)[/red]")
+            _, experiment = result
 
         experiment_path = resolve_experiment_path_extended(experiment, results_dir, imported_dir)
 
         if not experiment_path.exists():
             raise ExperimentNotFoundError(str(experiment_path))
 
-        # Interactive reference selection if --compare flag or no reference provided
+        # Interactive reference selection if no reference provided
         reference_path = None
         if reference:
             reference_path = resolve_experiment_path_extended(reference, results_dir, imported_dir)
             if not reference_path.exists():
                 raise ExperimentNotFoundError(str(reference_path))
-        elif compare:
-            # Filter out the selected experiment from options
+        else:
             ref_options = [(s, n) for s, n in all_options if n != experiment]
 
             if not ref_options:
                 typer.echo("No other experiments available for comparison.")
-            else:
-                console.print("\n[bold]Select reference experiment for comparison:[/bold]")
-                console.print("[dim]  Results (results/):[/dim]")
-                for idx, (source, name) in enumerate(ref_options, 1):
-                    if source == "results":
-                        console.print(f"  [{idx}] {name}")
+                raise typer.Exit(1)
 
-                if any(s == "imported" for s, _ in ref_options):
-                    console.print("[dim]  Imported (experiments/imported/):[/dim]")
-                    for idx, (source, name) in enumerate(ref_options, 1):
-                        if source == "imported":
-                            console.print(f"  [{idx}] {name} [yellow](imported)[/yellow]")
-
-                console.print(f"  [dim][0] Skip comparison[/dim]")
-                console.print()
-
-                while True:
-                    choice = typer.prompt("Select reference (or 'q' to skip)", default="0")
-
-                    if choice.lower() in ("q", "0", "quit", "skip", "cancel"):
-                        console.print("[dim]Skipping comparison.[/dim]")
-                        break
-
-                    try:
-                        idx = int(choice) - 1
-                        if 0 <= idx < len(ref_options):
-                            _, ref_name = ref_options[idx]
-                            reference_path = resolve_experiment_path_extended(ref_name, results_dir, imported_dir)
-                            break
-                        console.print(f"[red]Please enter a number between 1 and {len(ref_options)}[/red]")
-                    except ValueError:
-                        console.print("[red]Please enter a valid number (or 'q' to skip)[/red]")
-
-        if reference_path:
-            typer.echo(f"Generating report for: {experiment}")
-            typer.echo(f"Reference: {reference}")
-        else:
-            typer.echo(f"Generating report for: {experiment}")
-
-        with OperationProgress("Generating report") as progress:
-            report_path = generate_report(
-                str(experiment_path),
-                str(reference_path) if reference_path else None,
-                progress_callback=progress.callback,
+            result = select_from_grouped_list(
+                ref_options,
+                "Select reference experiment:",
+                group_labels,
             )
+            if result is None:
+                console.print("[dim]Cancelled.[/dim]")
+                raise typer.Exit(0)
 
-        # Display summary
-        summary_path = Path(report_path) / "summary.txt"
-        if summary_path.exists():
-            typer.echo("")
-            typer.echo(summary_path.read_text())
+            _, ref_name = result
+            reference_path = resolve_experiment_path_extended(ref_name, results_dir, imported_dir)
 
-        typer.echo(f"Report saved to: {report_path}")
+        typer.echo(f"Comparing: {experiment}")
+        typer.echo(f"Reference: {reference_path.name}")
+        typer.echo("")
+
+        # Run comparison
+        comparison = compare_runs(str(experiment_path), str(reference_path))
+
+        # Display formatted comparison table
+        typer.echo(format_comparison(comparison))
+
     except PlatformError as e:
         display_error(e, verbose=_verbose)
         raise typer.Exit(1)
@@ -467,18 +443,8 @@ def export(
 
 
 def resolve_bundle_path(bundle: str, bundles_dir: str) -> Path:
-    """Resolve bundle filename to full path.
-
-    Handles:
-    - "exp_v1.zip" -> "{bundles_dir}/exp_v1.zip"
-    - "/absolute/path.zip" -> use as-is
-    """
-    path = Path(bundle)
-
-    if path.is_absolute():
-        return path
-
-    return Path(bundles_dir) / bundle
+    """Resolve bundle filename to full path."""
+    return resolve_path(bundle, bundles_dir)
 
 
 @app.command("import")
