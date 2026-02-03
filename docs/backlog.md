@@ -2,7 +2,9 @@
 
 ## Open
 
-(None)
+- Report command does not serve any SRQ. What we want fto satisf the SRQs, is the compare experiments function. We should therefore get rid of the report command and the redundant option functions "reference" and "compare" and should instead have compare as native command. Should work the same as "platform report --compare" works right now
+- When listing available configurations for any command, e.g. configs, exp_to_export/import, etc, they should be always sorted by date (most recent last)
+
 
 ## Completed in feature/backlog-fixes (Round 4)
 

@@ -1,6 +1,6 @@
 """Utility functions."""
 
-from .fingerprint import capture_fingerprint, compare_fingerprints, save_fingerprint
+from .fingerprint import capture_fingerprint, save_fingerprint
 from .seeds import get_seed_state, set_all_seeds
 
 __all__ = [
@@ -8,5 +8,4 @@ __all__ = [
     "get_seed_state",
     "capture_fingerprint",
     "save_fingerprint",
-    "compare_fingerprints",
 ]

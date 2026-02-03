@@ -16,6 +16,64 @@ except ImportError:
     SummaryWriter = None
 
 
+def extract_metrics(result: dict[str, Any]) -> dict[str, Any]:
+    """Extract relevant metrics from RLlib result dict.
+
+    Args:
+        result: The raw result dict from RLlib training iteration.
+
+    Returns:
+        Dict containing the metrics to log.
+    """
+    # RLlib result structure varies by version and API stack
+    # Try multiple possible keys for compatibility
+    metrics: dict[str, Any] = {
+        "iteration": result.get("training_iteration"),
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+    }
+
+    # Episode rewards - try old and new API stack locations
+    env_runners = result.get("env_runners", {})
+    sampler_results = result.get("sampler_results", {})
+
+    metrics["episode_reward_mean"] = (
+        result.get("episode_reward_mean")
+        or env_runners.get("episode_reward_mean")
+        or sampler_results.get("episode_reward_mean")
+    )
+    metrics["episode_reward_min"] = (
+        result.get("episode_reward_min")
+        or env_runners.get("episode_reward_min")
+        or sampler_results.get("episode_reward_min")
+    )
+    metrics["episode_reward_max"] = (
+        result.get("episode_reward_max")
+        or env_runners.get("episode_reward_max")
+        or sampler_results.get("episode_reward_max")
+    )
+    metrics["episode_len_mean"] = (
+        result.get("episode_len_mean")
+        or env_runners.get("episode_len_mean")
+        or sampler_results.get("episode_len_mean")
+    )
+
+    # Try to get policy loss from various locations in result dict
+    info = result.get("info", {})
+    learner_info = info.get("learner", {})
+
+    # Default policy loss location
+    if "default_policy" in learner_info:
+        policy_info = learner_info["default_policy"]
+        metrics["loss"] = policy_info.get("learner_stats", {}).get(
+            "total_loss"
+        ) or policy_info.get("total_loss")
+    else:
+        # Fallback: check top-level learner stats
+        metrics["loss"] = learner_info.get("total_loss")
+
+    return metrics
+
+
 class MetricsLogger(DefaultCallbacks):
     """RLlib callback that logs training metrics to JSONL file.
 
@@ -54,65 +112,8 @@ class MetricsLogger(DefaultCallbacks):
             result: The result dict from the training iteration.
             **kwargs: Additional keyword arguments.
         """
-        metrics = self._extract_metrics(result)
+        metrics = extract_metrics(result)
         self._append_log(metrics)
-
-    def _extract_metrics(self, result: dict[str, Any]) -> dict[str, Any]:
-        """Extract relevant metrics from RLlib result dict.
-
-        Args:
-            result: The raw result dict from RLlib training iteration.
-
-        Returns:
-            Dict containing the metrics to log.
-        """
-        # RLlib result structure varies by version and API stack
-        # Try multiple possible keys for compatibility
-        metrics: dict[str, Any] = {
-            "iteration": result.get("training_iteration"),
-            "timestamp": datetime.now().isoformat(timespec="seconds"),
-        }
-
-        # Episode rewards - try old and new API stack locations
-        env_runners = result.get("env_runners", {})
-        sampler_results = result.get("sampler_results", {})
-
-        metrics["episode_reward_mean"] = (
-            result.get("episode_reward_mean")
-            or env_runners.get("episode_reward_mean")
-            or sampler_results.get("episode_reward_mean")
-        )
-        metrics["episode_reward_min"] = (
-            result.get("episode_reward_min")
-            or env_runners.get("episode_reward_min")
-            or sampler_results.get("episode_reward_min")
-        )
-        metrics["episode_reward_max"] = (
-            result.get("episode_reward_max")
-            or env_runners.get("episode_reward_max")
-            or sampler_results.get("episode_reward_max")
-        )
-        metrics["episode_len_mean"] = (
-            result.get("episode_len_mean")
-            or env_runners.get("episode_len_mean")
-            or sampler_results.get("episode_len_mean")
-        )
-
-        # Try to get policy loss from various locations in result dict
-        info = result.get("info", {})
-        learner_info = info.get("learner", {})
-
-        # Default policy loss location
-        if "default_policy" in learner_info:
-            policy_info = learner_info["default_policy"]
-            metrics["loss"] = policy_info.get("learner_stats", {}).get(
-                "total_loss"
-            ) or policy_info.get("total_loss")
-        else:
-            # Fallback: check top-level learner stats
-            metrics["loss"] = learner_info.get("total_loss")
-
-        return metrics
 
     def _append_log(self, metrics: dict[str, Any]) -> None:
         """Append metrics as JSON line to log file.
@@ -172,54 +173,20 @@ class TensorBoardLogger(DefaultCallbacks):
             result: The result dict from the training iteration.
             **kwargs: Additional keyword arguments.
         """
-        iteration = result.get("training_iteration", 0)
-
-        # Episode rewards - try old and new API stack locations
-        env_runners = result.get("env_runners", {})
-        sampler_results = result.get("sampler_results", {})
-
-        episode_reward_mean = (
-            result.get("episode_reward_mean")
-            or env_runners.get("episode_reward_mean")
-            or sampler_results.get("episode_reward_mean")
-        )
-        episode_reward_min = (
-            result.get("episode_reward_min")
-            or env_runners.get("episode_reward_min")
-            or sampler_results.get("episode_reward_min")
-        )
-        episode_reward_max = (
-            result.get("episode_reward_max")
-            or env_runners.get("episode_reward_max")
-            or sampler_results.get("episode_reward_max")
-        )
-        episode_len_mean = (
-            result.get("episode_len_mean")
-            or env_runners.get("episode_len_mean")
-            or sampler_results.get("episode_len_mean")
-        )
+        metrics = extract_metrics(result)
+        iteration = metrics.get("iteration", 0)
 
         # Log to TensorBoard
-        if episode_reward_mean is not None:
-            self.writer.add_scalar("reward/mean", episode_reward_mean, iteration)
-        if episode_reward_min is not None:
-            self.writer.add_scalar("reward/min", episode_reward_min, iteration)
-        if episode_reward_max is not None:
-            self.writer.add_scalar("reward/max", episode_reward_max, iteration)
-        if episode_len_mean is not None:
-            self.writer.add_scalar("episode/length_mean", episode_len_mean, iteration)
-
-        # Try to get policy loss
-        info = result.get("info", {})
-        learner_info = info.get("learner", {})
-
-        if "default_policy" in learner_info:
-            policy_info = learner_info["default_policy"]
-            loss = policy_info.get("learner_stats", {}).get(
-                "total_loss"
-            ) or policy_info.get("total_loss")
-            if loss is not None:
-                self.writer.add_scalar("loss/total", loss, iteration)
+        if metrics.get("episode_reward_mean") is not None:
+            self.writer.add_scalar("reward/mean", metrics["episode_reward_mean"], iteration)
+        if metrics.get("episode_reward_min") is not None:
+            self.writer.add_scalar("reward/min", metrics["episode_reward_min"], iteration)
+        if metrics.get("episode_reward_max") is not None:
+            self.writer.add_scalar("reward/max", metrics["episode_reward_max"], iteration)
+        if metrics.get("episode_len_mean") is not None:
+            self.writer.add_scalar("episode/length_mean", metrics["episode_len_mean"], iteration)
+        if metrics.get("loss") is not None:
+            self.writer.add_scalar("loss/total", metrics["loss"], iteration)
 
         self.writer.flush()
 

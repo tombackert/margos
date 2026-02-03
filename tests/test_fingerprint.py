@@ -4,11 +4,8 @@ from pathlib import Path
 
 import yaml
 
-from marl_platform.utils.fingerprint import (
-    capture_fingerprint,
-    compare_fingerprints,
-    save_fingerprint,
-)
+from marl_platform.utils.fingerprint import capture_fingerprint, save_fingerprint
+from marl_platform.export.importer import compare_fingerprints
 
 
 class TestCaptureFingerprint:
@@ -123,7 +120,10 @@ class TestSaveFingerprint:
 
 
 class TestCompareFingerprints:
-    """Tests for compare_fingerprints function."""
+    """Tests for compare_fingerprints function.
+
+    Note: compare_fingerprints returns tuples: (bundle_value, current_value, match)
+    """
 
     def test_identical_fingerprints_match(self) -> None:
         """Identical fingerprints report all_match=True."""
@@ -141,8 +141,8 @@ class TestCompareFingerprints:
         result = compare_fingerprints(fp1, fp2)
 
         assert result["all_match"] is True
-        assert result["python"]["match"] is True
-        assert result["os"]["match"] is True
+        assert result["python"][2] is True  # match flag
+        assert result["os"][2] is True
 
     def test_different_python_version_mismatch(self) -> None:
         """Different Python versions report mismatch."""
@@ -152,9 +152,9 @@ class TestCompareFingerprints:
         result = compare_fingerprints(fp1, fp2)
 
         assert result["all_match"] is False
-        assert result["python"]["match"] is False
-        assert result["python"]["current"] == "3.10.0"
-        assert result["python"]["reference"] == "3.11.0"
+        assert result["python"][2] is False  # match flag
+        assert result["python"][0] == "3.10.0"  # bundle value
+        assert result["python"][1] == "3.11.0"  # current value
 
     def test_different_package_version_mismatch(self) -> None:
         """Different package versions report mismatch."""
@@ -164,9 +164,9 @@ class TestCompareFingerprints:
         result = compare_fingerprints(fp1, fp2)
 
         assert result["all_match"] is False
-        assert result["packages"]["torch"]["match"] is False
-        assert result["packages"]["torch"]["current"] == "2.0.0"
-        assert result["packages"]["torch"]["reference"] == "2.0.1"
+        assert result["packages"]["torch"][2] is False  # match flag
+        assert result["packages"]["torch"][0] == "2.0.0"  # bundle value
+        assert result["packages"]["torch"][1] == "2.0.1"  # current value
 
     def test_missing_package_in_current(self) -> None:
         """Missing package in current is detected."""
@@ -176,8 +176,8 @@ class TestCompareFingerprints:
         result = compare_fingerprints(fp1, fp2)
 
         assert result["all_match"] is False
-        assert result["packages"]["torch"]["current"] == "not present"
-        assert result["packages"]["torch"]["reference"] == "2.0.0"
+        assert result["packages"]["torch"][0] == "not installed"  # bundle value
+        assert result["packages"]["torch"][1] == "2.0.0"  # current value
 
     def test_missing_package_in_reference(self) -> None:
         """Missing package in reference is detected."""
@@ -187,8 +187,8 @@ class TestCompareFingerprints:
         result = compare_fingerprints(fp1, fp2)
 
         assert result["all_match"] is False
-        assert result["packages"]["torch"]["current"] == "2.0.0"
-        assert result["packages"]["torch"]["reference"] == "not present"
+        assert result["packages"]["torch"][0] == "2.0.0"  # bundle value
+        assert result["packages"]["torch"][1] == "not installed"  # current value
 
     def test_not_installed_matches_not_installed(self) -> None:
         """Both 'not installed' counts as match."""
@@ -197,7 +197,7 @@ class TestCompareFingerprints:
 
         result = compare_fingerprints(fp1, fp2)
 
-        assert result["packages"]["torch"]["match"] is True
+        assert result["packages"]["torch"][2] is True  # match flag
 
     def test_multiple_mismatches_detected(self) -> None:
         """Multiple mismatches are all reported."""
@@ -215,7 +215,7 @@ class TestCompareFingerprints:
         result = compare_fingerprints(fp1, fp2)
 
         assert result["all_match"] is False
-        assert result["python"]["match"] is False
-        assert result["os"]["match"] is False
-        assert result["packages"]["torch"]["match"] is False
-        assert result["packages"]["numpy"]["match"] is False
+        assert result["python"][2] is False  # match flag
+        assert result["os"][2] is False
+        assert result["packages"]["torch"][2] is False
+        assert result["packages"]["numpy"][2] is False

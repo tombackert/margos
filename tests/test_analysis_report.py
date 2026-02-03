@@ -1,6 +1,5 @@
 """Unit tests for analysis report module."""
 
-import json
 from pathlib import Path
 
 import pytest
@@ -16,24 +15,8 @@ from marl_platform.analysis.report import (
     read_metrics,
 )
 
-
-def create_metrics_file(path: Path, metrics: list[dict]) -> Path:
-    """Helper to create a metrics.jsonl file."""
-    log_dir = path / "logs"
-    log_dir.mkdir(parents=True, exist_ok=True)
-    log_path = log_dir / "metrics.jsonl"
-    with open(log_path, "w") as f:
-        for m in metrics:
-            f.write(json.dumps(m) + "\n")
-    return log_path
-
-
-def create_experiment_dir(path: Path, metrics: list[dict], config_hash: str = "abc123") -> Path:
-    """Helper to create a minimal experiment directory."""
-    path.mkdir(parents=True, exist_ok=True)
-    create_metrics_file(path, metrics)
-    (path / "config_hash.txt").write_text(config_hash)
-    return path
+# Import helpers from conftest (pytest automatically loads conftest.py)
+from tests.conftest import create_experiment_dir, create_metrics_file
 
 
 class TestReadMetrics:
