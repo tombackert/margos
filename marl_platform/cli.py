@@ -4,19 +4,23 @@ from pathlib import Path
 from typing import Optional
 
 import typer
-from rich.console import Console
-from rich.table import Table
 
 from marl_platform.analysis import compare_runs
-from marl_platform.analysis.report import format_comparison
 from marl_platform.export import (
     compare_fingerprints,
     export_bundle,
-    format_fingerprint_comparison,
     get_bundle_fingerprint,
     import_bundle,
 )
 from marl_platform.orchestrator import run_experiment
+from marl_platform.utils import (
+    console,
+    create_comparison_table,
+    create_fingerprint_table,
+    create_grouped_selection_table,
+    create_list_table,
+    create_selection_table,
+)
 from marl_platform.utils.errors import (
     BundleNotFoundError,
     ConfigNotFoundError,
@@ -26,8 +30,6 @@ from marl_platform.utils.errors import (
 )
 from marl_platform.utils.fingerprint import capture_fingerprint
 from marl_platform.utils.progress import OperationProgress
-
-console = Console()
 
 
 def list_items(
@@ -98,11 +100,9 @@ def select_from_list(items: list[str], prompt: str, allow_exit: bool = True) -> 
     if not items:
         raise typer.Exit(1)
 
-    console.print(f"\n[bold]{prompt}[/bold]")
-    for i, item in enumerate(items, 1):
-        console.print(f"  [{i}] {item}")
-    if allow_exit:
-        console.print(f"  [dim][0] Cancel / Exit[/dim]")
+    table = create_selection_table(items, prompt, show_cancel=allow_exit)
+    console.print()
+    console.print(table)
     console.print()
 
     while True:
@@ -143,20 +143,9 @@ def select_from_grouped_list(
     if not options:
         return None
 
-    console.print(f"\n[bold]{prompt}[/bold]")
-
-    # Display items grouped by source
-    for source, label in group_labels.items():
-        source_items = [(idx, s, name) for idx, (s, name) in enumerate(options, 1) if s == source]
-        if source_items:
-            console.print(f"[dim]  {label}[/dim]")
-            for idx, s, name in source_items:
-                if s == "imported":
-                    console.print(f"  [{idx}] {name} [yellow](imported)[/yellow]")
-                else:
-                    console.print(f"  [{idx}] {name}")
-
-    console.print(f"  [dim][0] {exit_label}[/dim]")
+    table = create_grouped_selection_table(options, prompt, group_labels, exit_label)
+    console.print()
+    console.print(table)
     console.print()
 
     while True:
@@ -386,8 +375,10 @@ def compare(
         # Run comparison
         comparison = compare_runs(str(experiment_path), str(reference_path))
 
-        # Display formatted comparison table
-        typer.echo(format_comparison(comparison))
+        # Display Rich comparison table
+        table = create_comparison_table(comparison)
+        console.print()
+        console.print(table)
 
     except PlatformError as e:
         display_error(e, verbose=_verbose)
@@ -494,7 +485,9 @@ def import_(
         if bundle_fp:
             current_fp = capture_fingerprint()
             comparison = compare_fingerprints(bundle_fp, current_fp)
-            typer.echo(format_fingerprint_comparison(comparison))
+            table = create_fingerprint_table(comparison)
+            console.print()
+            console.print(table)
 
     except PlatformError as e:
         display_error(e, verbose=_verbose)
@@ -533,17 +526,11 @@ def show(
 
     def show_table(title: str, items: list[str], path: str) -> None:
         """Display a category table."""
-        table = Table(title=title, show_header=True, header_style="bold blue")
-        table.add_column("#", style="dim", width=4)
-        table.add_column("Name", style="cyan")
-        table.add_column("Path", style="dim")
+        table = create_list_table(title, items, path)
 
-        if not items:
+        if table is None:
             console.print(f"\n[dim]No {title.lower()} found in {path}[/dim]")
             return
-
-        for i, item in enumerate(items, 1):
-            table.add_row(str(i), item, f"{path}/{item}")
 
         console.print()
         console.print(table)
