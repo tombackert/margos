@@ -1,0 +1,13 @@
+experiment:
+  name: "aggregation_long"
+  seed: 42
+
+scenario:
+  file: "scenarios/footbot_aggregation.argos"
+
+training:
+  script: "training/aggregation.py"
+  iterations: 500  # Short for testing
+
+output:
+  dir: "results/"

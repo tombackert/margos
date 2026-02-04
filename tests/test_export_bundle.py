@@ -1,6 +1,5 @@
 """Unit tests for export bundle module."""
 
-import json
 import zipfile
 from pathlib import Path
 
@@ -9,40 +8,8 @@ import yaml
 
 from marl_platform.export.bundle import BundleError, create_manifest, export_bundle
 
-
-def create_minimal_experiment(path: Path, scenario_path: Path | None = None, script_path: Path | None = None) -> Path:
-    """Helper to create a minimal valid experiment directory."""
-    path.mkdir(parents=True, exist_ok=True)
-
-    # Create config.yaml
-    config = {
-        "experiment": {"name": "test_exp", "seed": 42},
-        "scenario": {"file": str(scenario_path) if scenario_path else "/path/to/scenario.argos"},
-        "training": {"script": str(script_path) if script_path else "/path/to/train.py"},
-        "output": {"dir": "results/"},
-    }
-    (path / "config.yaml").write_text(yaml.dump(config))
-
-    # Create env_fingerprint.yaml
-    fingerprint = {
-        "python": "3.12.0",
-        "os": "Linux",
-        "packages": {"ray": "2.0.0", "torch": "2.0.0"},
-    }
-    (path / "env_fingerprint.yaml").write_text(yaml.dump(fingerprint))
-
-    # Create config_hash.txt
-    (path / "config_hash.txt").write_text("sha256abc123")
-
-    # Create logs directory with metrics
-    log_dir = path / "logs"
-    log_dir.mkdir()
-    metrics = [{"iteration": 1, "episode_reward_mean": -100.0}]
-    with open(log_dir / "metrics.jsonl", "w") as f:
-        for m in metrics:
-            f.write(json.dumps(m) + "\n")
-
-    return path
+# Import helpers from conftest (pytest automatically loads conftest.py)
+from tests.conftest import create_experiment_dir as create_minimal_experiment
 
 
 class TestCreateManifest:

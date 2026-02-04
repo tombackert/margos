@@ -3,7 +3,8 @@
 import json
 from pathlib import Path
 
-from marl_platform.logging import MetricsLogger, create_logger, read_metrics
+from marl_platform.logging import MetricsLogger, create_logger
+from marl_platform.logging.callbacks import extract_metrics
 
 
 class TestMetricsLogger:
@@ -86,8 +87,7 @@ class TestMetricsLogger:
         assert metrics["episode_len_mean"] is None
 
     def test_extract_metrics_basic(self, tmp_path: Path) -> None:
-        """_extract_metrics extracts basic metrics correctly."""
-        logger = MetricsLogger(tmp_path)
+        """extract_metrics extracts basic metrics correctly."""
         mock_result = {
             "training_iteration": 5,
             "episode_reward_mean": -100.0,
@@ -96,7 +96,7 @@ class TestMetricsLogger:
             "episode_len_mean": 200.0,
         }
 
-        metrics = logger._extract_metrics(mock_result)
+        metrics = extract_metrics(mock_result)
 
         assert metrics["iteration"] == 5
         assert metrics["episode_reward_mean"] == -100.0
@@ -105,8 +105,7 @@ class TestMetricsLogger:
         assert metrics["episode_len_mean"] == 200.0
 
     def test_extract_metrics_with_loss(self, tmp_path: Path) -> None:
-        """_extract_metrics extracts policy loss when available."""
-        logger = MetricsLogger(tmp_path)
+        """extract_metrics extracts policy loss when available."""
         mock_result = {
             "training_iteration": 1,
             "info": {
@@ -118,7 +117,7 @@ class TestMetricsLogger:
             },
         }
 
-        metrics = logger._extract_metrics(mock_result)
+        metrics = extract_metrics(mock_result)
 
         assert metrics["loss"] == 0.5
 
@@ -140,72 +139,44 @@ class TestCreateLogger:
         assert logger.output_dir == output_dir
 
 
-class TestReadMetrics:
-    """Tests for read_metrics function."""
+class TestExtractMetrics:
+    """Tests for extract_metrics module-level function."""
 
-    def test_reads_empty_file(self, tmp_path: Path) -> None:
-        """Returns empty list for nonexistent file."""
-        metrics = read_metrics(tmp_path / "nonexistent.jsonl")
+    def test_extracts_from_env_runners(self) -> None:
+        """Extracts metrics from env_runners location (new RLlib API)."""
+        mock_result = {
+            "training_iteration": 1,
+            "env_runners": {
+                "episode_reward_mean": -100.0,
+                "episode_len_mean": 200.0,
+            },
+        }
 
-        assert metrics == []
+        metrics = extract_metrics(mock_result)
 
-    def test_reads_single_entry(self, tmp_path: Path) -> None:
-        """Reads single log entry."""
-        log_path = tmp_path / "metrics.jsonl"
-        log_path.write_text('{"iteration": 1, "episode_reward_mean": -100.0}\n')
+        assert metrics["episode_reward_mean"] == -100.0
+        assert metrics["episode_len_mean"] == 200.0
 
-        metrics = read_metrics(log_path)
+    def test_extracts_from_sampler_results(self) -> None:
+        """Extracts metrics from sampler_results location (old RLlib API)."""
+        mock_result = {
+            "training_iteration": 1,
+            "sampler_results": {
+                "episode_reward_mean": -100.0,
+                "episode_len_mean": 200.0,
+            },
+        }
 
-        assert len(metrics) == 1
-        assert metrics[0]["iteration"] == 1
-        assert metrics[0]["episode_reward_mean"] == -100.0
+        metrics = extract_metrics(mock_result)
 
-    def test_reads_multiple_entries(self, tmp_path: Path) -> None:
-        """Reads multiple log entries."""
-        log_path = tmp_path / "metrics.jsonl"
-        lines = [
-            '{"iteration": 1, "episode_reward_mean": -150.0}',
-            '{"iteration": 2, "episode_reward_mean": -140.0}',
-            '{"iteration": 3, "episode_reward_mean": -130.0}',
-        ]
-        log_path.write_text("\n".join(lines) + "\n")
+        assert metrics["episode_reward_mean"] == -100.0
+        assert metrics["episode_len_mean"] == 200.0
 
-        metrics = read_metrics(log_path)
+    def test_includes_timestamp(self) -> None:
+        """Extracted metrics include timestamp."""
+        mock_result = {"training_iteration": 1}
 
-        assert len(metrics) == 3
-        assert [m["iteration"] for m in metrics] == [1, 2, 3]
-        assert [m["episode_reward_mean"] for m in metrics] == [-150.0, -140.0, -130.0]
+        metrics = extract_metrics(mock_result)
 
-    def test_handles_empty_lines(self, tmp_path: Path) -> None:
-        """Skips empty lines in log file."""
-        log_path = tmp_path / "metrics.jsonl"
-        content = '{"iteration": 1}\n\n{"iteration": 2}\n\n'
-        log_path.write_text(content)
-
-        metrics = read_metrics(log_path)
-
-        assert len(metrics) == 2
-
-    def test_roundtrip_with_logger(self, tmp_path: Path) -> None:
-        """Metrics written by logger can be read back."""
-        logger = MetricsLogger(tmp_path)
-
-        # Log some iterations
-        for i in range(5):
-            mock_result = {
-                "training_iteration": i + 1,
-                "episode_reward_mean": -150.0 + i * 10,
-                "episode_reward_min": -200.0 + i * 10,
-                "episode_reward_max": -100.0 + i * 10,
-                "episode_len_mean": 500.0,
-            }
-            logger.on_train_result(algorithm=None, result=mock_result)
-
-        # Read back
-        metrics = read_metrics(logger.log_path)
-
-        assert len(metrics) == 5
-        assert metrics[0]["iteration"] == 1
-        assert metrics[4]["iteration"] == 5
-        assert metrics[0]["episode_reward_mean"] == -150.0
-        assert metrics[4]["episode_reward_mean"] == -110.0
+        assert "timestamp" in metrics
+        assert "T" in metrics["timestamp"]  # ISO format

@@ -2,6 +2,7 @@
 
 import zipfile
 from pathlib import Path
+from typing import Callable
 
 import yaml
 
@@ -49,17 +50,26 @@ def validate_bundle(bundle_path: Path) -> None:
         )
 
 
-def import_bundle(bundle_path: str, target_dir: str | None = None) -> str:
+def import_bundle(
+    bundle_path: str,
+    target_dir: str | None = None,
+    progress_callback: Callable[[int, int, str], None] | None = None,
+) -> str:
     """Import bundle and prepare for reproduction.
 
     Args:
         bundle_path: Path to bundle ZIP file.
         target_dir: Optional target directory (default: experiments/imported/<name>/).
+        progress_callback: Optional callback(current, total, description) for progress.
 
     Returns:
         Path to imported experiment directory.
     """
     bundle_path = Path(bundle_path)
+
+    def update_progress(current: int, total: int, desc: str = "") -> None:
+        if progress_callback:
+            progress_callback(current, total, desc)
 
     if not bundle_path.exists():
         raise ImportError(
@@ -68,8 +78,12 @@ def import_bundle(bundle_path: str, target_dir: str | None = None) -> str:
             fix="Check the bundle path is correct",
         )
 
+    update_progress(1, 4, "Validating bundle")
+
     # Validate bundle structure
     validate_bundle(bundle_path)
+
+    update_progress(2, 4, "Reading manifest")
 
     # Determine target directory
     if target_dir is None:
@@ -86,9 +100,13 @@ def import_bundle(bundle_path: str, target_dir: str | None = None) -> str:
     # Create target directory
     target_dir.mkdir(parents=True, exist_ok=True)
 
+    update_progress(3, 4, "Extracting files")
+
     # Extract bundle
     with zipfile.ZipFile(bundle_path, "r") as zf:
         zf.extractall(target_dir)
+
+    update_progress(4, 4, "Complete")
 
     return str(target_dir)
 

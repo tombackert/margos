@@ -1,6 +1,5 @@
 """Unit tests for export importer module."""
 
-import json
 import zipfile
 from pathlib import Path
 
@@ -16,42 +15,8 @@ from marl_platform.export.importer import (
     validate_bundle,
 )
 
-
-def create_valid_bundle(path: Path, exp_name: str = "test_exp") -> Path:
-    """Helper to create a valid bundle ZIP file."""
-    bundle_path = path / f"{exp_name}.zip"
-
-    with zipfile.ZipFile(bundle_path, "w", zipfile.ZIP_DEFLATED) as zf:
-        # Manifest
-        manifest = {
-            "version": "1.0",
-            "experiment_name": exp_name,
-            "exported_at": "2024-01-01T10:00:00",
-            "platform_version": "0.1.0",
-        }
-        zf.writestr("manifest.yaml", yaml.dump(manifest))
-
-        # Config
-        config = {
-            "experiment": {"name": exp_name, "seed": 42},
-            "scenario": {"file": "scenario.argos"},
-            "training": {"script": "train.py"},
-        }
-        zf.writestr("config.yaml", yaml.dump(config))
-
-        # Fingerprint
-        fingerprint = {
-            "python": "3.12.0",
-            "os": "Linux-5.10.0",
-            "packages": {"ray": "2.0.0", "torch": "2.0.0", "numpy": "1.24.0"},
-        }
-        zf.writestr("env_fingerprint.yaml", yaml.dump(fingerprint))
-
-        # Metrics
-        metrics = [{"iteration": 1, "episode_reward_mean": -100.0}]
-        zf.writestr("logs/metrics.jsonl", "\n".join(json.dumps(m) for m in metrics))
-
-    return bundle_path
+# Import helpers from conftest (pytest automatically loads conftest.py)
+from tests.conftest import create_valid_bundle
 
 
 class TestValidateBundle:

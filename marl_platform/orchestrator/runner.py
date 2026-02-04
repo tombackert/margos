@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from marl_platform.config import load_config, resolve_paths, save_frozen_config, hash_config
-from marl_platform.logging import create_logger
+from marl_platform.logging import create_logger, create_tensorboard_logger
 from marl_platform.utils.errors import ConfigNotFoundError, TrainingError, ValidationError
 from marl_platform.utils.fingerprint import capture_fingerprint, save_fingerprint
 from marl_platform.utils.progress import TrainingProgress
@@ -68,6 +68,12 @@ def run_experiment(config_path: str) -> str:
     # 6. Setup logging
     logger = create_logger(output_dir)
     callbacks = [logger]
+
+    # Add TensorBoard logging if enabled
+    if config.training.tensorboard:
+        tb_logger = create_tensorboard_logger(output_dir)
+        if tb_logger:
+            callbacks.append(tb_logger)
 
     # 7. Execute training script
     script_path = Path(config.training.script)
