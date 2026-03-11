@@ -8,6 +8,11 @@
 - [ ] SRQ3: Run unit tests, save output: `pytest tests/test_seeds.py -v > docs/experiments/evidence/SRQ3/unit_tests_output.txt`
 - [ ] SRQ3: Compute Reproduce-Success-Rate and variance, fill `analysis_summary.md`
 
+## Platform Commit for Experiments
+
+**Commit:** `06eb747` — all platform and experiment setup changes frozen at this state.
+This is the exact platform version used for all SRQ data collection.
+
 ## Completed — Feasibility + Training Demo
 
 - [x] Feasibility check: 300-iteration `aggregation_v1` run confirms ~85 min/run; created `aggregation_srq3.yaml` (10 iters, ~6 min/run) for batch
