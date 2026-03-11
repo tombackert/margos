@@ -4,34 +4,34 @@
 
 | Field | Value |
 |-------|-------|
-| Reference Reward | |
-| Reference AUC | |
-| Config Hash | |
+| Reference Reward | -46.8277 |
+| Reference AUC | -445.2401 |
+| Config Hash | b9ff14a67be24984cfc457a5116e2b70a2791b2f29bcf856c5782006e8614340 |
 
 ## Summary Statistics
 
 | Statistic | Final Reward | AUC |
 |-----------|--------------|-----|
-| Reference | | |
-| Mean (N=20) | | |
-| SD | | |
-| Min | | |
-| Max | | |
-| Max Deviation (%) | | |
+| Reference | -46.8277 | -445.2401 |
+| Mean (N=20) | -46.8277 | -445.2401 |
+| SD | 0.0000 | 0.0000 |
+| Min | -46.8277 | -445.2401 |
+| Max | -46.8277 | -445.2401 |
+| Max Deviation (%) | 0.0000% | 0.0000% |
 
 ## Primary Metrics
 
 | Metric | Formula | Value | Target | Met? |
 |--------|---------|-------|--------|------|
-| Reproduce-Success-Rate (M3.1) | (# Pass) / 20 × 100% | | ≥90% | |
-| Result-Variance (M3.2) | SD(final_rewards) | | Lower than baseline | |
+| Reproduce-Success-Rate (M3.1) | (# Pass) / 20 × 100% | 100% | ≥90% | Yes |
+| Result-Variance (M3.2) | SD(final_rewards) | 0.0000 | Lower than baseline | Yes |
 
 ## By-Design Metrics
 
 | Metric | Verification | Result |
 |--------|--------------|--------|
-| Config-Integrity (M3.3) | Unit test: config hash unchanged | Pass/Fail |
-| Seed-Determinism (M3.4) | Unit test: same seed → same sequence | Pass/Fail |
+| Config-Integrity (M3.3) | Unit test: config hash unchanged | Pass |
+| Seed-Determinism (M3.4) | Unit test: same seed → same sequence | Pass |
 
 ## Formulas
 
@@ -43,7 +43,7 @@ AUC Deviation (%) = |run_AUC - ref_AUC| / ref_AUC × 100
 
 ## Interpretation
 
-**Outcome:** [Fill after data collection]
+**Outcome:** H3 strongly supported — 100% success rate (20/20) with 0.0000% deviation across all runs.
 
 | Outcome | Interpretation |
 |---------|----------------|

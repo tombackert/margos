@@ -1,0 +1,39 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.8, pytest-8.4.1, pluggy-1.6.0 -- /Users/tom.backert/.pyenv/versions/3.12.8/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/tom.backert/Repos/marl-platform
+configfile: pyproject.toml
+plugins: anyio-4.9.0
+collecting ... collected 29 items
+
+tests/test_seeds.py::TestSetAllSeeds::test_python_random_determinism PASSED [  3%]
+tests/test_seeds.py::TestSetAllSeeds::test_numpy_determinism PASSED      [  6%]
+tests/test_seeds.py::TestSetAllSeeds::test_torch_determinism PASSED      [ 10%]
+tests/test_seeds.py::TestSetAllSeeds::test_different_seeds_produce_different_results PASSED [ 13%]
+tests/test_seeds.py::TestSetAllSeeds::test_seed_zero PASSED              [ 17%]
+tests/test_seeds.py::TestSetAllSeeds::test_large_seed PASSED             [ 20%]
+tests/test_seeds.py::TestGetSeedState::test_returns_dict PASSED          [ 24%]
+tests/test_seeds.py::TestGetSeedState::test_state_captures_random PASSED [ 27%]
+tests/test_seeds.py::TestGetSeedState::test_state_captures_numpy PASSED  [ 31%]
+tests/test_seeds.py::TestGetSeedState::test_state_captures_torch PASSED  [ 34%]
+tests/test_seeds.py::TestCrossLibraryDeterminism::test_combined_operations_deterministic PASSED [ 37%]
+tests/test_seeds.py::TestCrossLibraryDeterminism::test_interleaved_calls_deterministic PASSED [ 41%]
+tests/test_config.py::TestLoadConfig::test_load_valid_config PASSED      [ 44%]
+tests/test_config.py::TestLoadConfig::test_load_config_with_defaults PASSED [ 48%]
+tests/test_config.py::TestLoadConfig::test_load_missing_config_raises_error PASSED [ 51%]
+tests/test_config.py::TestLoadConfig::test_load_missing_required_field_raises_error PASSED [ 55%]
+tests/test_config.py::TestLoadConfig::test_load_invalid_seed_type_raises_error PASSED [ 58%]
+tests/test_config.py::TestLoadConfig::test_load_negative_seed_raises_error PASSED [ 62%]
+tests/test_config.py::TestLoadConfig::test_load_empty_config_raises_error PASSED [ 65%]
+tests/test_config.py::TestLoadConfig::test_load_invalid_yaml_raises_error PASSED [ 68%]
+tests/test_config.py::TestResolvePaths::test_resolve_paths_success PASSED [ 72%]
+tests/test_config.py::TestResolvePaths::test_resolve_missing_scenario_raises_error PASSED [ 75%]
+tests/test_config.py::TestResolvePaths::test_resolve_missing_script_raises_error PASSED [ 79%]
+tests/test_config.py::TestHashConfig::test_hash_is_deterministic PASSED  [ 82%]
+tests/test_config.py::TestHashConfig::test_hash_changes_with_config PASSED [ 86%]
+tests/test_config.py::TestHashConfig::test_hash_is_sha256 PASSED         [ 89%]
+tests/test_config.py::TestSaveFrozenConfig::test_save_creates_file PASSED [ 93%]
+tests/test_config.py::TestSaveFrozenConfig::test_save_creates_output_dir PASSED [ 96%]
+tests/test_config.py::TestSaveFrozenConfig::test_saved_config_is_valid_yaml PASSED [100%]
+
+============================== 29 passed in 1.55s ==============================

@@ -1,23 +1,31 @@
 # Backlog
 
-## Open — SRQ3: Reproducibility (~2 hours automated)
+# Open
+- Remove/bundle the ray output, it is not pleasing
+- Integrate the tensorboard logging into the cli
+- Remove the 4 or 2 iters overhead in every run 
 
-- [ ] SRQ3: Run reference experiment: `platform run aggregation_srq3` (~6 min)
-- [ ] SRQ3: Record reference metrics in `docs/experiments/evidence/SRQ3/reference_run.md` (SRQ3 Batch section)
-- [ ] SRQ3: Run N=20 batch: `python experiments/run_srq3_batch.py --reference results/<ref_id>` (~2 hours)
-- [ ] SRQ3: Run unit tests, save output: `pytest tests/test_seeds.py -v > docs/experiments/evidence/SRQ3/unit_tests_output.txt`
-- [ ] SRQ3: Compute Reproduce-Success-Rate and variance, fill `analysis_summary.md`
+# Done
+- ~~Show real learning behavior over a long run -> convergence on reward curve into positiv.~~
 
-## Platform Commit for Experiments
 
-**Commit:** `06eb747` — all platform and experiment setup changes frozen at this state.
-This is the exact platform version used for all SRQ data collection.
 
 ## Completed — Feasibility + Training Demo
 
 - [x] Feasibility check: 300-iteration `aggregation_v1` run confirms ~85 min/run; created `aggregation_srq3.yaml` (10 iters, ~6 min/run) for batch
 - [x] Real learning behavior demonstrated: -53.6 → -19.1 reward over 300 iterations (68.7% improvement), still converging
 - [x] Reproducibility confirmed pre-batch: two seed=42 runs are bit-for-bit identical (max diff = 0.0 across 300 iterations)
+
+## Completed — SRQ3: Reproducibility
+
+- [x] SRQ3: Run reference experiment: `platform run aggregation_srq3` (~6 min)
+- [x] SRQ3: Record reference metrics in `docs/experiments/evidence/SRQ3/reference_run.md` (SRQ3 Batch section)
+- [x] SRQ3: Run N=20 batch: `python experiments/run_srq3_batch.py --reference results/<ref_id>` (~2 hours)
+- [x] SRQ3: Run unit tests, save output: `pytest tests/test_seeds.py -v > docs/experiments/evidence/SRQ3/unit_tests_output.txt`
+- [x] SRQ3: Compute Reproduce-Success-Rate and variance, fill `analysis_summary.md`
+
+**Platform Commit:** `06eb747` — all platform and experiment setup changes frozen at this state.
+This is the exact platform version used for all SRQ data collection.
 
 ## Open — SRQ2: Efficiency (manual screen-recorded trials, N=5 per condition)
 
@@ -92,7 +100,3 @@ This is the exact platform version used for all SRQ data collection.
 - [x] Progress bar is still mock for report, import, export -> Replaced with real progress bars tracking actual operations
 - [x] Tensorboard logging (already integrated through ray i think, but we currently suppress it) because on long runs you need to be able to track training progress on all parameters -> Added `--tensorboard` flag to run command and `tensorboard: true` config option
 
-
-
-# Done
-- ~~Show real learning behavior over a long run -> convergence on reward curve into positiv.~~

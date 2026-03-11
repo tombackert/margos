@@ -16,23 +16,23 @@
 ## Prerequisites
 
 ### Required Artifacts
-- [ ] Platform CLI operational (`run`, `compare`)
-- [ ] Test experiment config (`aggregation_v1.yaml`)
-- [ ] Comparison script for results (`analysis/compare.py`)
-- [ ] Reference run completed and saved
+- [x] Platform CLI operational (`run`, `compare`)
+- [x] Test experiment config (`aggregation_v1.yaml`)
+- [x] Comparison script for results (`analysis/compare.py`)
+- [x] Reference run completed and saved
 
 ### Environment Setup
-- [ ] Same hardware for all runs
-- [ ] Platform installed and accessible
-- [ ] Sufficient disk space for N+1 experiment outputs
-- [ ] GPU non-determinism documented (if applicable)
+- [x] Same hardware for all runs
+- [x] Platform installed and accessible
+- [x] Sufficient disk space for N+1 experiment outputs
+- [x] GPU non-determinism documented (if applicable)
 
 ### Pre-Execution Checklist
-- [ ] Reference run completed successfully
-- [ ] Reference final reward recorded
-- [ ] Reference AUC calculated
-- [ ] Config hash recorded
-- [ ] Seed value documented
+- [x] Reference run completed successfully
+- [x] Reference final reward recorded
+- [x] Reference AUC calculated
+- [x] Config hash recorded
+- [x] Seed value documented
 
 ---
 
@@ -127,37 +127,38 @@ These are platform features verified via unit tests, not repeated per-run:
 
 | Field | Value |
 |-------|-------|
-| Experiment ID | |
-| Config Hash | |
-| Seed | |
-| Final Reward | |
-| AUC | |
-| Timestamp | |
+| Experiment ID | aggregation_srq3_20260311-110742 |
+| Platform Commit | `06eb747` |
+| Config Hash | b9ff14a67be24984cfc457a5116e2b70a2791b2f29bcf856c5782006e8614340 |
+| Seed | 42 |
+| Final Reward | -46.8277 |
+| AUC | -445.2401 |
+| Timestamp | 2026-03-11T11:07:42 → 2026-03-11T11:10:06 |
 
 ### Reproduction Attempts Template
 
 | Run # | Final Reward | AUC | Reward Deviation (%) | AUC Deviation (%) | Pass? | Config Hash Match |
 |-------|--------------|-----|---------------------|-------------------|-------|-------------------|
-| 1 | | | | | Y/N | Y/N |
-| 2 | | | | | Y/N | Y/N |
-| 3 | | | | | Y/N | Y/N |
-| 4 | | | | | Y/N | Y/N |
-| 5 | | | | | Y/N | Y/N |
-| 6 | | | | | Y/N | Y/N |
-| 7 | | | | | Y/N | Y/N |
-| 8 | | | | | Y/N | Y/N |
-| 9 | | | | | Y/N | Y/N |
-| 10 | | | | | Y/N | Y/N |
-| 11 | | | | | Y/N | Y/N |
-| 12 | | | | | Y/N | Y/N |
-| 13 | | | | | Y/N | Y/N |
-| 14 | | | | | Y/N | Y/N |
-| 15 | | | | | Y/N | Y/N |
-| 16 | | | | | Y/N | Y/N |
-| 17 | | | | | Y/N | Y/N |
-| 18 | | | | | Y/N | Y/N |
-| 19 | | | | | Y/N | Y/N |
-| 20 | | | | | Y/N | Y/N |
+| 1 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 2 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 3 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 4 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 5 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 6 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 7 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 8 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 9 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 10 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 11 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 12 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 13 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 14 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 15 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 16 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 17 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 18 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 19 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
+| 20 | -46.8277 | -445.2401 | 0.0000 | 0.0000 | Y | Y |
 
 ### Deviation Calculation
 
@@ -183,12 +184,12 @@ Pass = (Reward Deviation ≤ 1%) AND (AUC Deviation ≤ 1%)
 
 | Statistic | Final Reward | AUC |
 |-----------|--------------|-----|
-| Reference | | |
-| Mean (N runs) | | |
-| SD | | |
-| Min | | |
-| Max | | |
-| Max Deviation (%) | | |
+| Reference | -46.8277 | -445.2401 |
+| Mean (N runs) | -46.8277 | -445.2401 |
+| SD | 0.0000 | 0.0000 |
+| Min | -46.8277 | -445.2401 |
+| Max | -46.8277 | -445.2401 |
+| Max Deviation (%) | 0.0000% | 0.0000% |
 
 ### Success Rate Calculation
 
@@ -200,8 +201,8 @@ Reproduce-Success-Rate = (# runs with BOTH reward AND AUC within ±1%) / N × 10
 
 | Metric | Verification | Result |
 |--------|--------------|--------|
-| Config-Integrity (M3.3) | Unit test: config hash unchanged | Pass/Fail |
-| Seed-Determinism (M3.4) | Unit test: same seed → same sequence | Pass/Fail |
+| Config-Integrity (M3.3) | Unit test: config hash unchanged | Pass |
+| Seed-Determinism (M3.4) | Unit test: same seed → same sequence | Pass |
 
 ### Interpretation Guidelines
 
@@ -225,12 +226,12 @@ If success rate < 90%, analyze failure modes:
 
 ## Evidence Checklist
 
-- [ ] Reference run logs saved
-- [ ] All N reproduction run logs saved
-- [ ] Comparison reports generated
-- [ ] Config hashes recorded for all runs
-- [ ] Unit test results for Config-Integrity
-- [ ] Unit test results for Seed-Determinism
+- [x] Reference run logs saved
+- [x] All N reproduction run logs saved
+- [x] Comparison reports generated
+- [x] Config hashes recorded for all runs
+- [x] Unit test results for Config-Integrity
+- [x] Unit test results for Seed-Determinism
 
 ### Required Evidence Files
 
