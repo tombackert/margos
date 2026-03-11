@@ -10,12 +10,6 @@
 
 
 
-## Completed — Feasibility + Training Demo
-
-- [x] Feasibility check: 300-iteration `aggregation_v1` run confirms ~85 min/run; created `aggregation_srq3.yaml` (10 iters, ~6 min/run) for batch
-- [x] Real learning behavior demonstrated: -53.6 → -19.1 reward over 300 iterations (68.7% improvement), still converging
-- [x] Reproducibility confirmed pre-batch: two seed=42 runs are bit-for-bit identical (max diff = 0.0 across 300 iterations)
-
 ## Completed — SRQ3: Reproducibility
 
 - [x] SRQ3: Run reference experiment: `platform run aggregation_srq3` (~6 min)
@@ -26,6 +20,12 @@
 
 **Platform Commit:** `06eb747` — all platform and experiment setup changes frozen at this state.
 This is the exact platform version used for all SRQ data collection.
+
+## Completed — Feasibility + Training Demo
+
+- [x] Feasibility check: 300-iteration `aggregation_v1` run confirms ~85 min/run; created `aggregation_srq3.yaml` (10 iters, ~6 min/run) for batch
+- [x] Real learning behavior demonstrated: -53.6 → -19.1 reward over 300 iterations (68.7% improvement), still converging
+- [x] Reproducibility confirmed pre-batch: two seed=42 runs are bit-for-bit identical (max diff = 0.0 across 300 iterations)
 
 ## Open — SRQ2: Efficiency (manual screen-recorded trials, N=5 per condition)
 
