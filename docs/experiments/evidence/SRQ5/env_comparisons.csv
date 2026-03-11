@@ -1,0 +1,8 @@
+Trial,Field,Machine A,Machine B,Match
+,Python version,,,Y/N
+,OS,,,Y/N
+,Platform version,,,Y/N
+,RLlib version,,,Y/N
+,PyTorch version,,,Y/N
+,NumPy version,,,Y/N
+,Config hash,,,Y/N

@@ -58,6 +58,7 @@ runner = CliRunner()
 
 
 @requires_argos
+@pytest.mark.slow
 class TestAggregationScenarioE2E:
     """E2E tests for aggregation scenario (Issue #15 acceptance criteria)."""
 
@@ -251,6 +252,7 @@ class TestAggregationScenarioE2E:
 
 
 @requires_argos
+@pytest.mark.slow
 class TestAggregationRewardFunction:
     """Tests for aggregation reward function."""
 

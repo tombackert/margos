@@ -84,7 +84,6 @@ class TestMetricsLogger:
         with open(logger.log_path) as f:
             metrics = json.loads(f.readline())
         assert metrics["episode_reward_mean"] is None
-        assert metrics["episode_len_mean"] is None
 
     def test_extract_metrics_basic(self, tmp_path: Path) -> None:
         """extract_metrics extracts basic metrics correctly."""
@@ -102,25 +101,6 @@ class TestMetricsLogger:
         assert metrics["episode_reward_mean"] == -100.0
         assert metrics["episode_reward_min"] == -150.0
         assert metrics["episode_reward_max"] == -50.0
-        assert metrics["episode_len_mean"] == 200.0
-
-    def test_extract_metrics_with_loss(self, tmp_path: Path) -> None:
-        """extract_metrics extracts policy loss when available."""
-        mock_result = {
-            "training_iteration": 1,
-            "info": {
-                "learner": {
-                    "default_policy": {
-                        "total_loss": 0.5,
-                    }
-                }
-            },
-        }
-
-        metrics = extract_metrics(mock_result)
-
-        assert metrics["loss"] == 0.5
-
 
 class TestCreateLogger:
     """Tests for create_logger factory function."""
@@ -155,7 +135,6 @@ class TestExtractMetrics:
         metrics = extract_metrics(mock_result)
 
         assert metrics["episode_reward_mean"] == -100.0
-        assert metrics["episode_len_mean"] == 200.0
 
     def test_extracts_from_sampler_results(self) -> None:
         """Extracts metrics from sampler_results location (old RLlib API)."""
@@ -163,14 +142,12 @@ class TestExtractMetrics:
             "training_iteration": 1,
             "sampler_results": {
                 "episode_reward_mean": -100.0,
-                "episode_len_mean": 200.0,
             },
         }
 
         metrics = extract_metrics(mock_result)
 
         assert metrics["episode_reward_mean"] == -100.0
-        assert metrics["episode_len_mean"] == 200.0
 
     def test_includes_timestamp(self) -> None:
         """Extracted metrics include timestamp."""

@@ -1,5 +1,5 @@
 experiment:
-  name: "aggregation_test"
+  name: "aggregation_v1"
   seed: 42
 
 scenario:
@@ -7,7 +7,7 @@ scenario:
 
 training:
   script: "training/aggregation.py"
-  iterations: 5  # Short for testing
+  iterations: 300
 
 output:
   dir: "results/"

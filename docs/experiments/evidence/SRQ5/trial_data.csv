@@ -1,0 +1,21 @@
+Trial,Condition,Steps-to-Share,Time-to-Share (sec),Time-to-First-Run (sec),Time-to-Reproduce (sec),Handoff Success
+1,Manual,,,,, Y/N
+2,Platform,,,,,Y/N
+3,Manual,,,,,Y/N
+4,Platform,,,,,Y/N
+5,Manual,,,,,Y/N
+6,Platform,,,,,Y/N
+7,Manual,,,,,Y/N
+8,Platform,,,,,Y/N
+9,Manual,,,,,Y/N
+10,Platform,,,,,Y/N
+11,Manual,,,,,Y/N
+12,Platform,,,,,Y/N
+13,Manual,,,,,Y/N
+14,Platform,,,,,Y/N
+15,Manual,,,,,Y/N
+16,Platform,,,,,Y/N
+17,Manual,,,,,Y/N
+18,Platform,,,,,Y/N
+19,Manual,,,,,Y/N
+20,Platform,,,,,Y/N

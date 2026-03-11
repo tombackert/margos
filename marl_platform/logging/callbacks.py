@@ -51,26 +51,6 @@ def extract_metrics(result: dict[str, Any]) -> dict[str, Any]:
         or env_runners.get("episode_reward_max")
         or sampler_results.get("episode_reward_max")
     )
-    metrics["episode_len_mean"] = (
-        result.get("episode_len_mean")
-        or env_runners.get("episode_len_mean")
-        or sampler_results.get("episode_len_mean")
-    )
-
-    # Try to get policy loss from various locations in result dict
-    info = result.get("info", {})
-    learner_info = info.get("learner", {})
-
-    # Default policy loss location
-    if "default_policy" in learner_info:
-        policy_info = learner_info["default_policy"]
-        metrics["loss"] = policy_info.get("learner_stats", {}).get(
-            "total_loss"
-        ) or policy_info.get("total_loss")
-    else:
-        # Fallback: check top-level learner stats
-        metrics["loss"] = learner_info.get("total_loss")
-
     return metrics
 
 
@@ -82,8 +62,6 @@ class MetricsLogger(DefaultCallbacks):
     - episode_reward_mean: Average episode reward
     - episode_reward_min: Minimum episode reward
     - episode_reward_max: Maximum episode reward
-    - episode_len_mean: Average episode length
-    - loss: Policy loss (if available)
     - timestamp: ISO format timestamp
     """
 
@@ -183,11 +161,6 @@ class TensorBoardLogger(DefaultCallbacks):
             self.writer.add_scalar("reward/min", metrics["episode_reward_min"], iteration)
         if metrics.get("episode_reward_max") is not None:
             self.writer.add_scalar("reward/max", metrics["episode_reward_max"], iteration)
-        if metrics.get("episode_len_mean") is not None:
-            self.writer.add_scalar("episode/length_mean", metrics["episode_len_mean"], iteration)
-        if metrics.get("loss") is not None:
-            self.writer.add_scalar("loss/total", metrics["loss"], iteration)
-
         self.writer.flush()
 
     def close(self) -> None:

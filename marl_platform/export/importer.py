@@ -106,9 +106,60 @@ def import_bundle(
     with zipfile.ZipFile(bundle_path, "r") as zf:
         zf.extractall(target_dir)
 
+    # Rewrite config paths to point to bundled files (relative to experiments_dir)
+    # Runner computes experiments_dir = config.parent.parent, so paths must be
+    # relative to target_dir.parent (i.e., prefixed with target_dir.name/)
+    _rewrite_config_paths(target_dir)
+
     update_progress(4, 4, "Complete")
 
     return str(target_dir)
+
+
+def _rewrite_config_paths(target_dir: Path) -> None:
+    """Rewrite absolute paths in extracted config to use bundled files.
+
+    After extraction, scenario.argos and train.py are at target_dir/.
+    The runner resolves paths relative to config.parent.parent (= target_dir.parent),
+    so we rewrite to '<target_dir.name>/scenario.argos' etc.
+
+    Args:
+        target_dir: Path to extracted experiment directory.
+    """
+    config_path = target_dir / "config.yaml"
+    if not config_path.exists():
+        return
+
+    with open(config_path) as f:
+        config = yaml.safe_load(f)
+
+    if config is None:
+        return
+
+    prefix = target_dir.name
+    modified = False
+
+    # Rewrite scenario path if bundled scenario file exists
+    scenario_section = config.get("scenario", {})
+    if scenario_section and scenario_section.get("file"):
+        # Find any scenario file in the extracted dir
+        for candidate in target_dir.iterdir():
+            if candidate.suffix in (".argos", ".xml") and candidate.is_file():
+                config["scenario"]["file"] = f"{prefix}/{candidate.name}"
+                modified = True
+                break
+
+    # Rewrite training script path if bundled train.py exists
+    training_section = config.get("training", {})
+    if training_section and training_section.get("script"):
+        train_file = target_dir / "train.py"
+        if train_file.exists():
+            config["training"]["script"] = f"{prefix}/train.py"
+            modified = True
+
+    if modified:
+        with open(config_path, "w") as f:
+            yaml.dump(config, f, default_flow_style=False, sort_keys=False)
 
 
 def compare_fingerprints(bundle_fp: dict, current_fp: dict) -> dict:

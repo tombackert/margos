@@ -6,6 +6,7 @@ from typing import Optional
 import typer
 
 from marl_platform.analysis import compare_runs
+from marl_platform.analysis.report import calculate_auc, calculate_duration, read_metrics
 from marl_platform.export import (
     compare_fingerprints,
     export_bundle,
@@ -162,6 +163,48 @@ def select_from_grouped_list(
         except ValueError:
             console.print("[red]Please enter a valid number (or 'q' to cancel)[/red]")
 
+def _print_run_summary(output_dir: str) -> None:
+    """Print a Rich summary table after training completes."""
+    from rich.table import Table
+
+    output_path = Path(output_dir)
+    log_path = output_path / "logs" / "metrics.jsonl"
+
+    try:
+        metrics = read_metrics(log_path)
+    except Exception:
+        typer.echo(f"\nOutput: {output_dir}")
+        return
+
+    rewards = [m["episode_reward_mean"] for m in metrics if m.get("episode_reward_mean") is not None]
+    final_reward = rewards[-1] if rewards else None
+    best_reward = max(rewards) if rewards else None
+    auc = calculate_auc(metrics) if rewards else None
+    duration = calculate_duration(metrics)
+    iterations = len(metrics)
+
+    config_hash = "N/A"
+    config_hash_path = output_path / "config_hash.txt"
+    if config_hash_path.exists():
+        full_hash = config_hash_path.read_text().strip()
+        config_hash = full_hash[:8] + "..." if len(full_hash) > 8 else full_hash
+
+    table = Table(title="Training Complete", show_header=True, header_style="bold")
+    table.add_column("Metric", style="dim")
+    table.add_column("Value", justify="right")
+
+    table.add_row("Final Reward", f"{final_reward:.2f}" if final_reward is not None else "N/A")
+    table.add_row("Best Reward", f"{best_reward:.2f}" if best_reward is not None else "N/A")
+    table.add_row("AUC", f"{auc:.1f}" if auc is not None else "N/A")
+    table.add_row("Duration", duration)
+    table.add_row("Iterations", str(iterations))
+    table.add_row("Config Hash", config_hash)
+    table.add_row("Output", str(output_path))
+
+    console.print()
+    console.print(table)
+
+
 app = typer.Typer(
     name="platform",
     help="Research platform for MARL experiment workflows.\n\nUsage: platform [run | compare | export | import | show]",
@@ -265,9 +308,7 @@ def run(
         typer.echo("")
 
         output_dir = run_experiment(str(config_path))
-
-        typer.echo("")
-        typer.echo(f"Output: {output_dir}")
+        _print_run_summary(output_dir)
     except PlatformError as e:
         display_error(e, verbose=_verbose)
         raise typer.Exit(1)

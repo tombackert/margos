@@ -70,11 +70,14 @@ def main(
     algo_config = algo_config.framework("torch")
     algo_config = algo_config.env_runners(
         num_env_runners=0,
-        rollout_fragment_length=50,
+        rollout_fragment_length="auto",  # aligns with train_batch_size, no episode truncation
     )
-    algo_config.train_batch_size = 200
-    algo_config.sgd_minibatch_size = 64
-    algo_config.num_sgd_iter = 5
+    algo_config = algo_config.training(
+        entropy_coeff=0.01,              # exploration pressure on Discrete(5)
+    )
+    algo_config.train_batch_size = 2000     # ~20 complete episodes per update
+    algo_config.sgd_minibatch_size = 500    # 25% of train_batch_size (standard PPO)
+    algo_config.num_sgd_iter = 10           # standard PPO default
 
     # Print TensorBoard instructions
     tensorboard_dir = Path(output_dir).resolve() / "tensorboard"

@@ -1,0 +1,22 @@
+Task,Trial,Time (sec),Errors,Recovery Time (sec),Doc Lookups,Success
+T1,1,,,,, Y/N
+T1,2,,,,,Y/N
+T1,3,,,,,Y/N
+T2,1,,,,,Y/N
+T2,2,,,,,Y/N
+T2,3,,,,,Y/N
+T3,1,,,,,Y/N
+T3,2,,,,,Y/N
+T3,3,,,,,Y/N
+T4,1,,,,,Y/N
+T4,2,,,,,Y/N
+T4,3,,,,,Y/N
+T5,1,,,,,Y/N
+T5,2,,,,,Y/N
+T5,3,,,,,Y/N
+T6,1,,,,,Y/N
+T6,2,,,,,Y/N
+T6,3,,,,,Y/N
+T7,1,,,,,Y/N
+T7,2,,,,,Y/N
+T7,3,,,,,Y/N

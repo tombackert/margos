@@ -36,6 +36,12 @@ platform = "marl_platform.cli:app"
 [tool.setuptools.packages.find]
 where = ["."]
 
+[tool.pytest.ini_options]
+addopts = "-m 'not slow'"
+markers = [
+    "slow: marks tests as slow (skipped by default; run with -m slow or pytest tests/test_e2e_aggregation.py)",
+]
+
 [tool.ruff]
 line-length = 88
 target-version = "py310"

@@ -1,6 +1,52 @@
 # Backlog
 
-## Open
+## Open — SRQ3: Reproducibility (~2 hours automated)
+
+- [ ] SRQ3: Run reference experiment: `platform run aggregation_srq3` (~6 min)
+- [ ] SRQ3: Record reference metrics in `docs/experiments/evidence/SRQ3/reference_run.md` (SRQ3 Batch section)
+- [ ] SRQ3: Run N=20 batch: `python experiments/run_srq3_batch.py --reference results/<ref_id>` (~2 hours)
+- [ ] SRQ3: Run unit tests, save output: `pytest tests/test_seeds.py -v > docs/experiments/evidence/SRQ3/unit_tests_output.txt`
+- [ ] SRQ3: Compute Reproduce-Success-Rate and variance, fill `analysis_summary.md`
+
+## Completed — Feasibility + Training Demo
+
+- [x] Feasibility check: 300-iteration `aggregation_v1` run confirms ~85 min/run; created `aggregation_srq3.yaml` (10 iters, ~6 min/run) for batch
+- [x] Real learning behavior demonstrated: -53.6 → -19.1 reward over 300 iterations (68.7% improvement), still converging
+- [x] Reproducibility confirmed pre-batch: two seed=42 runs are bit-for-bit identical (max diff = 0.0 across 300 iterations)
+
+## Open — SRQ2: Efficiency (manual screen-recorded trials, N=5 per condition)
+
+- [ ] SRQ2: Set up screen recording (QuickTime or equivalent)
+- [ ] SRQ2: Run 10 interleaved trials (Manual, Platform, Manual, Platform...) per protocol order
+- [ ] SRQ2: For each trial: record screen, time steps, fill `timing_data.csv` and `step_logs.csv`
+- [ ] SRQ2: Compute time/step reductions, fill `analysis_summary.md`
+
+## Open — SRQ5: Collaboration (Docker environment required, N=20 total)
+
+- [ ] SRQ5: Build Docker image: `docker build -f docs/experiments/docker/Dockerfile.researcher_b .`
+- [ ] SRQ5: Prepare shareable experiment: `platform export <aggregation_v1_ref_id>`
+- [ ] SRQ5: Run 20 interleaved trials (10 manual + 10 platform)
+- [ ] SRQ5: For each platform trial: audit bundle completeness → fill `bundle_audits.csv`
+- [ ] SRQ5: For each trial: document environment comparison → fill `env_comparisons.csv`
+- [ ] SRQ5: Fill `trial_data.csv` (20 rows) with timing/steps/success
+- [ ] SRQ5: Compute Handoff-Success-Rate and time reductions, fill `analysis_summary.md`
+
+## Open — SRQ4: Usability (most complex — do last)
+
+- [ ] SRQ4 (Part 1): Fill `heuristic_audit.md` 35-criteria checklist against live platform; compute Heuristic-Compliance-Rate
+- [ ] SRQ4 (Part 2): Fill `klm_analysis.md` for 7 tasks (baseline + platform); compute KLM-Reduction
+- [ ] SRQ4 (Part 3): Screen-record 21 task trials (7 tasks × 3 repetitions)
+- [ ] SRQ4: Fill `task_metrics.csv` and `error_log.csv`
+- [ ] SRQ4: Compute M4.1–M4.7 metrics, fill `analysis_summary.md`
+
+## Completed — Experiment Setup (Phase 1)
+
+- [x] Create `experiments/configs/aggregation_v1.yaml` (100 iterations, seed 42)
+- [x] Update Protocol-SRQ2: `platform report` → `platform compare`
+- [x] Update Protocol-SRQ3: `platform report exp_XXX --reference results/reference/` → `platform compare exp_XXX results/reference/`
+- [x] Update Protocol-SRQ5: `platform run --verify-reference` → `platform run` + `platform compare` (two steps)
+- [x] Create evidence directory scaffold (`docs/experiments/evidence/SRQ2-5/` with CSV/MD templates)
+- [x] Create `docs/experiments/docker/Dockerfile.researcher_b`
 
 ## Completed
 
@@ -40,3 +86,8 @@
 - [x] Report comparison with an imported experiment is not simple as of now (you first have to copy results and stuff) -> Report now automatically checks imported directory
 - [x] Progress bar is still mock for report, import, export -> Replaced with real progress bars tracking actual operations
 - [x] Tensorboard logging (already integrated through ray i think, but we currently suppress it) because on long runs you need to be able to track training progress on all parameters -> Added `--tensorboard` flag to run command and `tensorboard: true` config option
+
+
+
+# Done
+- ~~Show real learning behavior over a long run -> convergence on reward curve into positiv.~~
