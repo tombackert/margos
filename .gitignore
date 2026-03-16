@@ -10,3 +10,4 @@ results/*
 bundles/*
 experiments/imported/*
 argos_plugins/build/*
+.DS_Store
