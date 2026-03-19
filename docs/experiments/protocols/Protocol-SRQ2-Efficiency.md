@@ -79,7 +79,7 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 | Metric | Start Trigger | Stop Trigger |
 |--------|---------------|--------------|
-| Time-to-Complete | First keystroke/click **after** .argos + training script exist | Final report file saved |
+| Time-to-Complete | First keystroke/click **after** .argos + training script exist | `results/aggregation_srq2/report/` folder created with CSV + PNG saved |
 | Steps-to-Complete | First action (including uncounted glue/debug steps) | Final report file saved |
 | Time-to-Setup | First keystroke/click after .argos + training script exist | Training command submitted (Enter pressed) |
 | Time-to-Report | First keystroke/click after training completes | Report ready |
@@ -111,11 +111,13 @@ These are excluded because authoring scenario-specific content takes the same ti
 | Training | 4 | Start training manually | Terminal | Yes |
 | Training | 5 | Monitor training (tensorboard/logs) | Browser/Terminal | Yes |
 | Training | (wait) | Wait for completion | - | Excluded |
-| Analysis | 6 | Extract logs/metrics | Scripts | Yes |
-| Analysis | 7 | Create plots | Python/matplotlib | Yes |
-| Analysis | 8 | Export results | Manual | Yes |
+| Analysis | 6 | Click 'Download as CSV' for `ray/tune/episode_reward_mean` in TensorBoard UI | Browser (TensorBoard) | Yes |
+| Analysis | 7 | Right-click plot → Save image as `training_curve.png` | Browser (TensorBoard) | Yes |
+| Analysis | 8 | `mkdir -p results/aggregation_srq2/report && mv ~/Downloads/*.csv ~/Downloads/*.png results/aggregation_srq2/report/` | Terminal | Yes |
 
 **Timed steps: 3 (setup) + 2 (training) + 3 (analysis) = 6 timed steps counted toward Time-to-Complete**
+
+**Baseline Derivation Note:** The manual workflow was derived from the natural interface sequence of the specific toolchain used in this study (ARGoS + Ray RLlib + TensorBoard), as documented in SRQ2EfficiencyBrainstorm.md Part 5. Steps 6-8 use TensorBoard's browser UI because RLlib writes TensorBoard-compatible event files by default — the browser UI is the zero-extra-tooling path for exporting those logs. This baseline is researcher-defined, not derived from a literature survey of MARL workflows. The brainstorm explicitly acknowledges this (R2) and decision D6 specifies documenting the baseline empirically before trials begin.
 
 ### Condition B: Platform Workflow
 
@@ -266,6 +268,7 @@ For each trial, log individual steps:
 | Training time excluded | Clearly stated — measures workflow efficiency, not compute optimization |
 | Expert user | Acknowledged — results may not generalize to novices (covered by SRQ4) |
 | Time metric is conservative lower bound | Glue script + debug excluded from timing (written once, highly variable). Clearly stated in results. Step metric (62.5% reduction) is the primary evidence for H2. Time reduction is expected to exceed 50% but may understate true advantage. |
+| Manual baseline is researcher-defined, not literature-derived | Documented explicitly in SRQ2EfficiencyBrainstorm.md with tool-by-tool rationale (Part 5). Risk R2 acknowledged in brainstorm; mitigated by D6 (empirical documentation before trials). Comparison is internally valid: both conditions use the same underlying tools; the platform adds orchestration on top. |
 
 ---
 

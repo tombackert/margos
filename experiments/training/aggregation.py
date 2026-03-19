@@ -3,6 +3,7 @@
 Platform calls: main(config, callbacks, output_dir, progress=None)
 """
 
+import os
 from pathlib import Path
 from typing import Any, Optional
 
@@ -27,6 +28,7 @@ def main(
         progress: Optional TrainingProgress for reporting progress
     """
     # Initialize Ray with minimal logging
+    os.environ.setdefault("RAY_DISABLE_MEMORY_MONITOR", "1")
     init_ray()
 
     # Delayed imports to ensure seeds are set first

@@ -1,9 +1,9 @@
 experiment:
-  name: "aggregation_srq3"
+  name: "aggregation_srq2"
   seed: 42
 
 scenario:
-  file: "scenarios/footbot_aggregation_srq3.argos"
+  file: "scenarios/footbot_aggregation_srq2.argos"
 
 training:
   script: "training/aggregation.py"
