@@ -7,6 +7,10 @@ __pycache__/
 .venv/
 ATZ/
 results/*
+!results/aggregation_srq3_20260311-110742
+!results/aggregation_srq3_20260311-110742/**
+!results/aggregation_v1_20260310-170135
+!results/aggregation_v1_20260310-170135/**
 bundles/*
 experiments/imported/*
 argos_plugins/build/*

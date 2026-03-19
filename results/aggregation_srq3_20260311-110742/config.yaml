@@ -1,0 +1,11 @@
+experiment:
+  name: aggregation_srq3
+  seed: 42
+scenario:
+  file: /Users/tom.backert/Repos/marl-platform/experiments/scenarios/footbot_aggregation.argos
+training:
+  script: /Users/tom.backert/Repos/marl-platform/experiments/training/aggregation.py
+  iterations: 10
+  tensorboard: true
+output:
+  dir: results/

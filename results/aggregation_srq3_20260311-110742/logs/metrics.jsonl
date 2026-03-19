@@ -1,0 +1,10 @@
+{"iteration": 1, "timestamp": "2026-03-11T11:08:02", "episode_reward_mean": -53.598561940339685, "episode_reward_min": -75.14841701572165, "episode_reward_max": -35.74806084943657}
+{"iteration": 2, "timestamp": "2026-03-11T11:08:14", "episode_reward_mean": -51.225474700210874, "episode_reward_min": -75.92562484586976, "episode_reward_max": -21.071787521568883}
+{"iteration": 3, "timestamp": "2026-03-11T11:08:27", "episode_reward_mean": -51.40266179215902, "episode_reward_min": -78.50757339048283, "episode_reward_max": -21.071787521568883}
+{"iteration": 4, "timestamp": "2026-03-11T11:08:39", "episode_reward_mean": -49.182661468505145, "episode_reward_min": -80.74239923102253, "episode_reward_max": -18.02013441682292}
+{"iteration": 5, "timestamp": "2026-03-11T11:08:53", "episode_reward_mean": -49.25276101682, "episode_reward_min": -80.74239923102253, "episode_reward_max": -14.867351633656204}
+{"iteration": 6, "timestamp": "2026-03-11T11:09:05", "episode_reward_mean": -48.20250228986119, "episode_reward_min": -80.74239923102253, "episode_reward_max": -14.867351633656204}
+{"iteration": 7, "timestamp": "2026-03-11T11:09:18", "episode_reward_mean": -48.61378703551019, "episode_reward_min": -80.74239923102253, "episode_reward_max": -14.867351633656204}
+{"iteration": 8, "timestamp": "2026-03-11T11:09:32", "episode_reward_mean": -48.48276967655984, "episode_reward_min": -80.74239923102253, "episode_reward_max": -14.867351633656204}
+{"iteration": 9, "timestamp": "2026-03-11T11:09:50", "episode_reward_mean": -48.664359190449616, "episode_reward_min": -76.62893163484323, "episode_reward_max": -14.867351633656204}
+{"iteration": 10, "timestamp": "2026-03-11T11:10:06", "episode_reward_mean": -46.82765211273764, "episode_reward_min": -76.62893163484323, "episode_reward_max": -1.8548769916489998}
