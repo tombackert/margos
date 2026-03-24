@@ -16,8 +16,8 @@
 ## Prerequisites
 
 ### Required Artifacts
-- [ ] Platform CLI operational (`run`, `compare`)
-- [ ] Test experiment config (`aggregation_v1.yaml`)
+- [ ] Platform CLI operational (`run`)
+- [ ] Test experiment config (`aggregation_srq2.yaml`)
 - [ ] Screen recording software installed
 - [ ] Step log template prepared
 - [ ] Stopwatch/timer available
@@ -33,11 +33,11 @@ These are excluded because authoring scenario-specific content takes the same ti
 - [ ] Same hardware for all trials
 - [ ] Platform installed and accessible
 - [ ] ARGoS + RLlib manual workflow components available
-- [ ] Training configured for short duration (e.g., 10 iterations for measurement)
+- [ ] Training configured for short duration (5 iterations for measurement)
 
 ### Pre-Execution Checklist
 - [ ] Baseline workflow documented (8 measured steps: 6 timed + 2 counted-only)
-- [ ] Platform workflow documented (3 steps, all timed)
+- [ ] Platform workflow documented (2 steps, all timed)
 - [ ] .argos scenario file and training script pre-prepared (not created during trials)
 - [ ] Screen recording tested
 - [ ] Trial order randomized or documented
@@ -77,12 +77,14 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 ### Measurement Triggers
 
-| Metric | Start Trigger | Stop Trigger |
-|--------|---------------|--------------|
-| Time-to-Complete | First keystroke/click **after** .argos + training script exist | `results/aggregation_srq2/report/` folder created with CSV + PNG saved |
-| Steps-to-Complete | First action (including uncounted glue/debug steps) | Final report file saved |
-| Time-to-Setup | First keystroke/click after .argos + training script exist | Training command submitted (Enter pressed) |
-| Time-to-Report | First keystroke/click after training completes | Report ready |
+| Metric | Condition | Start Trigger | Stop Trigger |
+|--------|-----------|---------------|--------------|
+| Time-to-Complete | Manual | First keystroke/click **after** .argos + training script exist | `results/aggregation_srq2/report/` folder created with CSV + PNG saved |
+| Time-to-Complete | Platform | First keystroke/click **after** .argos + training script exist | Training Complete summary table printed to terminal by `platform run` |
+| Steps-to-Complete | Both | First action (including uncounted glue/debug steps) | Final output ready (report folder / summary table) |
+| Time-to-Setup | Both | First keystroke/click after .argos + training script exist | Training command submitted (Enter pressed) |
+| Time-to-Report | Manual | First keystroke/click after training completes | `results/aggregation_srq2/report/` folder with CSV + PNG saved |
+| Time-to-Report | Platform | Training completes | Training Complete summary table printed (automatic) |
 
 ### Controlled Variables
 
@@ -91,7 +93,7 @@ These are excluded because authoring scenario-specific content takes the same ti
 | Experiment type | Same scenario (aggregation) for all trials |
 | Hardware | Same machine |
 | Prior knowledge | Expert user (knows both workflows) |
-| Training length | Fixed (e.g., 10 iterations) - short for measurement |
+| Training length | Fixed (5 iterations) - short for measurement |
 
 ---
 
@@ -103,34 +105,33 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 *Pre-existing (not measured): `.argos` scenario file, RLlib config — identical effort in both conditions.*
 
-| Phase | Step | Action | Tool | Timed? |
-|-------|------|--------|------|--------|
-| Setup | 1 | Write glue script (ARGoS ↔ RLlib) | Python/IDE | No — counted only |
-| Setup | 2 | Debug integration issues | Terminal | No — counted only |
-| Setup | 3 | Configure paths, seeds, parameters | Manual | Yes |
-| Training | 4 | Start training manually | Terminal | Yes |
-| Training | 5 | Monitor training (tensorboard/logs) | Browser/Terminal | Yes |
-| Training | (wait) | Wait for completion | - | Excluded |
-| Analysis | 6 | Click 'Download as CSV' for `ray/tune/episode_reward_mean` in TensorBoard UI | Browser (TensorBoard) | Yes |
-| Analysis | 7 | Right-click plot → Save image as `training_curve.png` | Browser (TensorBoard) | Yes |
-| Analysis | 8 | `mkdir -p results/aggregation_srq2/report && mv ~/Downloads/*.csv ~/Downloads/*.png results/aggregation_srq2/report/` | Terminal | Yes |
+| Phase | Step | Protocol Action | Concrete Command / Action | Timed? |
+|-------|------|-----------------|--------------------------|--------|
+| Setup | 1 | Write glue script (ARGoS ↔ RLlib) | `src/zoo/argos_env.py` (ZMQ bridge) | No — counted only |
+| Setup | 2 | Debug integration issues | (resolved prior to trials) | No — counted only |
+| Setup | 3 | Configure paths, seeds, parameters | Edit constants at top of `scripts/ray_footbot_aggregation_srq2.py` | Yes |
+| Training | 4 | Start training manually | `PYTHONPATH=src python scripts/ray_footbot_aggregation_srq2.py` | Yes |
+| Training | 5 | Monitor training | `tensorboard --logdir results/aggregation_srq2_{timestamp}/tensorboard/` → open browser | Yes |
+| Training | (wait) | Wait for completion | — | Excluded |
+| Analysis | 6 | Extract metrics as CSV | TensorBoard UI → `ray/tune/episode_reward_mean` → Download as CSV | Yes |
+| Analysis | 7 | Save training curve image | TensorBoard UI → right-click plot → Save image as `training_curve.png` | Yes |
+| Analysis | 8 | Export to report folder | `mkdir -p results/aggregation_srq2/report && mv ~/Downloads/*.csv ~/Downloads/*.png results/aggregation_srq2/report/` | Yes |
 
-**Timed steps: 3 (setup) + 2 (training) + 3 (analysis) = 6 timed steps counted toward Time-to-Complete**
+**Timed steps: 1 (setup) + 2 (training) + 3 (analysis) = 6 timed steps counted toward Time-to-Complete**
 
 **Baseline Derivation Note:** The manual workflow was derived from the natural interface sequence of the specific toolchain used in this study (ARGoS + Ray RLlib + TensorBoard), as documented in SRQ2EfficiencyBrainstorm.md Part 5. Steps 6-8 use TensorBoard's browser UI because RLlib writes TensorBoard-compatible event files by default — the browser UI is the zero-extra-tooling path for exporting those logs. This baseline is researcher-defined, not derived from a literature survey of MARL workflows. The brainstorm explicitly acknowledges this (R2) and decision D6 specifies documenting the baseline empirically before trials begin.
 
 ### Condition B: Platform Workflow
 
-**Total steps: 3 (all timed)**
+**Total steps: 2 (all timed)**
 
 *Pre-existing (not measured): `.argos` scenario file, custom training script — identical effort in both conditions.*
 
-| Phase | Step | Action | Tool | Timed? |
-|-------|------|--------|------|--------|
-| Setup | 1 | Fill unified config (from template) | Platform CLI | Yes |
-| Training | 2 | `platform run exp_v1` | Platform CLI | Yes |
-| Training | (wait) | (Auto-logging during training) | - | Excluded |
-| Analysis | 3 | `platform compare exp_123 results/reference/` | Platform CLI | Yes |
+| Phase | Step | Protocol Action | Concrete Command | Timed? |
+|-------|------|-----------------|------------------|--------|
+| Setup | 1 | Fill unified config (from template) | Edit `experiments/configs/aggregation_srq2.yaml` | Yes |
+| Training | 2 | Run experiment | `platform run aggregation_srq2` | Yes |
+| Training | (wait) | (Auto-logging + Training Complete summary printed on finish) | — | Excluded |
 
 ### Trial Protocol
 
@@ -267,7 +268,7 @@ For each trial, log individual steps:
 | Learning effects | Multiple trials, interleaved conditions, document trial order |
 | Training time excluded | Clearly stated — measures workflow efficiency, not compute optimization |
 | Expert user | Acknowledged — results may not generalize to novices (covered by SRQ4) |
-| Time metric is conservative lower bound | Glue script + debug excluded from timing (written once, highly variable). Clearly stated in results. Step metric (62.5% reduction) is the primary evidence for H2. Time reduction is expected to exceed 50% but may understate true advantage. |
+| Time metric is conservative lower bound | Glue script + debug excluded from timing (written once, highly variable). Clearly stated in results. Step metric (75% reduction, 8→2) is the primary evidence for H2. Time reduction is expected to exceed 50% but may understate true advantage. |
 | Manual baseline is researcher-defined, not literature-derived | Documented explicitly in SRQ2EfficiencyBrainstorm.md with tool-by-tool rationale (Part 5). Risk R2 acknowledged in brainstorm; mitigated by D6 (empirical documentation before trials). Comparison is internally valid: both conditions use the same underlying tools; the platform adds orchestration on top. |
 
 ---
