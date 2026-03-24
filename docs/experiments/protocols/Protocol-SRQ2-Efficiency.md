@@ -135,15 +135,19 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 ### Trial Protocol
 
+**No live stopwatch needed.** The screen recording is the authoritative timing source — frame-accurate and objective.
+
 1. **Start screen recording**
 2. **State trial ID and condition** (verbal or written)
-3. **Start timer** at first keystroke/click
-4. **Perform workflow** - count each step as performed
-5. **Pause timer** when training starts (wait time excluded)
-6. **Resume timer** when training completes
-7. **Stop timer** when final report is saved
-8. **Stop screen recording**
-9. **Record data** in collection template
+3. **Perform workflow** — count each step as performed
+4. **Stop screen recording** when final report is saved
+5. **Post-hoc timing** — review the video and mark four timestamps:
+   - `T1` = first keystroke/click
+   - `T2` = training command submitted (Enter pressed)
+   - `T3` = training completion visible in terminal output
+   - `T4` = final report file saved
+6. **Compute human effort time**: `(T2 − T1) + (T4 − T3)`
+7. **Record data** in collection template
 
 ### Trial Execution Order
 
