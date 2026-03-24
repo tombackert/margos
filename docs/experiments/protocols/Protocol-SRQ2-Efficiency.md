@@ -79,11 +79,11 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 | Metric | Condition | Start Trigger | Stop Trigger |
 |--------|-----------|---------------|--------------|
-| Time-to-Complete | Manual | First keystroke/click **after** .argos + training script exist | `results/aggregation_srq2/report/` folder created with CSV + PNG saved |
+| Time-to-Complete | Manual | First keystroke/click **after** .argos + training script exist | `results/aggregation_srq2/report/` folder created with CSV + SVG saved |
 | Time-to-Complete | Platform | First keystroke/click **after** .argos + training script exist | Training Complete summary table printed to terminal by `platform run` |
 | Steps-to-Complete | Both | First action (including uncounted glue/debug steps) | Final output ready (report folder / summary table) |
 | Time-to-Setup | Both | First keystroke/click after .argos + training script exist | Training command submitted (Enter pressed) |
-| Time-to-Report | Manual | First keystroke/click after training completes | `results/aggregation_srq2/report/` folder with CSV + PNG saved |
+| Time-to-Report | Manual | First keystroke/click after training completes | `results/aggregation_srq2/report/` folder with CSV + SVG saved |
 | Time-to-Report | Platform | Training completes | Training Complete summary table printed (automatic) |
 
 ### Controlled Variables
@@ -114,8 +114,8 @@ These are excluded because authoring scenario-specific content takes the same ti
 | Training | 5 | Monitor training | `tensorboard --logdir results/aggregation_srq2_{timestamp}/tensorboard/` → open browser | Yes |
 | Training | (wait) | Wait for completion | — | Excluded |
 | Analysis | 6 | Extract metrics as CSV | TensorBoard UI → `ray/tune/episode_reward_mean` → Download as CSV | Yes |
-| Analysis | 7 | Save training curve image | TensorBoard UI → right-click plot → Save image as `training_curve.png` | Yes |
-| Analysis | 8 | Export to report folder | `mkdir -p results/aggregation_srq2/report && mv ~/Downloads/*.csv ~/Downloads/*.png results/aggregation_srq2/report/` | Yes |
+| Analysis | 7 | Save training curve image | TensorBoard UI → click download icon on plot → Save as `training_curve.svg` | Yes |
+| Analysis | 8 | Export to report folder | `mkdir -p results/aggregation_srq2/report && mv ~/Downloads/*.csv ~/Downloads/*.svg results/aggregation_srq2/report/` | Yes |
 
 **Timed steps: 1 (setup) + 2 (training) + 3 (analysis) = 6 timed steps counted toward Time-to-Complete**
 
