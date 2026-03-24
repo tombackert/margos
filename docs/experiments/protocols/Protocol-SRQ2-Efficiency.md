@@ -17,7 +17,7 @@
 
 ### Required Artifacts
 - [ ] Platform CLI operational (`run`, `compare`)
-- [ ] Test experiment config (`aggregation_v1.yaml`)
+- [ ] Test experiment config (`aggregation_srq2.yaml`)
 - [ ] Screen recording software installed
 - [ ] Step log template prepared
 - [ ] Stopwatch/timer available
@@ -77,12 +77,12 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 ### Measurement Triggers
 
-| Metric | Start Trigger | Stop Trigger |
-|--------|---------------|--------------|
-| Time-to-Complete | First keystroke/click **after** .argos + training script exist | `results/aggregation_srq2/report/` folder created with CSV + PNG saved |
-| Steps-to-Complete | First action (including uncounted glue/debug steps) | Final report file saved |
-| Time-to-Setup | First keystroke/click after .argos + training script exist | Training command submitted (Enter pressed) |
-| Time-to-Report | First keystroke/click after training completes | Report ready |
+| Metric | Mark in Video | Definition |
+|--------|---------------|------------|
+| Time-to-Complete (T1→T4 minus T2→T3) | T1 = first keystroke; T2 = Enter on training cmd; T3 = training done in terminal; T4 = report saved | Human effort time = (T2−T1) + (T4−T3) |
+| Steps-to-Complete | Count each discrete action (including uncounted glue/debug steps) | Total from first action to report saved |
+| Time-to-Setup | T1 → T2 | Setup phase only |
+| Time-to-Report | T3 → T4 | Analysis phase only |
 
 ### Controlled Variables
 
@@ -134,15 +134,19 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 ### Trial Protocol
 
+**No live stopwatch needed.** The screen recording is the authoritative timing source — frame-accurate and objective.
+
 1. **Start screen recording**
 2. **State trial ID and condition** (verbal or written)
-3. **Start timer** at first keystroke/click
-4. **Perform workflow** - count each step as performed
-5. **Pause timer** when training starts (wait time excluded)
-6. **Resume timer** when training completes
-7. **Stop timer** when final report is saved
-8. **Stop screen recording**
-9. **Record data** in collection template
+3. **Perform workflow** — count each step as performed
+4. **Stop screen recording** when final report is saved
+5. **Post-hoc timing** — review the video and mark four timestamps:
+   - `T1` = first keystroke/click
+   - `T2` = training command submitted (Enter pressed)
+   - `T3` = training completion visible in terminal output
+   - `T4` = final report file saved
+6. **Compute human effort time**: `(T2 − T1) + (T4 − T3)`
+7. **Record data** in collection template
 
 ### Trial Execution Order
 
