@@ -115,7 +115,7 @@ These are excluded because authoring scenario-specific content takes the same ti
 | Training | (wait) | Wait for completion | — | Excluded |
 | Analysis | 6 | Extract metrics as CSV | TensorBoard UI → `ray/tune/episode_reward_mean` → Download as CSV | Yes |
 | Analysis | 7 | Save training curve image | TensorBoard UI → click download icon on plot → Save as `training_curve.svg` | Yes |
-| Analysis | 8 | Export to report folder | `mkdir -p results/aggregation_srq2/report && mv ~/Downloads/*.csv ~/Downloads/*.svg results/aggregation_srq2/report/` | Yes |
+| Analysis | 8 | Export to report folder | `mkdir -p results/aggregation_srq2/report && mv $HOME/Downloads/*.csv $HOME/Downloads/*.svg results/aggregation_srq2/report/` | Yes |
 
 **Timed steps: 1 (setup) + 2 (training) + 3 (analysis) = 6 timed steps counted toward Time-to-Complete**
 
