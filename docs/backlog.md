@@ -10,6 +10,15 @@
 
 
 
+## Completed — SRQ2: Efficiency
+
+- [x] SRQ2: Set up screen recording (QuickTime or equivalent)
+- [x] SRQ2: Run 10 interleaved trials (Manual, Platform, Manual, Platform...) per protocol order
+- [x] SRQ2: For each trial: record screen, time steps, fill `timing_data.csv` and `step_logs.csv`
+- [x] SRQ2: Compute time/step reductions, fill `analysis_summary.md`
+
+**Result:** H2 supported — 78.2% time reduction (87s → 19s), 75.0% step reduction (8 → 2), both ≥50%.
+
 ## Completed — SRQ3: Reproducibility
 
 - [x] SRQ3: Run reference experiment: `platform run aggregation_srq3` (~6 min)
@@ -26,13 +35,6 @@ This is the exact platform version used for all SRQ data collection.
 - [x] Feasibility check: 300-iteration `aggregation_v1` run confirms ~85 min/run; created `aggregation_srq3.yaml` (10 iters, ~6 min/run) for batch
 - [x] Real learning behavior demonstrated: -53.6 → -19.1 reward over 300 iterations (68.7% improvement), still converging
 - [x] Reproducibility confirmed pre-batch: two seed=42 runs are bit-for-bit identical (max diff = 0.0 across 300 iterations)
-
-## Open — SRQ2: Efficiency (manual screen-recorded trials, N=5 per condition)
-
-- [ ] SRQ2: Set up screen recording (QuickTime or equivalent)
-- [ ] SRQ2: Run 10 interleaved trials (Manual, Platform, Manual, Platform...) per protocol order
-- [ ] SRQ2: For each trial: record screen, time steps, fill `timing_data.csv` and `step_logs.csv`
-- [ ] SRQ2: Compute time/step reductions, fill `analysis_summary.md`
 
 ## Open — SRQ5: Collaboration (Docker environment required, N=20 total)
 
