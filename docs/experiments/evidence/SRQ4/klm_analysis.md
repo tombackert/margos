@@ -259,16 +259,16 @@ Without R: 5.35*(no R1)=4.35 + 6.55*(no R5)=1.55 + 4.95*(no R1)=3.95 + 1.55 = **
 
 *Times below exclude system response R(t) as per KLM convention (compute wait time is equal in both conditions).*
 
-| Task                 | Baseline (s)   | Platform (s)   | Reduction (%)   |
-| -------------------- | -------------- | -------------- | --------------- |
-| T1: Configure        | 33.70          | 33.70          | 0%              |
-| T2: Modify           | 9.95           | 9.95           | 0%              |
-| T3: Train            | 13.15          | 5.50           | 58%             |
-| T4: Monitor          | 21.05          | 2.55           | 88%             |
-| T5: Results          | 22.00          | 3.95           | 82%             |
-| T6: Export           | 14.90          | 5.90           | 60%             |
-| T7: Import/Reproduce | 54.50          | 11.40          | 79%             |
-| **Average**          | **24.18**      | **10.42**      | **52%**         |
+| Task                 | Baseline (s) | Platform (s) | Reduction (%) | Speedup (x) |
+| -------------------- | ------------ | ------------ | ------------- | ----------- |
+| T1: Configure        | 33.70        | 33.70        | 0%            | 1.00x       |
+| T2: Modify           | 9.95         | 9.95         | 0%            | 1.00x       |
+| T3: Train            | 13.15        | 5.50         | 58%           | 2.39x       |
+| T4: Monitor          | 21.05        | 2.55         | 88%           | 8.25x       |
+| T5: Results          | 22.00        | 3.95         | 82%           | 5.57x       |
+| T6: Export           | 14.90        | 5.90         | 60%           | 2.53x       |
+| T7: Import/Reproduce | 54.50        | 11.40        | 79%           | 4.78x       |
+| **Average**          | **24.18**    | **10.42**    | **52%**       | **2.32x**   |
 
 **Weighted KLM-Reduction (M4.6):** (169.25 − 72.95) / 169.25 = **56.9%**
 
