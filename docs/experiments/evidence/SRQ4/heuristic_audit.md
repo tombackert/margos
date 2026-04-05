@@ -82,13 +82,13 @@ For each criterion: record Y/N and evidence (command output, screenshot referenc
 
 ## H7: Flexibility and Efficiency of Use
 
-| #   | Criterion                       | Present?   | Evidence                                                                                                                       |
-| --- | ------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| 7.1 | Shortcuts for common operations | N          | No aliases or shortcut syntax built into CLI                                                                                   |
-| 7.2 | Configurable defaults           | Y          | Directory defaults overridable via `--config-dir`, `--results-dir`, `--bundles-dir`, `--imported-dir` on all relevant commands |
-| 7.3 | Batch operations supported      | N          | No batch run or multi-experiment execution command                                                                             |
+| #   | Criterion                       | Present?   | Evidence                                                                                                                                                |
+| --- | ------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 7.1 | Shortcuts for common operations | Y          | `p` alias registered with 5 sub-aliases: `p r` → run, `p s` → show, `p c` → compare, `p e` → export, `p i` → import; `p --help` confirms all registered |
+| 7.2 | Configurable defaults           | Y          | Directory defaults overridable via `--config-dir`, `--results-dir`, `--bundles-dir`, `--imported-dir` on all relevant commands                          |
+| 7.3 | Batch operations supported      | N          | No batch run or multi-experiment execution command                                                                                                      |
 
-**Score: 1/3**
+**Score: 2/3**
 
 ---
 
@@ -124,9 +124,9 @@ For each criterion: record Y/N and evidence (command output, screenshot referenc
 | 10.1 | Built-in help command       | Y          | `platform --help` and `platform <cmd> --help` via typer; lists all commands and flags                |
 | 10.2 | Examples provided           | Y          | `compare`, `export`, `import`, `show` all have Examples sections in docstrings displayed by `--help` |
 | 10.3 | Documentation accessible    | Y          | `docs/` folder contains ResearchPlan.md, DesignBrainstorm.md, experiment protocols                   |
-| 10.4 | Quick-start guide available | N          | No README or quick-start guide at repository root                                                    |
+| 10.4 | Quick-start guide available | Y          | README.md at repo root; covers install, all 5 commands with short/long aliases and examples          |
 
-**Score: 3/4**
+**Score: 4/4**
 
 ---
 
@@ -140,17 +140,17 @@ For each criterion: record Y/N and evidence (command output, screenshot referenc
 | H4: Consistency      | 4                | 4      | 4/4       |
 | H5: Error Prevention | 4                | 4      | 4/4       |
 | H6: Recognition      | 3                | 2      | 2/3       |
-| H7: Flexibility      | 3                | 1      | 1/3       |
+| H7: Flexibility      | 3                | 2      | 2/3       |
 | H8: Minimalist       | 3                | 3      | 3/3       |
 | H9: Error Recovery   | 4                | 3      | 3/4       |
-| H10: Help/Docs       | 4                | 3      | 3/4       |
-| **Total**            | **35**           | **28** | **28/35** |
+| H10: Help/Docs       | 4                | 4      | 4/4       |
+| **Total**            | **35**           | **30** | **30/35** |
 
-**Heuristic-Compliance-Rate (M4.4):** 28 / 35 × 100% = **80.0%**
+**Heuristic-Compliance-Rate (M4.4):** 30 / 35 × 100% = **85.7%**
 
 **Target:** ≥80% (28/35 criteria)
 
-**Met?** YES (exactly meets threshold)
+**Met?** YES
 
 ---
 
@@ -159,4 +159,4 @@ For each criterion: record Y/N and evidence (command output, screenshot referenc
 **Assessment method:** All 35 criteria assessed from code inspection of `marl_platform/cli.py` and `marl_platform/utils/errors.py`. No behavioral trials conducted (see protocol Limitations section).
 
 **Pre-determined N (no implementation):**
-- H3.2, H6.3, H7.1, H7.3, H9.4, H10.4: Not implemented; maximum achievable score was 29/35 (83%)
+- H3.2, H6.3, H7.3, H9.4: Not implemented; maximum achievable score was 31/35 (89%)
