@@ -8,6 +8,7 @@ scenario:
 training:
   script: "training/aggregation.py"
   iterations: 5
+  tensorboard: true
 
 output:
   dir: "results/"

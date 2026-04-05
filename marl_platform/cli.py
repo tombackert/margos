@@ -267,7 +267,7 @@ def run(
     """Run an experiment from config file.
 
     If no experiment name is provided, shows a selection list.
-    TensorBoard logging is enabled by default (config: training.tensorboard).
+    TensorBoard launches automatically and is available at http://localhost:6006.
     """
     try:
         source = "config"  # Default source

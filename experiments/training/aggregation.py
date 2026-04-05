@@ -81,23 +81,6 @@ def main(
     algo_config.sgd_minibatch_size = 500    # 25% of train_batch_size (standard PPO)
     algo_config.num_sgd_iter = 10           # standard PPO default
 
-    # Print TensorBoard instructions
-    tensorboard_dir = Path(output_dir).resolve() / "tensorboard"
-    tensorboard_dir.mkdir(parents=True, exist_ok=True)
-
-    print("")
-    print("=" * 60)
-    print("TENSORBOARD ENABLED")
-    print("=" * 60)
-    print(f"Log directory: {tensorboard_dir}")
-    print("")
-    print("To view live training progress, run in a new terminal:")
-    print(f"  tensorboard --logdir {tensorboard_dir}")
-    print("")
-    print("Then open: http://localhost:6006")
-    print("=" * 60)
-    print("")
-
     algo = algo_config.build()
 
     # Update progress after initialization

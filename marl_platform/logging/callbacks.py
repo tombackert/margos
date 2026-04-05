@@ -128,14 +128,7 @@ class TensorBoardLogger(DefaultCallbacks):
         self.output_dir = Path(output_dir)
         self.tb_dir = self.output_dir / "tensorboard"
         self.tb_dir.mkdir(parents=True, exist_ok=True)
-        self._writer: Optional[SummaryWriter] = None
-
-    @property
-    def writer(self) -> SummaryWriter:
-        """Lazy-initialize the SummaryWriter."""
-        if self._writer is None:
-            self._writer = SummaryWriter(log_dir=str(self.tb_dir))
-        return self._writer
+        self._writer: SummaryWriter = SummaryWriter(log_dir=str(self.tb_dir))
 
     def on_train_result(
         self,
@@ -156,12 +149,12 @@ class TensorBoardLogger(DefaultCallbacks):
 
         # Log to TensorBoard
         if metrics.get("episode_reward_mean") is not None:
-            self.writer.add_scalar("reward/mean", metrics["episode_reward_mean"], iteration)
+            self._writer.add_scalar("reward/mean", metrics["episode_reward_mean"], iteration)
         if metrics.get("episode_reward_min") is not None:
-            self.writer.add_scalar("reward/min", metrics["episode_reward_min"], iteration)
+            self._writer.add_scalar("reward/min", metrics["episode_reward_min"], iteration)
         if metrics.get("episode_reward_max") is not None:
-            self.writer.add_scalar("reward/max", metrics["episode_reward_max"], iteration)
-        self.writer.flush()
+            self._writer.add_scalar("reward/max", metrics["episode_reward_max"], iteration)
+        self._writer.flush()
 
     def close(self) -> None:
         """Close the TensorBoard writer."""

@@ -2,7 +2,11 @@
 
 import importlib.util
 import inspect
+import os
+import signal
+import subprocess
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -13,6 +17,19 @@ from marl_platform.utils.errors import ConfigNotFoundError, TrainingError, Valid
 from marl_platform.utils.fingerprint import capture_fingerprint, save_fingerprint
 from marl_platform.utils.progress import TrainingProgress
 from marl_platform.utils.seeds import set_all_seeds
+
+
+def _kill_port(port: int) -> None:
+    """Kill any process listening on the given port."""
+    try:
+        result = subprocess.run(["lsof", "-ti", f":{port}"], capture_output=True, text=True)
+        for pid_str in result.stdout.strip().split("\n"):
+            if pid_str:
+                os.kill(int(pid_str), signal.SIGKILL)
+        if result.stdout.strip():
+            time.sleep(0.5)  # let the port be released
+    except Exception:
+        pass
 
 
 def run_experiment(config_path: str) -> str:
@@ -50,8 +67,8 @@ def run_experiment(config_path: str) -> str:
     experiments_dir = config_path_obj.parent.parent
     config = resolve_paths(config, experiments_dir)
 
-    # 2. Create output directory
-    output_dir = create_output_dir(config)
+    # 2. Create output directory (resolved to absolute so all downstream code is stable)
+    output_dir = create_output_dir(config).resolve()
 
     # 3. Save frozen config + hash
     save_frozen_config(config, output_dir)
@@ -75,9 +92,33 @@ def run_experiment(config_path: str) -> str:
         if tb_logger:
             callbacks.append(tb_logger)
 
-    # 7. Execute training script
+    # 7. Execute training script (auto-launch TensorBoard if enabled)
     script_path = Path(config.training.script)
-    execute_training_script(script_path, config, callbacks, output_dir)
+    tb_process = None
+    if config.training.tensorboard:
+        try:
+            _kill_port(6006)
+            tb_dir = (output_dir / "tensorboard").resolve()
+            tb_process = subprocess.Popen(
+                ["tensorboard", "--logdir", str(tb_dir), "--port", "6006", "--reload_interval", "5"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
+            )
+            from rich.console import Console
+            Console().print("TensorBoard running at [link=http://localhost:6006]http://localhost:6006[/link]")
+        except FileNotFoundError:
+            from rich.console import Console
+            Console().print("[yellow]Warning: tensorboard not found, skipping auto-launch[/yellow]")
+
+    try:
+        execute_training_script(script_path, config, callbacks, output_dir)
+    finally:
+        for cb in callbacks:
+            if hasattr(cb, 'close'):
+                cb.close()
+        if tb_process is not None:
+            tb_process.kill()
 
     return str(output_dir)
 
