@@ -5,8 +5,8 @@
 | Metric                                            | Value          | Target       | Met?   |
 | ------------------------------------------------- | -------------- | ------------ | ------ |
 | M4.4: Heuristic-Compliance-Rate                   | 28/35 (80.0%)  | ≥80% (28/35) | Yes    |
-| M4.5: KLM-Predicted-Time (platform, weighted avg) | 12.51 sec/task | —            | —      |
-| M4.6: KLM-Reduction                               | 50.5%          | ≥50%         | Yes    |
+| M4.5: KLM-Predicted-Time (platform, weighted avg) | 10.42 sec/task | —            | —      |
+| M4.6: KLM-Reduction                               | 56.9%          | ≥50%         | Yes    |
 
 ## Heuristic Compliance Breakdown
 
@@ -28,21 +28,21 @@
 
 | Task                 | Baseline (sec)   | Platform (sec)   | Reduction (%)   |
 | -------------------- | ---------------- | ---------------- | --------------- |
-| T1: Configure        | 37.35            | 40.35            | −8%             |
-| T2: Modify           | 14.05            | 15.65            | −11%            |
+| T1: Configure        | 33.70            | 33.70            | 0%              |
+| T2: Modify           | 9.95             | 9.95             | 0%              |
 | T3: Train            | 13.15            | 5.55             | 58%             |
 | T4: Monitor          | 21.05            | 2.55             | 88%             |
-| T5: Results          | 22.00            | 5.35             | 76%             |
+| T5: Results          | 22.00            | 3.95             | 82%             |
 | T6: Export           | 14.90            | 5.90             | 60%             |
-| T7: Import/Reproduce | 54.50            | 12.25            | 78%             |
-| **Weighted Total**   | **177.00**       | **87.60**        | **50.5%**       |
+| T7: Import/Reproduce | 54.50            | 11.40            | 79%             |
+| **Weighted Total**   | **169.25**       | **72.95**        | **56.9%**       |
 
 ## Formulas
 
 ```
 Heuristic-Compliance-Rate   = Criteria met / 35 × 100%
 KLM-Reduction               = (Baseline_KLM - Platform_KLM) / Baseline_KLM × 100%
-                            = (177.00 - 87.60) / 177.00 × 100% = 50.5%
+                            = (169.25 - 72.95) / 169.25 × 100% = 56.9%
 ```
 
 ## Interpretation
@@ -52,8 +52,8 @@ KLM-Reduction               = (Baseline_KLM - Platform_KLM) / Baseline_KLM × 10
 | Criterion                 | Result   | Target   | Met?   |
 | ------------------------- | -------- | -------- | ------ |
 | Heuristic-Compliance-Rate | 80.0%    | ≥80%     | Yes    |
-| KLM-Reduction             | 50.5%    | ≥50%     | Yes    |
+| KLM-Reduction             | 56.9%    | ≥50%     | Yes    |
 
 Both success criteria met. H4 is supported: the platform's design complies with established usability heuristics and significantly reduces predicted interaction complexity vs. the manual baseline.
 
-**Note:** Both results are borderline (80.0% and 50.5%). This is acknowledged in the thesis — the Limitations section of the protocol addresses single-evaluator bias and KLM's error-free assumption.
+**Note on KLM methodology:** T1 and T2 (configuration tasks) show 0% reduction — both conditions use VS Code and configure the same parameters. The 56.9% weighted reduction is driven by T3–T7, where platform automation replaces fragmented multi-step manual workflows. The heuristic result (80.0%) is borderline and acknowledged in the Limitations section of the protocol (single-evaluator bias, KLM error-free assumption).
