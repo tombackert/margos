@@ -33,6 +33,7 @@ ml = [
 
 [project.scripts]
 platform = "marl_platform.cli:app"
+p = "marl_platform.cli:p_app"
 
 [tool.setuptools.packages.find]
 where = ["."]

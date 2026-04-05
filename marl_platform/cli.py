@@ -593,5 +593,27 @@ def show(
         show_table("Bundles", bundles, bundles_dir)
 
 
+p_app = typer.Typer(
+    name="p",
+    help="Short aliases: p r=run, p s=show, p c=compare, p e=export, p i=import",
+    add_completion=False,
+)
+
+
+@p_app.callback()
+def p_main(
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Show full traceback on errors"),
+) -> None:
+    global _verbose
+    _verbose = verbose
+
+
+p_app.command("r")(run)
+p_app.command("s")(show)
+p_app.command("c")(compare)
+p_app.command("e")(export)
+p_app.command("i")(import_)
+
+
 if __name__ == "__main__":
     app()
