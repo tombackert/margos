@@ -1,52 +1,59 @@
 # SRQ4 Analysis Summary
 
-## Metrics Summary (M4.1-M4.7)
+## Metrics Summary (M4.4–M4.6)
 
 | Metric | Value | Target | Met? |
 |--------|-------|--------|------|
-| M4.1: Time-to-First-Success (mean across tasks, Trial 1) | | Learning curve shows improvement | |
-| M4.2: Error-Rate (total errors / total attempts) | | Decreasing over trials | |
-| M4.3: Recovery-Time (mean) | | | |
-| M4.4: Heuristic-Compliance-Rate | | ≥80% (28/35) | |
-| M4.5: KLM-Predicted-Time (platform, average) | | | |
-| M4.6: KLM-Reduction | | ≥50% | |
-| M4.7: Documentation-Lookups (mean per task) | | | |
+| M4.4: Heuristic-Compliance-Rate | 28/35 (80.0%) | ≥80% (28/35) | Yes |
+| M4.5: KLM-Predicted-Time (platform, weighted avg) | 12.51 sec/task | — | — |
+| M4.6: KLM-Reduction | 50.5% | ≥50% | Yes |
 
-## Error Metrics
+## Heuristic Compliance Breakdown
 
-| Metric | Formula | Value |
-|--------|---------|-------|
-| Error-Rate | Total errors / Total task attempts (21) | |
-| Mean-Recovery-Time | Σ Recovery times / # recoveries | |
-| Error-Free-Rate | Tasks with 0 errors / 21 | |
+| Heuristic | Met / Total | Notes |
+|-----------|-------------|-------|
+| H1: Visibility | 3/4 | Missing: resource usage metrics (1.4) |
+| H2: Real World Match | 3/3 | |
+| H3: User Control | 2/3 | Missing: undo/revert config changes (3.2) |
+| H4: Consistency | 4/4 | |
+| H5: Error Prevention | 4/4 | |
+| H6: Recognition | 2/3 | Missing: recent commands/configs accessible (6.3) |
+| H7: Flexibility | 1/3 | Missing: shortcuts (7.1), batch ops (7.3) |
+| H8: Minimalist | 3/3 | |
+| H9: Error Recovery | 3/4 | Missing: error codes for reference (9.4) |
+| H10: Help/Docs | 3/4 | Missing: quick-start guide (10.4) |
+| **Total** | **28/35** | **80.0%** |
 
-## Learning Curve
+## KLM Reduction by Task
 
-| Task | Trial 1 (sec) | Trial 2 (sec) | Trial 3 (sec) | Improvement (T1→T3) |
-|------|---------------|---------------|---------------|---------------------|
-| T1 | | | | |
-| T2 | | | | |
-| T3 | | | | |
-| T4 | | | | |
-| T5 | | | | |
-| T6 | | | | |
-| T7 | | | | |
+| Task | Baseline (sec) | Platform (sec) | Reduction (%) |
+|------|----------------|----------------|---------------|
+| T1: Configure | 37.35 | 40.35 | −8% |
+| T2: Modify | 14.05 | 15.65 | −11% |
+| T3: Train | 13.15 | 5.55 | 58% |
+| T4: Monitor | 21.05 | 2.55 | 88% |
+| T5: Results | 22.00 | 5.35 | 76% |
+| T6: Export | 14.90 | 5.90 | 60% |
+| T7: Import/Reproduce | 54.50 | 12.25 | 78% |
+| **Weighted Total** | **177.00** | **87.60** | **50.5%** |
 
 ## Formulas
 
 ```
-Error-Rate = Total errors / Total task attempts
-Mean-Recovery-Time = Σ Recovery times / # recoveries
-Heuristic-Compliance-Rate = Criteria met / 35 × 100%
-KLM-Reduction = (Baseline_KLM - Platform_KLM) / Baseline_KLM × 100%
+Heuristic-Compliance-Rate   = Criteria met / 35 × 100%
+KLM-Reduction               = (Baseline_KLM - Platform_KLM) / Baseline_KLM × 100%
+                            = (177.00 - 87.60) / 177.00 × 100% = 50.5%
 ```
 
 ## Interpretation
 
-**Outcome:** [Fill after data collection]
+**Outcome: H4 Supported**
 
-| Outcome | Interpretation |
-|---------|----------------|
-| ≥80% heuristic AND ≥50% KLM | H4 supported |
-| ≥80% heuristic OR ≥50% KLM | H4 partially supported |
-| <80% heuristic AND <50% KLM | H4 not supported |
+| Criterion | Result | Target | Met? |
+|-----------|--------|--------|------|
+| Heuristic-Compliance-Rate | 80.0% | ≥80% | Yes |
+| KLM-Reduction | 50.5% | ≥50% | Yes |
+
+Both success criteria met. H4 is supported: the platform's design complies with established usability heuristics and significantly reduces predicted interaction complexity vs. the manual baseline.
+
+**Note:** Both results are borderline (80.0% and 50.5%). This is acknowledged in the thesis — the Limitations section of the protocol addresses single-evaluator bias and KLM's error-free assumption.
