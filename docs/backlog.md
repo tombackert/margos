@@ -8,7 +8,7 @@
 - ~~Integrate the tensorboard logging into the cli~~
 - ~~Remove the 4 or 2 iters overhead in every run~~
 - ~~Remove/bundle the ray output, it is not pleasing~~
-
+- ~~TB process was killed immediately after training ended, now killed after user enter~~
 
 ## Completed — SRQ2: Efficiency
 

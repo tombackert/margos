@@ -1,0 +1,13 @@
+experiment:
+  name: "srq5_eval"
+  seed: 42
+
+scenario:
+  file: "scenarios/footbot_aggregation.argos"
+
+training:
+  script: "training/aggregation.py"
+  iterations: 5
+
+output:
+  dir: "results/"
