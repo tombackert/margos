@@ -38,7 +38,7 @@
 
 ### Pre-Execution Checklist
 - [ ] Baseline workflow steps documented (8 steps)
-- [ ] Platform workflow steps documented (4 steps)
+- [ ] Platform workflow steps documented (5 steps)
 - [ ] Transfer mechanism decided (e.g., file copy, simulated network transfer)
 - [ ] Researcher B environment specification documented
 
@@ -60,6 +60,15 @@
 | **Handoff-Success-Rate** | % of handoffs where B successfully reproduces A's results      |
 | **Bundle-Completeness**  | Checklist score of required components present in bundle       |
 | **Setup-Divergence**     | Differences between A's and B's environment configurations     |
+
+### Handoff Success Definition (pre-committed)
+
+A handoff is **successful** if Researcher B's experiment produces a final episode reward mean (averaged over the last 50 episodes of training) within **±5%** of Researcher A's reference value.
+
+- Manual condition: Researcher B exports TensorBoard scalar data to CSV and computes the mean of the last 50 reward values. Compares against the reference value documented in A's README.
+- Platform condition: `platform compare` applies the same ±5% threshold automatically.
+
+The threshold (±5%) is committed before trial 1 and must not be changed post-hoc.
 
 ### Measurement Triggers
 
@@ -85,56 +94,179 @@
 
 ### Condition A: Manual Workflow (Baseline)
 
-**Total steps: 8**
+#### Starting Machine State (identical for both conditions)
 
-| Step   | Action                | Description                                                 |
-| ------ | --------------------- | ----------------------------------------------------------- |
-| 1      | Identify files        | Determine which files are needed (configs, scripts, models) |
-| 2      | Copy files to staging | Manually copy relevant files to a shareable location        |
-| 3      | Write README          | Document setup instructions, dependencies, how to run       |
-| 4      | List dependencies     | Create requirements.txt or equivalent manually              |
-| 5      | Document seeds        | Write down seed values used in experiment                   |
-| 6      | Document environment  | Note Python version, OS, relevant env variables             |
-| 7      | Package files         | Zip or tar the files for transfer                           |
-| 8      | Transfer              | Send via file copy (simulated)                              |
+| Component                                 | Present? | Notes                                                                           |
+| ----------------------------------------- | -------- | ------------------------------------------------------------------------------- |
+| OS + Python                               | Yes      | Same version as Machine A                                                       |
+| ARGoS binary + plugins                    | Yes      | Same version as Machine A                                                       |
+| `ARGOS_PLUGIN_PATH` configured            | Yes      | Base infrastructure, identical on both machines                                 |
+| ZMQ port 5555 available                   | Yes      | Base infrastructure, assumed free and working                                   |
+| ArgosToZoo repo checked out               | Yes      | Provides `src/zoo/*` and `PYTHONPATH=src`                                       |
+| Platform CLI                              | Yes      | Required for Condition B; present in both for symmetry                          |
+| Common packages (numpy, torch, ray, etc.) | Yes      | Base ecosystem, not experiment-pinned                                           |
+| Experiment files / bundle                 | **No**   | This is what the handoff provides                                               |
+| Experiment-specific pinned deps           | **No**   | Manual: B installs from A's `requirements.txt`; Platform: handled automatically |
 
-**Receiving (Baseline):**
-| Step   | Action                   |
-| ------ | ------------------------ |
-| 1      | Unpack files             |
-| 2      | Read README              |
-| 3      | Install dependencies     |
-| 4      | Configure environment    |
-| 5      | Run experiment           |
-| 6      | Compare results (manual) |
+> **Rationale:** Platform installation is infrastructure cost amortized across all experiments. Both conditions start from the same state; measured friction is purely the experiment handoff itself.
+
+#### Step 0 — Reference run on Machine A (per trial)
+
+```bash
+# From repo root
+PYTHONPATH=src python scripts/ray_footbot_aggregation_srq5.py
+# Note the timestamped output dir, e.g.: results/aggregation_srq5_20260407-143000/
+```
+
+Produces the reference results (TensorBoard logs + final checkpoint) that Researcher B must reproduce.
+
+#### Sharing Phase — 8 steps
+
+**Step 1 — Identify files**
+```bash
+ls scripts/ray_footbot_aggregation_srq5.py \
+   experiments/footbot_aggregation_srq5.argos
+# src/zoo/* are repo source files — present on both machines, not shared
+```
+
+**Step 2 — Copy files to staging**
+```bash
+mkdir -p ~/srq5_share/scripts \
+          ~/srq5_share/experiments \
+          ~/srq5_share/results
+
+cp scripts/ray_footbot_aggregation_srq5.py    ~/srq5_share/scripts/
+cp experiments/footbot_aggregation_srq5.argos ~/srq5_share/experiments/
+cp -r results/aggregation_srq5_<TIMESTAMP>/   ~/srq5_share/results/reference/
+```
+
+**Step 3 — Write README** (use mandatory template below)
+```bash
+nano ~/srq5_share/README.md
+```
+
+README mandatory template (all fields required; do not deviate between trials):
+```
+Experiment: footbot_aggregation_srq5
+Run command: PYTHONPATH=src python scripts/ray_footbot_aggregation_srq5.py
+Output dir: results/aggregation_srq5_<timestamp>/
+Seeds: random_seed=<X> (argos), see experiments/footbot_aggregation_srq5.argos
+Reference result: Final episode reward mean = <value> (mean of last 50 episodes)
+Dependencies: pip install -r requirements.txt
+Python: <version>  OS: <version>
+Compare: export TensorBoard scalar to CSV; compute mean of last 50 reward values; must be within ±5% of reference result above
+```
+
+**Step 4 — List dependencies** (use pre-defined grep pattern; do not adjust per trial)
+```bash
+pip freeze | grep -E "^ray==|^pettingzoo==|^pyzmq==|^numpy==|^torch==|^tensorboard==|^gymnasium==" \
+  > ~/srq5_share/requirements.txt
+```
+
+**Step 5 — Document seeds**
+```bash
+grep "random_seed" experiments/footbot_aggregation_srq5.argos
+grep -n "seed\|SEED" scripts/ray_footbot_aggregation_srq5.py
+# Copy values into README seeds section
+```
+
+**Step 6 — Document environment**
+```bash
+python --version
+pip show ray torch numpy pettingzoo pyzmq | grep -E "^Name|^Version"
+# Copy into README environment section
+# (ARGOS_PLUGIN_PATH, ZMQ port — base infrastructure, assumed identical on both machines)
+```
+
+**Step 7 — Package**
+```bash
+cd ~ && zip -r srq5_bundle.zip srq5_share/
+```
+
+**Step 8 — Transfer**
+```bash
+cp ~/srq5_bundle.zip ~/srq5_machine_b/srq5_bundle.zip
+```
+
+#### Receiving Phase — 5 steps
+
+**Step 1 — Unpack**
+```bash
+cd ~/srq5_machine_b && unzip srq5_bundle.zip -d srq5_received/
+```
+
+**Step 2 — Read README**
+```bash
+cat ~/srq5_machine_b/srq5_received/README.md
+```
+
+**Step 3 — Install experiment dependencies**
+```bash
+pip install -r ~/srq5_machine_b/srq5_received/requirements.txt
+```
+
+**Step 4 — Run experiment**
+```bash
+cd ~/srq5_machine_b/srq5_received
+PYTHONPATH=src python scripts/ray_footbot_aggregation_srq5.py
+# Note the new output dir, e.g. results/aggregation_srq5_<NEW_TIMESTAMP>/
+```
+
+**Step 5 — Compare results (manual)**
+```bash
+tensorboard --logdir results/reference/tensorboard --port 6006 &
+tensorboard --logdir results/aggregation_srq5_<NEW_TIMESTAMP>/tensorboard --port 6007 &
+# Open http://localhost:6006 and http://localhost:6007, compare reward/mean curves
+```
 
 ### Condition B: Platform Workflow
 
-**Sharing (Platform):**
+**Machine A — Researcher A:** Sharing Phase - 1 step
 ```bash
-# Step 1: Export
-platform export exp_123 --output bundle.zip
+# Step 0 (pre-trial, NOT counted in Steps-to-Share): Run experiment (produces reference run)
+platform run srq5_eval
+
+# Step 1: Export reference run
+platform export srq5_eval_<timestamp> --output /transfer/srq5_eval_<timestamp>.zip
 ```
 
 **Transfer:**
 ```bash
-# Step 2: Copy bundle to Machine B
-cp bundle.zip /path/to/machine_b/
+# Step 2: Bundle available on Machine B via shared volume (no manual action)
+# Machine A mounts ~/transfer read-write; Machine B mounts ~/transfer read-only
 ```
 
-**Receiving (Platform):**
+**Machine B — Researcher B:** Receiving Phase - 3 steps
 ```bash
-# Step 3: Import
-platform import bundle.zip
+# Step 3: Import bundle
+platform import /transfer/srq5_eval_<timestamp>.zip
 
-# Step 4: Reproduce
-platform run exp_123
+# Step 4: Run experiment from imported config
+platform run srq5_eval
 
-# Step 5: Verify
-platform compare exp_123 results/reference/
+# Step 5: Verify reproduction
+platform compare <new_result_dir> srq5_eval_<timestamp>
 ```
 
-**Total platform steps: 5**
+**Total platform steps: 5 active (+ 1 Step 0 pre-trial, not counted)**
+
+**Steps-to-Share (M5.1): 1** (step 1 only, from "I want to share" to "bundle ready")
+
+### Docker Transfer Setup
+
+Both containers run on the same host. A shared host directory acts as the transfer point:
+
+```bash
+mkdir -p ~/transfer
+
+# Machine A (Researcher A) — read-write access
+docker run -v ~/transfer:/transfer -v $(pwd):/workspace ... platform_image
+
+# Machine B (Researcher B) — read-only simulates "received bundle"
+docker run -v ~/transfer:/transfer:ro -v $(pwd):/workspace ... platform_image
+```
+
+Transfer time is not measured: Time-to-Share stops when bundle is ready (`/transfer/` written), Time-to-First-Run starts when Researcher B begins `platform import`.
 
 ### Researcher B Simulation Setup
 
@@ -234,7 +366,6 @@ Compare Machine A and Machine B environments:
 
 | Trial   | Condition   | Error Type   | Error Description   | Resolution   |
 | ------- | ----------- | ------------ | ------------------- | ------------ |
-| ------- | ----------- | ------------ | ------------------- | ------------ |
 
 ---
 
@@ -244,7 +375,7 @@ Compare Machine A and Machine B environments:
 
 | Metric                     | Manual (Mean ± SD)  | Platform (Mean ± SD)  | Reduction (%)   | Target      |
 | -------------------------- | ------------------- | --------------------- | --------------- | ----------- |
-| M5.1: Steps-to-Share       | 8 (fixed)           | ~2                    |                 | Significant |
+| M5.1: Steps-to-Share       | 8 (fixed)           | 1 (step 1 only)       |                 | Significant |
 | M5.2: Time-to-Share        |                     |                       |                 | Significant |
 | M5.3: Time-to-First-Run    |                     |                       |                 | Significant |
 | M5.4: Time-to-Reproduce    |                     |                       |                 | Significant |
@@ -263,7 +394,7 @@ Compare Machine A and Machine B environments:
 Handoff-Success-Rate = (# successful handoffs) / (total handoffs) × 100%
 ```
 
-A handoff is **successful** if Researcher B can reproduce results that match Researcher A's reference within defined tolerance.
+A handoff is **successful** if Researcher B's final episode reward mean (last 50 episodes) is within ±5% of Researcher A's reference value (see Handoff Success Definition above).
 
 ### Time Reduction Calculation
 
@@ -328,12 +459,13 @@ If Handoff-Success-Rate < 100%, categorize failures:
 
 ## Limitations
 
-| Limitation                                      | Mitigation                                                                               |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Researcher B is simulated                       | Explicitly acknowledge - measures technical enablement, not social/communication aspects |
-| Same hardware for A and B (if using containers) | Document hardware specification                                                          |
-| Transfer time not included                      | Focus on preparation and reproduction time                                               |
-| Limited trial count                             | Report confidence intervals                                                              |
+| Limitation                                      | Mitigation                                                                                                                                                                                                           |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Researcher B is simulated                       | Explicitly acknowledge - measures technical enablement, not social/communication aspects                                                                                                                             |
+| Same hardware for A and B (if using containers) | Document hardware specification                                                                                                                                                                                      |
+| Transfer time not included                      | Focus on preparation and reproduction time                                                                                                                                                                           |
+| Limited trial count                             | Report confidence intervals                                                                                                                                                                                          |
+| Time metrics measured by platform developer     | Times represent a lower bound - a naive researcher would take longer on the platform condition. Direction of comparison is preserved (same evaluator for both conditions); absolute times should not be generalized. |
 
 ### Note on Simulation
 
