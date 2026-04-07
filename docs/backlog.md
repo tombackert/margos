@@ -1,13 +1,13 @@
 # Backlog
 
 # Open
-- Remove/bundle the ray output, it is not pleasing
-- Integrate the tensorboard logging into the cli
-- Remove the 4 or 2 iters overhead in every run 
+
 
 # Done
 - ~~Show real learning behavior over a long run -> convergence on reward curve into positiv.~~
-
+- ~~Integrate the tensorboard logging into the cli~~
+- ~~Remove the 4 or 2 iters overhead in every run~~
+- ~~Remove/bundle the ray output, it is not pleasing~~
 
 
 ## Completed — SRQ2: Efficiency

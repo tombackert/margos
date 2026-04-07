@@ -307,8 +307,14 @@ def run(
         typer.echo(f"Config: {config_path}")
         typer.echo("")
 
-        output_dir = run_experiment(str(config_path))
+        output_dir, tb_process = run_experiment(str(config_path))
         _print_run_summary(output_dir)
+
+        typer.echo("")
+
+        if tb_process is not None:
+            input("TensorBoard still running - press 'Enter' to close.")
+            tb_process.kill()
     except PlatformError as e:
         display_error(e, verbose=_verbose)
         raise typer.Exit(1)

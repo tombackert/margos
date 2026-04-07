@@ -117,10 +117,8 @@ def run_experiment(config_path: str) -> str:
         for cb in callbacks:
             if hasattr(cb, 'close'):
                 cb.close()
-        if tb_process is not None:
-            tb_process.kill()
 
-    return str(output_dir)
+    return str(output_dir), tb_process
 
 
 def create_output_dir(config: Any) -> Path:
