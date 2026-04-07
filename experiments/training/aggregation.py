@@ -45,10 +45,6 @@ def main(
     # Get training iterations
     iterations = config.get("training", {}).get("iterations", 10)
 
-    # Start progress bar
-    if progress:
-        progress.start(iterations + 2, "Initializing")  # +2 for init and checkpoint steps
-
     # Environment creator
     def env_creator(cfg: dict) -> ParallelPettingZooEnv:
         env = ArgosEnv(
@@ -80,12 +76,10 @@ def main(
     algo_config.train_batch_size = 2000     # ~20 complete episodes per update
     algo_config.sgd_minibatch_size = 500    # 25% of train_batch_size (standard PPO)
     algo_config.num_sgd_iter = 10           # standard PPO default
-
     algo = algo_config.build()
 
-    # Update progress after initialization
     if progress:
-        progress.update(1, description="Training")
+        progress.start(iterations, "Training")
 
     # Training loop
     last_reward = 0.0
@@ -106,18 +100,11 @@ def main(
 
         # Update progress
         if progress:
-            progress.update(i + 2, reward=last_reward)  # +2 because init was step 1
+            progress.update(i + 1, reward=last_reward)
 
     # Save checkpoint
-    if progress:
-        progress.update(iterations + 1, description="Saving checkpoint", reward=last_reward)
-
     checkpoint_dir = Path(output_dir) / "checkpoints" / "final"
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     algo.save(str(checkpoint_dir))
 
     algo.stop()
-
-    # Mark complete
-    if progress:
-        progress.update(iterations + 2, description="Complete", reward=last_reward)
