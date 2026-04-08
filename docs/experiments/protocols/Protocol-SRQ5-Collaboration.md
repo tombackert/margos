@@ -29,12 +29,11 @@
 - [ ] Completed experiment in results directory
 
 **Machine B (Simulated Researcher B):**
-- [ ] Fresh environment (one of the following):
-  - [ ] Docker container with only base dependencies
-  - [ ] Fresh VM
-  - [ ] New user profile / fresh directory
-- [ ] No pre-existing platform data
-- [ ] Network isolation from Machine A's filesystem
+- [ ] Dedicated macOS user account (`researcherb`) prepared once before the study
+- [ ] Fixed base environment available: ARGoS, Python, plugin build capability, `marl-platform`, `ArgosToZoo`, shell config, shared SRQ5 `.venv`
+- [ ] No pre-existing SRQ5 experiment artifacts available at trial start
+- [ ] Transfer path restricted to `/Users/Shared/srq5-transfer`
+- [ ] No direct use of Machine A working directories or results
 
 ### Pre-Execution Checklist
 - [ ] Baseline workflow steps documented (8 steps)
@@ -81,12 +80,12 @@ The threshold (±5%) is committed before trial 1 and must not be changed post-ho
 
 ### Controlled Variables
 
-| Variable                   | How Controlled                        |
-| -------------------------- | ------------------------------------- |
-| Experiment being shared    | Same experiment for all trials        |
-| Transfer mechanism         | Consistent (e.g., file copy)          |
-| Machine B specification    | Same container image / VM config      |
-| Pre-installed dependencies | None on Machine B (fresh environment) |
+| Variable                          | How Controlled                                                                         |
+| --------------------------------- | -------------------------------------------------------------------------------------- |
+| Experiment being shared           | Same experiment for all trials                                                         |
+| Transfer mechanism                | Consistent (e.g., file copy)                                                           |
+| Machine B specification           | Same prepared `researcherb` account and fixed base environment                         |
+| Pre-installed base infrastructure | Fixed and identical across trials; experiment-specific artifacts absent at trial start |
 
 ---
 
@@ -109,6 +108,8 @@ The threshold (±5%) is committed before trial 1 and must not be changed post-ho
 | Experiment-specific pinned deps           | **No**   | Manual: B installs from A's `requirements.txt`; Platform: handled automatically |
 
 > **Rationale:** Platform installation is infrastructure cost amortized across all experiments. Both conditions start from the same state; measured friction is purely the experiment handoff itself.
+
+Machine B is simulated by a dedicated prepared macOS account that remains constant across the study. The account's base software environment is installed once and treated as fixed infrastructure, not part of the measured handoff effort. Before each trial, all experiment-specific state from prior trials is removed so that only the prepared base environment persists.
 
 #### Step 0 — Reference run on Machine A (per trial)
 
@@ -185,29 +186,32 @@ cd ~ && zip -r srq5_bundle.zip srq5_share/
 
 **Step 8 — Transfer**
 ```bash
-cp ~/srq5_bundle.zip ~/srq5_machine_b/srq5_bundle.zip
+cp ~/srq5_bundle.zip /Users/Shared/srq5-transfer/srq5_bundle.zip
 ```
 
 #### Receiving Phase — 5 steps
 
 **Step 1 — Unpack**
 ```bash
-cd ~/srq5_machine_b && unzip srq5_bundle.zip -d srq5_received/
+mkdir -p ~/srq5_trials/manual_received
+cd ~/srq5_trials/manual_received && unzip /Users/Shared/srq5-transfer/srq5_bundle.zip -d srq5_received/
 ```
 
 **Step 2 — Read README**
 ```bash
-cat ~/srq5_machine_b/srq5_received/README.md
+cat ~/srq5_trials/manual_received/srq5_received/README.md
 ```
 
-**Step 3 — Install experiment dependencies**
+**Step 3 — Verify/install experiment dependencies against the prepared shared venv**
 ```bash
-pip install -r ~/srq5_machine_b/srq5_received/requirements.txt
+pip install -r ~/srq5_trials/manual_received/srq5_received/requirements.txt
 ```
+
+On the prepared Machine B account this command is expected to validate or reuse the fixed shared SRQ5 virtualenv, not provision a brand-new Python environment.
 
 **Step 4 — Run experiment**
 ```bash
-cd ~/srq5_machine_b/srq5_received
+cd ~/srq5_trials/manual_received/srq5_received
 PYTHONPATH=src python scripts/ray_footbot_aggregation_srq5.py
 # Note the new output dir, e.g. results/aggregation_srq5_<NEW_TIMESTAMP>/
 ```
@@ -227,19 +231,19 @@ tensorboard --logdir results/aggregation_srq5_<NEW_TIMESTAMP>/tensorboard --port
 platform run srq5_eval
 
 # Step 1: Export reference run
-platform export srq5_eval_<timestamp> --output /transfer/srq5_eval_<timestamp>.zip
+platform export srq5_eval_<timestamp> --output /Users/Shared/srq5-transfer/srq5_eval_<timestamp>.zip
 ```
 
 **Transfer:**
 ```bash
-# Step 2: Bundle available on Machine B via shared volume (no manual action)
-# Machine A mounts ~/transfer read-write; Machine B mounts ~/transfer read-only
+# Step 2: Bundle available to Machine B in the shared host transfer directory (no manual action)
+# Machine A writes to /Users/Shared/srq5-transfer and Machine B reads only the received artifact from there
 ```
 
 **Machine B — Researcher B:** Receiving Phase - 3 steps
 ```bash
 # Step 3: Import bundle
-platform import /transfer/srq5_eval_<timestamp>.zip
+platform import /Users/Shared/srq5-transfer/srq5_eval_<timestamp>.zip
 
 # Step 4: Run experiment from imported config
 platform run srq5_eval
@@ -252,65 +256,81 @@ platform compare <new_result_dir> srq5_eval_<timestamp>
 
 **Steps-to-Share (M5.1): 1** (step 1 only, from "I want to share" to "bundle ready")
 
-### Docker Transfer Setup
+### Shared Transfer Setup
 
-Both containers run on the same host. A shared host directory acts as the transfer point:
+Machine A and Machine B are separate macOS user accounts on the same host. A shared host directory acts as the transfer point:
 
 ```bash
-mkdir -p ~/transfer
+sudo mkdir -p /Users/Shared/srq5-transfer
+sudo chmod 1777 /Users/Shared/srq5-transfer
 
-# Machine A (Researcher A) — read-write access
-docker run -v ~/transfer:/transfer -v $(pwd):/workspace ... platform_image
+# Machine A (Researcher A) writes transfer artifacts here
+cp <artifact> /Users/Shared/srq5-transfer/
 
-# Machine B (Researcher B) — read-only simulates "received bundle"
-docker run -v ~/transfer:/transfer:ro -v $(pwd):/workspace ... platform_image
+# Machine B (Researcher B) reads/imports artifacts from here
+ls /Users/Shared/srq5-transfer/
 ```
 
-Transfer time is not measured: Time-to-Share stops when bundle is ready (`/transfer/` written), Time-to-First-Run starts when Researcher B begins `platform import`.
+Transfer time is not measured: Time-to-Share stops when the artifact is written to `/Users/Shared/srq5-transfer`, Time-to-First-Run starts when Researcher B begins unpack/import.
 
 ### Researcher B Simulation Setup
 
-Create isolated environment before each trial:
+Prepare the dedicated Machine B account once before the study:
 
 ```bash
-# Option 1: Docker
-docker run -it --rm -v /path/to/bundles:/bundles base_image:latest
+# One-time setup (already validated before timed trials)
+cd ~/Repos/marl-platform
+./scripts/bootstrap_researcherb.sh
 
-# Option 2: Fresh directory
-mkdir -p ~/research_b_trial_N
-cd ~/research_b_trial_N
-
-# Option 3: VM snapshot
-# Restore VM to clean snapshot before each trial
+# One-time dry run validation
+./scripts/srq5_dry_run_researcherb.sh
 ```
+
+Stable base state that remains fixed across trials:
+- macOS user account `researcherb`
+- Host-native ARGoS, Python, and plugin build capability
+- `~/Repos/marl-platform` checkout
+- `~/Repos/ArgosToZoo` checkout
+- `~/.venvs/srq5` shared virtualenv
+- Shell configuration and aliases
+
+Per-trial reset requirement:
+- Remove prior received bundles from `/Users/Shared/srq5-transfer`
+- Remove prior manual handoff directories under `~/srq5_trials/`
+- Remove prior imported experiments under `~/Repos/marl-platform/experiments/imported/`
+- Remove prior trial result directories relevant to the next run
+- Verify no previous trial README, requirements, bundle, imported config, or result artifact remains available to the operator
+
+If contamination is suspected, document the issue in the trial log. Re-clean the account state and rerun the trial; if cleanup is insufficient, re-run the one-time bootstrap as an exception path.
 
 ### Trial Protocol
 
 For each trial:
 
-1. **Prepare fresh Machine B environment**
+1. **Reset Machine B trial state** (remove prior received bundles, imported configs, results, and transfer artifacts; verify no prior trial experiment data remains accessible)
 2. **Start screen recording**
+3. **Confirm cleanup complete before any timer starts**
 
 **A's Sharing Phase:**
-3. **State trial ID and condition**
-4. **Start timer** (Time-to-Share)
-5. **Perform sharing workflow** (Baseline or Platform)
-6. **Count steps**
-7. **Stop timer** when bundle ready
+4. **State trial ID and condition**
+5. **Start timer** (Time-to-Share)
+6. **Perform sharing workflow** (Baseline or Platform)
+7. **Count steps**
+8. **Stop timer** when bundle ready
 
 **Transfer:**
-8. **Transfer bundle to Machine B**
+9. **Transfer bundle to Machine B**
 
 **B's Receiving Phase:**
-9. **Start timer** (Time-to-First-Run)
-10. **Perform import/setup**
-11. **Mark when first run succeeds**
-12. **Continue to verification**
-13. **Stop timer** when results verified (Time-to-Reproduce)
-14. **Record success/failure**
+10. **Start timer** (Time-to-First-Run)
+11. **Perform import/setup**
+12. **Mark when first run succeeds**
+13. **Continue to verification**
+14. **Stop timer** when results verified (Time-to-Reproduce)
+15. **Record success/failure**
 
-15. **Stop screen recording**
-16. **Record all data**
+16. **Stop screen recording**
+17. **Record all data**
 
 ---
 
@@ -448,28 +468,29 @@ If Handoff-Success-Rate < 100%, categorize failures:
 
 ### Simulation Environment Documentation
 
-| Field             | Value                         |
-| ----------------- | ----------------------------- |
-| Simulation method | Docker / VM / Fresh directory |
-| Base image/config |                               |
-| Resource limits   |                               |
-| Network isolation | Yes/No                        |
+| Field             | Value                                                                            |
+| ----------------- | -------------------------------------------------------------------------------- |
+| Simulation method | Dedicated macOS account                                                          |
+| Base environment  | `researcherb` account with fixed repos and `~/.venvs/srq5`                       |
+| Transfer path     | `/Users/Shared/srq5-transfer`                                                    |
+| Network isolation | No direct access to Machine A working directories; transfer-only artifact access |
 
 ---
 
 ## Limitations
 
-| Limitation                                      | Mitigation                                                                                                                                                                                                           |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Researcher B is simulated                       | Explicitly acknowledge - measures technical enablement, not social/communication aspects                                                                                                                             |
-| Same hardware for A and B (if using containers) | Document hardware specification                                                                                                                                                                                      |
-| Transfer time not included                      | Focus on preparation and reproduction time                                                                                                                                                                           |
-| Limited trial count                             | Report confidence intervals                                                                                                                                                                                          |
-| Time metrics measured by platform developer     | Times represent a lower bound - a naive researcher would take longer on the platform condition. Direction of comparison is preserved (same evaluator for both conditions); absolute times should not be generalized. |
+| Limitation                                              | Mitigation                                                                                                                                                                                                           |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Researcher B is simulated                               | Explicitly acknowledge - measures technical enablement, not social/communication aspects                                                                                                                             |
+| Same hardware for A and B                               | Document hardware specification                                                                                                                                                                                      |
+| Prepared collaborator environment, not cold-start setup | State explicitly that base infrastructure is amortized and outside SRQ5 timing scope                                                                                                                                 |
+| Transfer time not included                              | Focus on preparation and reproduction time                                                                                                                                                                           |
+| Limited trial count                                     | Report confidence intervals                                                                                                                                                                                          |
+| Time metrics measured by platform developer             | Times represent a lower bound - a naive researcher would take longer on the platform condition. Direction of comparison is preserved (same evaluator for both conditions); absolute times should not be generalized. |
 
 ### Note on Simulation
 
-Researcher B is simulated using isolated environments (containers/VMs/fresh directories) rather than actual external researchers. This measures **technical collaboration enablement** but not social/communication aspects of collaboration.
+Researcher B is simulated using a dedicated local macOS account with an isolated home directory, fixed repo copies, a shared SRQ5 virtualenv, and transfer-only artifact access via `/Users/Shared/srq5-transfer`. This measures **technical collaboration enablement** on a prepared collaborator workstation, but not social/communication aspects of collaboration or first-time machine provisioning effort.
 
 ---
 
