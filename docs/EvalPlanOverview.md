@@ -3,6 +3,7 @@
 
 > Decided: 2026-02-25 -> pre-professor-meeting Q&A session (Blocker A)
 > Protocol files (docs/protocols/Protocol-SRQ*.md) are the authoritative source.
+> Clarification: the executed SRQ3 evaluation is a platform self-reproducibility study (reference run + 20 automated reproductions), not a platform-vs-manual baseline comparison.
 ### Decision Table
 
 | Metric                             | Decided N                                    | What it enables                                                                                                                                                | Feasibility                                                                            | Rationale                                                                                                                                                                                           | Open for professor |
