@@ -2,6 +2,10 @@
 
 # Open
 
+- [ ] Post-eval maintenance: restore green `pytest` without changing thesis claims or SRQ closeout artifacts. Current failures are non-blocking for thesis success but should be cleaned up later:
+  - ARGoS integration tests fail during ZMQ port selection (`tests/test_argos_integration.py`)
+  - CLI / orchestrator tests fail because `run_experiment()` now returns `(output_dir, tb_process)` and CLI waits for TensorBoard input in test runs (`tests/test_cli_e2e.py`, `tests/test_orchestrator.py`)
+  - E2E aggregation tests expect missing `experiments/configs/aggregation_test.yaml` (`tests/test_e2e_aggregation.py`)
 
 # Done
 - ~~Show real learning behavior over a long run -> convergence on reward curve into positiv.~~
