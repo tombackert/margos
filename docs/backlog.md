@@ -36,15 +36,16 @@ This is the exact platform version used for all SRQ data collection.
 - [x] Real learning behavior demonstrated: -53.6 → -19.1 reward over 300 iterations (68.7% improvement), still converging
 - [x] Reproducibility confirmed pre-batch: two seed=42 runs are bit-for-bit identical (max diff = 0.0 across 300 iterations)
 
-## Open — SRQ5: Collaboration (Docker environment required, N=20 total)
+## Completed — SRQ5: Collaboration
 
-- [ ] SRQ5: Build Docker image: `docker build -f docs/experiments/docker/Dockerfile.researcher_b .`
-- [ ] SRQ5: Prepare shareable experiment: `platform export <aggregation_v1_ref_id>`
-- [ ] SRQ5: Run 20 interleaved trials (10 manual + 10 platform)
-- [ ] SRQ5: For each platform trial: audit bundle completeness → fill `bundle_audits.csv`
-- [ ] SRQ5: For each trial: document environment comparison → fill `env_comparisons.csv`
-- [ ] SRQ5: Fill `trial_data.csv` (20 rows) with timing/steps/success
-- [ ] SRQ5: Compute Handoff-Success-Rate and time reductions, fill `analysis_summary.md`
+- [x] SRQ5: Prepare shareable experiment: `platform export <aggregation_v1_ref_id>`
+- [x] SRQ5: Run 20 interleaved trials (10 manual + 10 platform)
+- [x] SRQ5: For each platform trial: audit bundle completeness → fill `bundle_audits.csv`
+- [x] SRQ5: For each trial: document environment comparison → fill `env_comparisons.csv`
+- [x] SRQ5: Fill `trial_data.csv` (20 rows) with timing/steps/success
+- [x] SRQ5: Compute Handoff-Success-Rate and time reductions, fill `analysis_summary.md`
+
+**Result:** H5 partially supported. SRQ5 evaluation is complete: Steps-to-Share fell by 87.5%, Time-to-Share by 65.3%, and Time-to-Reproduce by 23.4%, while Handoff-Success-Rate remained 100% in both conditions. Time-to-First-Run increased by 59.7% in the platform condition because import overhead outweighed the direct file-copy path in the prepared-collaborator setup.
 
 ## Completed — SRQ4: Usability
 
@@ -52,7 +53,7 @@ This is the exact platform version used for all SRQ data collection.
 - [x] SRQ4 (Part 2): Fill `klm_analysis.md` for 7 tasks (baseline + platform); compute KLM-Reduction
 - [x] SRQ4: Fill `analysis_summary.md` with M4.4–M4.6 results
 
-**Result:** H4 supported — 80.0% heuristic compliance (28/35), 50.5% KLM reduction, both ≥ thresholds. Scope: analytical methods only (heuristic audit + KLM); empirical task trials excluded due to self-as-evaluator invalidity.
+**Result:** H4 supported — 85.7% heuristic compliance (30/35), 56.9% KLM reduction, both ≥ thresholds. Scope: analytical methods only (heuristic audit + KLM); empirical task trials excluded due to self-as-evaluator invalidity.
 
 ## Completed — Experiment Setup (Phase 1)
 
@@ -101,4 +102,3 @@ This is the exact platform version used for all SRQ data collection.
 - [x] Report comparison with an imported experiment is not simple as of now (you first have to copy results and stuff) -> Report now automatically checks imported directory
 - [x] Progress bar is still mock for report, import, export -> Replaced with real progress bars tracking actual operations
 - [x] Tensorboard logging (already integrated through ray i think, but we currently suppress it) because on long runs you need to be able to track training progress on all parameters -> Added `--tensorboard` flag to run command and `tensorboard: true` config option
-
