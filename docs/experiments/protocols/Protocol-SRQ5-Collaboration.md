@@ -485,76 +485,76 @@ Use one row per documented protocol step. For manual trials, `Time-to-First-Run`
 | 5     | B       | Receiving | 4    | Copy received files into checkout                      | 0:34  | 0:34 |                | First-Run, Reproduce  |       |
 | 5     | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           | 0:38  | 1:09 |                | First-Run, Reproduce  |       |
 | 5     | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             | 1:09  | 1:45 |                | Reproduce             |       |
-| 6     | A       | Sharing   | 1    | Identify files (`ls ...`)                              |       |      |                | Share                 |       |
-| 6     | A       | Sharing   | 2    | Stage share files (`mkdir -p`, `cp`, `cp -r`)          |       |      |                | Share                 |       |
-| 6     | A       | Sharing   | 3    | Write `README.md`                                      |       |      |                | Share                 |       |
-| 6     | A       | Sharing   | 4    | Capture `requirements.txt`                             |       |      |                | Share                 |       |
-| 6     | A       | Sharing   | 5    | Document seeds                                         |       |      |                | Share                 |       |
-| 6     | A       | Sharing   | 6    | Document environment                                   |       |      |                | Share                 |       |
-| 6     | A       | Sharing   | 7    | Package bundle (`zip -r`)                              |       |      |                | Share                 |       |
-| 6     | A       | Sharing   | 8    | Transfer bundle to `/Users/Shared/srq5-transfer`       |       |      |                | Share                 |       |
-| 6     | B       | Receiving | 1    | Unpack bundle (`unzip`)                                |       |      |                | First-Run, Reproduce  |       |
-| 6     | B       | Receiving | 2    | Read `README.md`                                       |       |      |                | First-Run, Reproduce  |       |
-| 6     | B       | Receiving | 3    | Install/verify dependencies (`pip install -r ...`)     |       |      |                | First-Run, Reproduce  |       |
-| 6     | B       | Receiving | 4    | Copy received files into checkout                      |       |      |                | First-Run, Reproduce  |       |
-| 6     | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           |       |      |                | First-Run, Reproduce  |       |
-| 6     | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             |       |      |                | Reproduce             |       |
-| 7     | A       | Sharing   | 1    | Identify files (`ls ...`)                              |       |      |                | Share                 |       |
-| 7     | A       | Sharing   | 2    | Stage share files (`mkdir -p`, `cp`, `cp -r`)          |       |      |                | Share                 |       |
-| 7     | A       | Sharing   | 3    | Write `README.md`                                      |       |      |                | Share                 |       |
-| 7     | A       | Sharing   | 4    | Capture `requirements.txt`                             |       |      |                | Share                 |       |
-| 7     | A       | Sharing   | 5    | Document seeds                                         |       |      |                | Share                 |       |
-| 7     | A       | Sharing   | 6    | Document environment                                   |       |      |                | Share                 |       |
-| 7     | A       | Sharing   | 7    | Package bundle (`zip -r`)                              |       |      |                | Share                 |       |
-| 7     | A       | Sharing   | 8    | Transfer bundle to `/Users/Shared/srq5-transfer`       |       |      |                | Share                 |       |
-| 7     | B       | Receiving | 1    | Unpack bundle (`unzip`)                                |       |      |                | First-Run, Reproduce  |       |
-| 7     | B       | Receiving | 2    | Read `README.md`                                       |       |      |                | First-Run, Reproduce  |       |
-| 7     | B       | Receiving | 3    | Install/verify dependencies (`pip install -r ...`)     |       |      |                | First-Run, Reproduce  |       |
-| 7     | B       | Receiving | 4    | Copy received files into checkout                      |       |      |                | First-Run, Reproduce  |       |
-| 7     | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           |       |      |                | First-Run, Reproduce  |       |
-| 7     | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             |       |      |                | Reproduce             |       |
-| 8     | A       | Sharing   | 1    | Identify files (`ls ...`)                              |       |      |                | Share                 |       |
-| 8     | A       | Sharing   | 2    | Stage share files (`mkdir -p`, `cp`, `cp -r`)          |       |      |                | Share                 |       |
-| 8     | A       | Sharing   | 3    | Write `README.md`                                      |       |      |                | Share                 |       |
-| 8     | A       | Sharing   | 4    | Capture `requirements.txt`                             |       |      |                | Share                 |       |
-| 8     | A       | Sharing   | 5    | Document seeds                                         |       |      |                | Share                 |       |
-| 8     | A       | Sharing   | 6    | Document environment                                   |       |      |                | Share                 |       |
-| 8     | A       | Sharing   | 7    | Package bundle (`zip -r`)                              |       |      |                | Share                 |       |
-| 8     | A       | Sharing   | 8    | Transfer bundle to `/Users/Shared/srq5-transfer`       |       |      |                | Share                 |       |
-| 8     | B       | Receiving | 1    | Unpack bundle (`unzip`)                                |       |      |                | First-Run, Reproduce  |       |
-| 8     | B       | Receiving | 2    | Read `README.md`                                       |       |      |                | First-Run, Reproduce  |       |
-| 8     | B       | Receiving | 3    | Install/verify dependencies (`pip install -r ...`)     |       |      |                | First-Run, Reproduce  |       |
-| 8     | B       | Receiving | 4    | Copy received files into checkout                      |       |      |                | First-Run, Reproduce  |       |
-| 8     | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           |       |      |                | First-Run, Reproduce  |       |
-| 8     | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             |       |      |                | Reproduce             |       |
-| 9     | A       | Sharing   | 1    | Identify files (`ls ...`)                              |       |      |                | Share                 |       |
-| 9     | A       | Sharing   | 2    | Stage share files (`mkdir -p`, `cp`, `cp -r`)          |       |      |                | Share                 |       |
-| 9     | A       | Sharing   | 3    | Write `README.md`                                      |       |      |                | Share                 |       |
-| 9     | A       | Sharing   | 4    | Capture `requirements.txt`                             |       |      |                | Share                 |       |
-| 9     | A       | Sharing   | 5    | Document seeds                                         |       |      |                | Share                 |       |
-| 9     | A       | Sharing   | 6    | Document environment                                   |       |      |                | Share                 |       |
-| 9     | A       | Sharing   | 7    | Package bundle (`zip -r`)                              |       |      |                | Share                 |       |
-| 9     | A       | Sharing   | 8    | Transfer bundle to `/Users/Shared/srq5-transfer`       |       |      |                | Share                 |       |
-| 9     | B       | Receiving | 1    | Unpack bundle (`unzip`)                                |       |      |                | First-Run, Reproduce  |       |
-| 9     | B       | Receiving | 2    | Read `README.md`                                       |       |      |                | First-Run, Reproduce  |       |
-| 9     | B       | Receiving | 3    | Install/verify dependencies (`pip install -r ...`)     |       |      |                | First-Run, Reproduce  |       |
-| 9     | B       | Receiving | 4    | Copy received files into checkout                      |       |      |                | First-Run, Reproduce  |       |
-| 9     | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           |       |      |                | First-Run, Reproduce  |       |
-| 9     | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             |       |      |                | Reproduce             |       |
-| 10    | A       | Sharing   | 1    | Identify files (`ls ...`)                              |       |      |                | Share                 |       |
-| 10    | A       | Sharing   | 2    | Stage share files (`mkdir -p`, `cp`, `cp -r`)          |       |      |                | Share                 |       |
-| 10    | A       | Sharing   | 3    | Write `README.md`                                      |       |      |                | Share                 |       |
-| 10    | A       | Sharing   | 4    | Capture `requirements.txt`                             |       |      |                | Share                 |       |
-| 10    | A       | Sharing   | 5    | Document seeds                                         |       |      |                | Share                 |       |
-| 10    | A       | Sharing   | 6    | Document environment                                   |       |      |                | Share                 |       |
-| 10    | A       | Sharing   | 7    | Package bundle (`zip -r`)                              |       |      |                | Share                 |       |
-| 10    | A       | Sharing   | 8    | Transfer bundle to `/Users/Shared/srq5-transfer`       |       |      |                | Share                 |       |
-| 10    | B       | Receiving | 1    | Unpack bundle (`unzip`)                                |       |      |                | First-Run, Reproduce  |       |
-| 10    | B       | Receiving | 2    | Read `README.md`                                       |       |      |                | First-Run, Reproduce  |       |
-| 10    | B       | Receiving | 3    | Install/verify dependencies (`pip install -r ...`)     |       |      |                | First-Run, Reproduce  |       |
-| 10    | B       | Receiving | 4    | Copy received files into checkout                      |       |      |                | First-Run, Reproduce  |       |
-| 10    | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           |       |      |                | First-Run, Reproduce  |       |
-| 10    | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             |       |      |                | Reproduce             |       |
+| 6     | A       | Sharing   | 1    | Identify files (`ls ...`)                              | 0:47  | 0:48 |                | Share                 |       |
+| 6     | A       | Sharing   | 2    | Stage share files (`mkdir -p`, `cp`, `cp -r`)          | 0:57  | 1:22 |                | Share                 |       |
+| 6     | A       | Sharing   | 3    | Write `README.md`                                      | 1:29  | 1:49 |                | Share                 |       |
+| 6     | A       | Sharing   | 4    | Capture `requirements.txt`                             | 2:03  | 2:04 |                | Share                 |       |
+| 6     | A       | Sharing   | 5    | Document seeds                                         | 2:12  | 2:13 |                | Share                 |       |
+| 6     | A       | Sharing   | 6    | Document environment                                   | 2:16  | 3:21 |                | Share                 |       |
+| 6     | A       | Sharing   | 7    | Package bundle (`zip -r`)                              | 3:27  | 3:32 |                | Share                 |       |
+| 6     | A       | Sharing   | 8    | Transfer bundle to `/Users/Shared/srq5-transfer`       | 3:40  | 3:45 |                | Share                 |       |
+| 6     | B       | Receiving | 1    | Unpack bundle (`unzip`)                                | 0:07  | 0:08 |                | First-Run, Reproduce  |       |
+| 6     | B       | Receiving | 2    | Read `README.md`                                       | 0:12  | 0:13 |                | First-Run, Reproduce  |       |
+| 6     | B       | Receiving | 3    | Install/verify dependencies (`pip install -r ...`)     | 0:22  | 0:25 |                | First-Run, Reproduce  |       |
+| 6     | B       | Receiving | 4    | Copy received files into checkout                      | 0:36  | 0:38 |                | First-Run, Reproduce  |       |
+| 6     | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           | 0:47  | 1:13 |                | First-Run, Reproduce  |       |
+| 6     | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             | 1:17  | 3:26 |                | Reproduce             |       |
+| 7     | A       | Sharing   | 1    | Identify files (`ls ...`)                              | 0:35  | 0:40 |                | Share                 |       |
+| 7     | A       | Sharing   | 2    | Stage share files (`mkdir -p`, `cp`, `cp -r`)          | 0:48  | 1:09 |                | Share                 |       |
+| 7     | A       | Sharing   | 3    | Write `README.md`                                      | 1:27  | 1:28 |                | Share                 |       |
+| 7     | A       | Sharing   | 4    | Capture `requirements.txt`                             | 1:44  | 1:48 |                | Share                 |       |
+| 7     | A       | Sharing   | 5    | Document seeds                                         | 2:06  | 2:07 |                | Share                 |       |
+| 7     | A       | Sharing   | 6    | Document environment                                   | 2:07  | 3:22 |                | Share                 |       |
+| 7     | A       | Sharing   | 7    | Package bundle (`zip -r`)                              | 3:26  | 3:30 |                | Share                 |       |
+| 7     | A       | Sharing   | 8    | Transfer bundle to `/Users/Shared/srq5-transfer`       | 3:31  | 3:32 |                | Share                 |       |
+| 7     | B       | Receiving | 1    | Unpack bundle (`unzip`)                                | 0:00  | 0:32 |                | First-Run, Reproduce  |       |
+| 7     | B       | Receiving | 2    | Read `README.md`                                       | 0:35  | 0:39 |                | First-Run, Reproduce  |       |
+| 7     | B       | Receiving | 3    | Install/verify dependencies (`pip install -r ...`)     | 0:41  | 0:42 |                | First-Run, Reproduce  |       |
+| 7     | B       | Receiving | 4    | Copy received files into checkout                      | 0:45  | 0:47 |                | First-Run, Reproduce  |       |
+| 7     | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           | 1:18  | 1:49 |                | First-Run, Reproduce  |       |
+| 7     | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             | 1:49  | 3:04 |                | Reproduce             |       |
+| 8     | A       | Sharing   | 1    | Identify files (`ls ...`)                              | 0:50  | 0:51 |                | Share                 |       |
+| 8     | A       | Sharing   | 2    | Stage share files (`mkdir -p`, `cp`, `cp -r`)          | 0:54  | 1:09 |                | Share                 |       |
+| 8     | A       | Sharing   | 3    | Write `README.md`                                      | 1:13  | 1:16 |                | Share                 |       |
+| 8     | A       | Sharing   | 4    | Capture `requirements.txt`                             | 1:28  | 1:31 |                | Share                 |       |
+| 8     | A       | Sharing   | 5    | Document seeds                                         | 1:38  | 1:40 |                | Share                 |       |
+| 8     | A       | Sharing   | 6    | Document environment                                   | 1:40  | 2:43 |                | Share                 |       |
+| 8     | A       | Sharing   | 7    | Package bundle (`zip -r`)                              | 2:49  | 2:51 |                | Share                 |       |
+| 8     | A       | Sharing   | 8    | Transfer bundle to `/Users/Shared/srq5-transfer`       | 2:57  | 3:47 |                | Share                 |       |
+| 8     | B       | Receiving | 1    | Unpack bundle (`unzip`)                                | 0:15  | 0:39 |                | First-Run, Reproduce  |       |
+| 8     | B       | Receiving | 2    | Read `README.md`                                       | 0:47  | 0:48 |                | First-Run, Reproduce  |       |
+| 8     | B       | Receiving | 3    | Install/verify dependencies (`pip install -r ...`)     | 0:56  | 0:58 |                | First-Run, Reproduce  |       |
+| 8     | B       | Receiving | 4    | Copy received files into checkout                      | 1:03  | 1:04 |                | First-Run, Reproduce  |       |
+| 8     | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           | 1:12  | 1:43 |                | First-Run, Reproduce  |       |
+| 8     | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             | 1:44  | 2:44 |                | Reproduce             |       |
+| 9     | A       | Sharing   | 1    | Identify files (`ls ...`)                              | 0:33  | 0:34 |                | Share                 |       |
+| 9     | A       | Sharing   | 2    | Stage share files (`mkdir -p`, `cp`, `cp -r`)          | 0:42  | 1:27 |                | Share                 |       |
+| 9     | A       | Sharing   | 3    | Write `README.md`                                      | 1:36  | 1:37 |                | Share                 |       |
+| 9     | A       | Sharing   | 4    | Capture `requirements.txt`                             | 1:44  | 1:47 |                | Share                 |       |
+| 9     | A       | Sharing   | 5    | Document seeds                                         | 1:53  | 1:54 |                | Share                 |       |
+| 9     | A       | Sharing   | 6    | Document environment                                   | 1:54  | 2:41 |                | Share                 |       |
+| 9     | A       | Sharing   | 7    | Package bundle (`zip -r`)                              | 2:47  | 2:48 |                | Share                 |       |
+| 9     | A       | Sharing   | 8    | Transfer bundle to `/Users/Shared/srq5-transfer`       | 2:56  | 3:03 |                | Share                 |       |
+| 9     | B       | Receiving | 1    | Unpack bundle (`unzip`)                                | 0:02  | 0:21 |                | First-Run, Reproduce  |       |
+| 9     | B       | Receiving | 2    | Read `README.md`                                       | 0:28  | 0:31 |                | First-Run, Reproduce  |       |
+| 9     | B       | Receiving | 3    | Install/verify dependencies (`pip install -r ...`)     | 0:33  | 0:34 |                | First-Run, Reproduce  |       |
+| 9     | B       | Receiving | 4    | Copy received files into checkout                      | 0:42  | 0:45 |                | First-Run, Reproduce  |       |
+| 9     | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           | 0:51  | 1:19 |                | First-Run, Reproduce  |       |
+| 9     | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             | 1:19  | 2:07 |                | Reproduce             |       |
+| 10    | A       | Sharing   | 1    | Identify files (`ls ...`)                              | 0:36  | 0:37 |                | Share                 |       |
+| 10    | A       | Sharing   | 2    | Stage share files (`mkdir -p`, `cp`, `cp -r`)          | 0:46  | 0:57 |                | Share                 |       |
+| 10    | A       | Sharing   | 3    | Write `README.md`                                      | 1:05  | 1:06 |                | Share                 |       |
+| 10    | A       | Sharing   | 4    | Capture `requirements.txt`                             | 1:13  | 1:14 |                | Share                 |       |
+| 10    | A       | Sharing   | 5    | Document seeds                                         | 1:21  | 1:22 |                | Share                 |       |
+| 10    | A       | Sharing   | 6    | Document environment                                   | 1:22  | 2:02 |                | Share                 |       |
+| 10    | A       | Sharing   | 7    | Package bundle (`zip -r`)                              | 2:05  | 2:08 |                | Share                 |       |
+| 10    | A       | Sharing   | 8    | Transfer bundle to `/Users/Shared/srq5-transfer`       | 2:10  | 2:17 |                | Share                 |       |
+| 10    | B       | Receiving | 1    | Unpack bundle (`unzip`)                                | 0:00  | 0:15 |                | First-Run, Reproduce  |       |
+| 10    | B       | Receiving | 2    | Read `README.md`                                       | 0:18  | 0:22 |                | First-Run, Reproduce  |       |
+| 10    | B       | Receiving | 3    | Install/verify dependencies (`pip install -r ...`)     | 0:23  | 0:24 |                | First-Run, Reproduce  |       |
+| 10    | B       | Receiving | 4    | Copy received files into checkout                      | 0:29  | 0:31 |                | First-Run, Reproduce  |       |
+| 10    | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           | 0:36  | 1:04 |                | First-Run, Reproduce  |       |
+| 10    | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             | 1:05  | 1:39 |                | Reproduce             |       |
 
 #### Platform Workflow Raw Command Timestamps
 
@@ -587,31 +587,31 @@ Use one row per documented protocol step. For platform trials, exclude Step 0 fr
 | 5     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:24 |                | First-Run, Reproduce  |       |
 | 5     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:24  | 1:24 |                | First-Run, Reproduce  |       |
 | 5     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:25  | 1:32 |                | Reproduce             |       |
-| 6     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           |       |      |                | No                    |       |
-| 6     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              |       |      |                | Share                 |       |
-| 6     | B       | Receiving | 3    | Import bundle (`platform import ...`)              |       |      |                | First-Run, Reproduce  |       |
-| 6     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) |       |      |                | First-Run, Reproduce  |       |
-| 6     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       |       |      |                | Reproduce             |       |
-| 7     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           |       |      |                | No                    |       |
-| 7     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              |       |      |                | Share                 |       |
-| 7     | B       | Receiving | 3    | Import bundle (`platform import ...`)              |       |      |                | First-Run, Reproduce  |       |
-| 7     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) |       |      |                | First-Run, Reproduce  |       |
-| 7     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       |       |      |                | Reproduce             |       |
-| 8     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           |       |      |                | No                    |       |
-| 8     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              |       |      |                | Share                 |       |
-| 8     | B       | Receiving | 3    | Import bundle (`platform import ...`)              |       |      |                | First-Run, Reproduce  |       |
-| 8     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) |       |      |                | First-Run, Reproduce  |       |
-| 8     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       |       |      |                | Reproduce             |       |
-| 9     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           |       |      |                | No                    |       |
-| 9     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              |       |      |                | Share                 |       |
-| 9     | B       | Receiving | 3    | Import bundle (`platform import ...`)              |       |      |                | First-Run, Reproduce  |       |
-| 9     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) |       |      |                | First-Run, Reproduce  |       |
-| 9     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       |       |      |                | Reproduce             |       |
-| 10    | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           |       |      |                | No                    |       |
-| 10    | A       | Sharing   | 1    | Export bundle (`platform export ...`)              |       |      |                | Share                 |       |
-| 10    | B       | Receiving | 3    | Import bundle (`platform import ...`)              |       |      |                | First-Run, Reproduce  |       |
-| 10    | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) |       |      |                | First-Run, Reproduce  |       |
-| 10    | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       |       |      |                | Reproduce             |       |
+| 6     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:14  | 1:21 |                | No                    |       |
+| 6     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:23  | 2:21 |                | Share                 |       |
+| 6     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:08  | 0:47 |                | First-Run, Reproduce  |       |
+| 6     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:47  | 1:52 |                | First-Run, Reproduce  |       |
+| 6     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:52  | 2:01 |                | Reproduce             |       |
+| 7     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:08  | 1:21 |                | No                    |       |
+| 7     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:21  | 2:18 |                | Share                 |       |
+| 7     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:05  | 0:08 |                | First-Run, Reproduce  |       |
+| 7     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:12  | 1:14 |                | First-Run, Reproduce  |       |
+| 7     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:14  | 1:23 |                | Reproduce             |       |
+| 8     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:15  | 1:22 |                | No                    |       |
+| 8     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:23  | 1:55 |                | Share                 |       |
+| 8     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:01  | 0:30 |                | First-Run, Reproduce  |       |
+| 8     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:30  | 1:39 |                | First-Run, Reproduce  |       |
+| 8     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:40  | 1:55 |                | Reproduce             |       |
+| 9     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:17  | 1:26 |                | No                    |       |
+| 9     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:26  | 1:51 |                | Share                 |       |
+| 9     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:03  | 0:23 |                | First-Run, Reproduce  |       |
+| 9     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:23  | 1:19 |                | First-Run, Reproduce  |       |
+| 9     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:22  | 1:27 |                | Reproduce             |       |
+| 10    | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:02  | 0:03 |                | No                    |       |
+| 10    | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:03  | 0:21 |                | Share                 |       |
+| 10    | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:22 |                | First-Run, Reproduce  |       |
+| 10    | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:22  | 1:20 |                | First-Run, Reproduce  |       |
+| 10    | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:22  | 1:31 |                | Reproduce             |       |
 
 ### Bundle Completeness Checklist
 
