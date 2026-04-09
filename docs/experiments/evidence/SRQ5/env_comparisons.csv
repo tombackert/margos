@@ -1,8 +1,11 @@
-Trial,Field,Machine A,Machine B,Match
-,Python version,,,Y/N
-,OS,,,Y/N
-,Platform version,,,Y/N
-,RLlib version,,,Y/N
-,PyTorch version,,,Y/N
-,NumPy version,,,Y/N
-,Config hash,,,Y/N
+Trial,Python,OS,Gymnasium,NumPy,PettingZoo,Pydantic,Ray,PyTorch,Mismatch Count
+1,Match,Match,Match,Mismatch,Mismatch,Match,Match,Mismatch,3
+2,Match,Match,Match,Mismatch,Mismatch,Match,Match,Mismatch,3
+3,Match,Match,Match,Mismatch,Mismatch,Match,Match,Mismatch,3
+4,Match,Match,Match,Mismatch,Mismatch,Match,Match,Mismatch,3
+5,Match,Match,Match,Mismatch,Mismatch,Match,Match,Mismatch,3
+6,Match,Match,Match,Mismatch,Mismatch,Match,Match,Mismatch,3
+7,Match,Match,Match,Mismatch,Mismatch,Match,Match,Mismatch,3
+8,Match,Match,Match,Mismatch,Mismatch,Match,Match,Mismatch,3
+9,Match,Match,Match,Mismatch,Mismatch,Match,Match,Mismatch,3
+10,Match,Match,Match,Mismatch,Mismatch,Match,Match,Mismatch,3

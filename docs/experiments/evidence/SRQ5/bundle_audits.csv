@@ -1,11 +1,11 @@
-Trial,Config (frozen),Seeds,Env Fingerprint,Training Script,ARGoS Scenario,Logs (metrics.jsonl),Manifest
-2,,,,,,,
-4,,,,,,,
-6,,,,,,,
-8,,,,,,,
-10,,,,,,,
-12,,,,,,,
-14,,,,,,,
-16,,,,,,,
-18,,,,,,,
-20,,,,,,,
+Trial,Config (frozen),Seeds,Env Fingerprint,Training Script,ARGoS Scenario,Logs (metrics.jsonl),Manifest,Checkpoints
+1,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+2,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+3,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+4,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+5,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+6,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+7,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+8,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+9,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+10,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
