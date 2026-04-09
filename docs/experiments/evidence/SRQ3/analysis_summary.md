@@ -24,7 +24,7 @@
 | Metric | Formula | Value | Target | Met? |
 |--------|---------|-------|--------|------|
 | Reproduce-Success-Rate (M3.1) | (# Pass) / 20 × 100% | 100% | ≥90% | Yes |
-| Result-Variance (M3.2) | SD(final_rewards) | 0.0000 | Lower than baseline | Yes |
+| Result-Variance (M3.2) | SD(final_rewards) | 0.0000 | Low and stable across repeated runs | Yes |
 
 ## By-Design Metrics
 

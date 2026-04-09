@@ -5,9 +5,9 @@
 | Field                | Value                                                                                                                                                                                                                                                     |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Protocol ID**      | P-SRQ3                                                                                                                                                                                                                                                    |
-| **SRQ Reference**    | SRQ3: To what extent does the platform's centralized configuration and seed management improve self-reproducibility of MARL experiments compared to manual workflows?                                                                                     |
-| **Hypothesis**       | H3: The platform achieves higher Reproduce-Success-Rate (≥90% within ±1% tolerance on final reward and AUC) and lower Result-Variance compared to manual reproducibility workflows, through centralized config management and deterministic seed control. |
-| **Success Criteria** | Reproduce-Success-Rate ≥90%, Result-Variance lower than baseline                                                                                                                                                                                          |
+| **SRQ Reference**    | SRQ3: To what extent does the platform's centralized configuration and seed management enable reliable self-reproducibility of MARL experiments?                                                                                                          |
+| **Hypothesis**       | H3: The platform achieves a Reproduce-Success-Rate of at least 90% within ±1% tolerance on final reward and AUC, with low Result-Variance across repeated platform reproductions, through centralized config management and deterministic seed control.   |
+| **Success Criteria** | Reproduce-Success-Rate ≥90%, low and stable Result-Variance across repeated runs                                                                                                                                                                          |
 | **Sample Size**      | N=20 reproduction attempts (raised from N≥10 in EvalPlanOverview to achieve 5% resolution on success rate, making the ≥90% threshold cleanly testable)                                                                                                    |
 | **Dependencies**     | Platform implementation complete, reference run established                                                                                                                                                                                               |
 
@@ -175,10 +175,10 @@ Pass = (Reward Deviation ≤ 1%) AND (AUC Deviation ≤ 1%)
 
 ### Primary Metrics (M3.1, M3.2)
 
-| Metric                        | Formula             | Target              |
-| ----------------------------- | ------------------- | ------------------- |
-| Reproduce-Success-Rate (M3.1) | (# Pass) / N × 100% | ≥90%                |
-| Result-Variance (M3.2)        | SD(final_rewards)   | Lower than baseline |
+| Metric                        | Formula             | Target                              |
+| ----------------------------- | ------------------- | ----------------------------------- |
+| Reproduce-Success-Rate (M3.1) | (# Pass) / N × 100% | ≥90%                                |
+| Result-Variance (M3.2)        | SD(final_rewards)   | Low and stable across repeated runs |
 
 ### Summary Statistics Template
 
@@ -263,31 +263,6 @@ Training on GPU may introduce non-deterministic behavior due to parallel computa
 - Report variance bounds
 - Document GPU model and CUDA version
 - Consider CPU-only runs for strict determinism test
-
----
-
-## Baseline Comparison (Optional)
-
-If comparing to manual reproducibility workflow:
-
-### Manual Baseline Steps
-
-| Step   | Action                         | Risk                  |
-| ------ | ------------------------------ | --------------------- |
-| 1      | Remember/find config file used | Wrong version         |
-| 2      | Manually set seeds in code     | Forget one RNG        |
-| 3      | Check library versions         | Version mismatch      |
-| 4      | Run experiment                 | Non-determinism       |
-| 5      | Compare results manually       | Subjective comparison |
-
-**Total manual steps: 5**
-
-### Comparison (if performed)
-
-| Metric                 | Manual Baseline   | Platform   | Improvement   |
-| ---------------------- | ----------------- | ---------- | ------------- |
-| Reproduce-Success-Rate |                   |            |               |
-| Result-Variance        |                   |            |               |
 
 ---
 
