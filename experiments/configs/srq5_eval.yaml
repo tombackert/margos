@@ -6,7 +6,7 @@ scenario:
   file: "scenarios/footbot_aggregation.argos"
 
 training:
-  script: "training/aggregation.py"
+  script: "training/srq5.py"
   iterations: 5
 
 output:

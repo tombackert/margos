@@ -49,7 +49,7 @@ This is the exact platform version used for all SRQ data collection.
 - [x] SRQ5: Fill `trial_data.csv` (20 rows) with timing/steps/success
 - [x] SRQ5: Compute Handoff-Success-Rate and time reductions, fill `analysis_summary.md`
 
-**Result:** H5 partially supported. SRQ5 evaluation is complete: Steps-to-Share fell by 87.5%, Time-to-Share by 65.3%, and Time-to-Reproduce by 23.4%, while Handoff-Success-Rate remained 100% in both conditions. Time-to-First-Run increased by 59.7% in the platform condition because import overhead outweighed the direct file-copy path in the prepared-collaborator setup.
+**Result:** H5 partially supported. SRQ5 evaluation is complete: Steps-to-Share fell by 87.5%, Time-to-Share by 65.3%, and Time-to-Reproduce by 45.9%, while Handoff-Success-Rate remained 100% in both conditions. Time-to-First-Run increased by 7.4% in the platform condition because import overhead still outweighed the direct file-copy path in the prepared-collaborator setup.
 
 ## Completed — SRQ4: Usability
 

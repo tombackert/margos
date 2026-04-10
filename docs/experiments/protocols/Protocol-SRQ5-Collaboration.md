@@ -395,16 +395,16 @@ For each trial:
 | 8     | Manual    | 8              | 139                 | 59                      | 119                     | Yes              |
 | 9     | Manual    | 8              | 106                 | 54                      | 102                     | Yes              |
 | 10    | Manual    | 8              | 65                  | 50                      | 84                      | Yes              |
-| 1     | Platform  | 1              | 57                  | 99                      | 109                     | Yes              |
-| 2     | Platform  | 1              | 59                  | 64                      | 72                      | Yes              |
-| 3     | Platform  | 1              | 29                  | 92                      | 109                     | Yes              |
-| 4     | Platform  | 1              | 24                  | 78                      | 86                      | Yes              |
-| 5     | Platform  | 1              | 15                  | 84                      | 91                      | Yes              |
-| 6     | Platform  | 1              | 58                  | 104                     | 113                     | Yes              |
-| 7     | Platform  | 1              | 57                  | 65                      | 74                      | Yes              |
-| 8     | Platform  | 1              | 32                  | 98                      | 113                     | Yes              |
-| 9     | Platform  | 1              | 25                  | 76                      | 81                      | Yes              |
-| 10    | Platform  | 1              | 18                  | 80                      | 89                      | Yes              |
+| 1     | Platform  | 1              | 57                  | 70                      | 80                      | Yes              |
+| 2     | Platform  | 1              | 59                  | 39                      | 47                      | Yes              |
+| 3     | Platform  | 1              | 29                  | 60                      | 77                      | Yes              |
+| 4     | Platform  | 1              | 24                  | 55                      | 63                      | Yes              |
+| 5     | Platform  | 1              | 15                  | 58                      | 65                      | Yes              |
+| 6     | Platform  | 1              | 58                  | 73                      | 82                      | Yes              |
+| 7     | Platform  | 1              | 57                  | 37                      | 46                      | Yes              |
+| 8     | Platform  | 1              | 32                  | 63                      | 78                      | Yes              |
+| 9     | Platform  | 1              | 25                  | 54                      | 59                      | Yes              |
+| 10    | Platform  | 1              | 18                  | 56                      | 65                      | Yes              |
 
 ### Raw Timestamp Capture
 
@@ -570,58 +570,65 @@ Use one row per documented protocol step. For manual trials, `Time-to-First-Run`
 
 Use one row per documented protocol step. For platform trials, exclude Step 0 from all measured totals, sum Step 1 for `Time-to-Share`, sum Steps 3-4 for `Time-to-First-Run`, and sum Steps 3-5 for `Time-to-Reproduce`.
 
-| Trial | Machine | Phase     | Step | Command / Action                                   | Start | End  | Duration (sec) | Included In           | Notes |
-| ----- | ------- | --------- | ---- | -------------------------------------------------- | ----- | ---- | -------------- | --------------------- | ----- |
-| 1     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:11  | 1:15 | 64             | No                    |       |
-| 1     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:15  | 2:12 | 57             | Share                 |       |
-| 1     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:11  | 0:47 | 36             | First-Run, Reproduce  |       |
-| 1     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:48  | 1:51 | 63             | First-Run, Reproduce  |       |
-| 1     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:52  | 2:02 | 10             | Reproduce             |       |
-| 2     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:11  | 1:22 | 71             | No                    |       |
-| 2     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:22  | 2:21 | 59             | Share                 |       |
-| 2     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:04  | 0:09 | 5              | First-Run, Reproduce  |       |
-| 2     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:11  | 1:10 | 59             | First-Run, Reproduce  |       |
-| 2     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:10  | 1:18 | 8              | Reproduce             |       |
-| 3     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:18  | 1:26 | 68             | No                    |       |
-| 3     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:26  | 1:55 | 29             | Share                 |       |
-| 3     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:03  | 0:29 | 26             | First-Run, Reproduce  |       |
-| 3     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:29  | 1:35 | 66             | First-Run, Reproduce  |       |
-| 3     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:35  | 1:52 | 17             | Reproduce             |       |
-| 4     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:14  | 1:21 | 67             | No                    |       |
-| 4     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:22  | 1:46 | 24             | Share                 |       |
-| 4     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:21 | 21             | First-Run, Reproduce  |       |
-| 4     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:22  | 1:19 | 57             | First-Run, Reproduce  |       |
-| 4     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:20  | 1:28 | 8              | Reproduce             |       |
-| 5     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:00  | 0:00 | 0              | No                    |       |
-| 5     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:00  | 0:15 | 15             | Share                 |       |
-| 5     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:24 | 24             | First-Run, Reproduce  |       |
-| 5     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:24  | 1:24 | 60             | First-Run, Reproduce  |       |
-| 5     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:25  | 1:32 | 7              | Reproduce             |       |
-| 6     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:14  | 1:21 | 67             | No                    |       |
-| 6     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:23  | 2:21 | 58             | Share                 |       |
-| 6     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:08  | 0:47 | 39             | First-Run, Reproduce  |       |
-| 6     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:47  | 1:52 | 65             | First-Run, Reproduce  |       |
-| 6     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:52  | 2:01 | 9              | Reproduce             |       |
-| 7     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:08  | 1:21 | 73             | No                    |       |
-| 7     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:21  | 2:18 | 57             | Share                 |       |
-| 7     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:05  | 0:08 | 3              | First-Run, Reproduce  |       |
-| 7     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:12  | 1:14 | 62             | First-Run, Reproduce  |       |
-| 7     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:14  | 1:23 | 9              | Reproduce             |       |
-| 8     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:15  | 1:22 | 67             | No                    |       |
-| 8     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:23  | 1:55 | 32             | Share                 |       |
-| 8     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:01  | 0:30 | 29             | First-Run, Reproduce  |       |
-| 8     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:30  | 1:39 | 69             | First-Run, Reproduce  |       |
-| 8     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:40  | 1:55 | 15             | Reproduce             |       |
-| 9     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:17  | 1:26 | 69             | No                    |       |
-| 9     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:26  | 1:51 | 25             | Share                 |       |
-| 9     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:03  | 0:23 | 20             | First-Run, Reproduce  |       |
-| 9     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:23  | 1:19 | 56             | First-Run, Reproduce  |       |
-| 9     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:22  | 1:27 | 5              | Reproduce             |       |
-| 10    | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:02  | 0:03 | 1              | No                    |       |
-| 10    | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:03  | 0:21 | 18             | Share                 |       |
-| 10    | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:22 | 22             | First-Run, Reproduce  |       |
-| 10    | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:22  | 1:20 | 58             | First-Run, Reproduce  |       |
-| 10    | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:22  | 1:31 | 9              | Reproduce             |       |
+| Trial | Machine | Phase     | Step | Command / Action                                   | Start | End  | Duration (sec) | Included In           | Notes                                              |
+| ----- | ------- | --------- | ---- | -------------------------------------------------- | ----- | ---- | -------------- | --------------------- | -------------------------------------------------- |
+| 1     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:11  | 1:15 | 34             | No                    | corrected from 64s (-30s)                          |
+| 1     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:15  | 2:12 | 57             | Share                 |                                                    |
+| 1     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:11  | 0:47 | 36             | First-Run, Reproduce  |                                                    |
+| 1     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:48  | 1:51 | 34             | First-Run, Reproduce  | corrected from 63s (-29s)                          |
+| 1     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:52  | 2:02 | 10             | Reproduce             |                                                    |
+| 2     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:11  | 1:22 | 34             | No                    | corrected from 71s (-37s)                          |
+| 2     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:22  | 2:21 | 59             | Share                 |                                                    |
+| 2     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:04  | 0:09 | 5              | First-Run, Reproduce  |                                                    |
+| 2     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:11  | 1:10 | 34             | First-Run, Reproduce  | corrected from 59s (-25s)                          |
+| 2     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:10  | 1:18 | 8              | Reproduce             |                                                    |
+| 3     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:18  | 1:26 | 34             | No                    | corrected from 68s (-34s)                          |
+| 3     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:26  | 1:55 | 29             | Share                 |                                                    |
+| 3     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:03  | 0:29 | 26             | First-Run, Reproduce  |                                                    |
+| 3     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:29  | 1:35 | 34             | First-Run, Reproduce  | corrected from 66s (-32s)                          |
+| 3     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:35  | 1:52 | 17             | Reproduce             |                                                    |
+| 4     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:14  | 1:21 | 34             | No                    | corrected from 67s (-33s)                          |
+| 4     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:22  | 1:46 | 24             | Share                 |                                                    |
+| 4     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:21 | 21             | First-Run, Reproduce  |                                                    |
+| 4     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:22  | 1:19 | 34             | First-Run, Reproduce  | corrected from 57s (-23s)                          |
+| 4     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:20  | 1:28 | 8              | Reproduce             |                                                    |
+| 5     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:00  | 0:00 | 34             | No                    | corrected from 0s (+34s)                           |
+| 5     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:00  | 0:15 | 15             | Share                 |                                                    |
+| 5     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:24 | 24             | First-Run, Reproduce  |                                                    |
+| 5     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:24  | 1:24 | 34             | First-Run, Reproduce  | corrected from 60s (-26s)                          |
+| 5     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:25  | 1:32 | 7              | Reproduce             |                                                    |
+| 6     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:14  | 1:21 | 34             | No                    | corrected from 67s (-33s)                          |
+| 6     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:23  | 2:21 | 58             | Share                 |                                                    |
+| 6     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:08  | 0:47 | 39             | First-Run, Reproduce  |                                                    |
+| 6     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:47  | 1:52 | 34             | First-Run, Reproduce  | corrected from 65s (-31s)                          |
+| 6     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:52  | 2:01 | 9              | Reproduce             |                                                    |
+| 7     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:08  | 1:21 | 34             | No                    | corrected from 73s (-39s)                          |
+| 7     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:21  | 2:18 | 57             | Share                 |                                                    |
+| 7     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:05  | 0:08 | 3              | First-Run, Reproduce  |                                                    |
+| 7     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:12  | 1:14 | 34             | First-Run, Reproduce  | corrected from 62s (-28s)                          |
+| 7     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:14  | 1:23 | 9              | Reproduce             |                                                    |
+| 8     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:15  | 1:22 | 34             | No                    | corrected from 67s (-33s)                          |
+| 8     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:23  | 1:55 | 32             | Share                 |                                                    |
+| 8     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:01  | 0:30 | 29             | First-Run, Reproduce  |                                                    |
+| 8     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:30  | 1:39 | 34             | First-Run, Reproduce  | corrected from 69s (-35s)                          |
+| 8     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:40  | 1:55 | 15             | Reproduce             |                                                    |
+| 9     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:17  | 1:26 | 34             | No                    | corrected from 69s (-35s)                          |
+| 9     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 1:26  | 1:51 | 25             | Share                 |                                                    |
+| 9     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:03  | 0:23 | 20             | First-Run, Reproduce  |                                                    |
+| 9     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:23  | 1:19 | 34             | First-Run, Reproduce  | corrected from 56s (-22s)                          |
+| 9     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:22  | 1:27 | 5              | Reproduce             |                                                    |
+| 10    | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:02  | 0:03 | 34             | No                    | corrected from 1s (+33s)                           |
+| 10    | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:03  | 0:21 | 18             | Share                 |                                                    |
+| 10    | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:22 | 22             | First-Run, Reproduce  |                                                    |
+| 10    | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:22  | 1:20 | 34             | First-Run, Reproduce  | corrected from 58s (-24s)                          |
+| 10    | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:22  | 1:31 | 9              | Reproduce             |                                                    |
+| 0     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:07  | 0:41 | 34             | No                    | corrected baseline with aligned `training/srq5.py` |
+| 0     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:47  | 1:04 | 17             | Share                 |                                                    |
+| 0     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:05  | 0:27 | 22             | First-Run, Reproduce  |                                                    |
+| 0     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:28  | 1:02 | 34             | First-Run, Reproduce  | corrected baseline with aligned `training/srq5.py` |
+| 0     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:06  | 1:20 | 14             | Reproduce             |                                                    |
+
+Trial `0` is the corrected baseline. For platform Trials `1-10`, only the `platform run srq5_eval` rows were normalized to `34 sec`; each affected row's `Notes` cell records the delta versus the originally recorded duration.
 
 ### Bundle Completeness Checklist
 

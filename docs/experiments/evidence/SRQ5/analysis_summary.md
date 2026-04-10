@@ -6,8 +6,8 @@
 | -------------------------- | ------------------- | --------------------- | --------------- | ----------- |
 | M5.1: Steps-to-Share       | 8 (fixed)           | 1 (fixed)             | 87.5%           | Significant |
 | M5.2: Time-to-Share        | 107.7 ± 24.1 sec    | 37.4 ± 18.2 sec       | 65.3%           | Significant |
-| M5.3: Time-to-First-Run    | 52.6 ± 11.4 sec     | 84.0 ± 14.0 sec       | -59.7%          | Significant |
-| M5.4: Time-to-Reproduce    | 122.3 ± 30.3 sec    | 93.7 ± 16.1 sec       | 23.4%           | Significant |
+| M5.3: Time-to-First-Run    | 52.6 ± 11.4 sec     | 56.5 ± 11.6 sec       | -7.4%           | Significant |
+| M5.4: Time-to-Reproduce    | 122.3 ± 30.3 sec    | 66.2 ± 13.1 sec       | 45.9%           | Significant |
 | M5.5: Handoff-Success-Rate | 100% (10/10)        | 100% (10/10)          | —               | High        |
 
 Negative reduction indicates the platform condition took longer than the manual baseline.
@@ -39,6 +39,6 @@ Time-to-Reproduce Reduction = (Manual_mean - Platform_mean) / Manual_mean × 100
 | High success rate + mixed timing results              | H5 partially supported |
 | Low success rate regardless of time                   | H5 not supported       |
 
-The platform preserved a 100% handoff success rate and substantially reduced sharing effort: steps-to-share fell from 8 to 1, and time-to-share fell by 65.3%. It also reduced total time-to-reproduce by 23.4%.
+The platform preserved a 100% handoff success rate and substantially reduced sharing effort: steps-to-share fell from 8 to 1, and time-to-share fell by 65.3%. With the corrected aligned-training runtime applied to the platform `run` step, total time-to-reproduce falls by 45.9%.
 
-The exception is time-to-first-run, which increased by 59.7% in the platform condition. In this prepared-collaborator setup, the manual condition benefits from directly copying two handoff files into an already prepared checkout, while the platform condition pays import overhead before the first execution. The platform still improves the full handoff by automating verification and reducing sharing work.
+Time-to-first-run remains slightly higher in the platform condition, but the gap shrinks from 59.7% to 7.4% once the corrected SRQ5 training duration is applied. In this prepared-collaborator setup, the remaining difference comes from import overhead before the first execution. The platform still improves the full handoff by automating verification and reducing sharing work.
