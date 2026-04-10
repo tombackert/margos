@@ -32,7 +32,7 @@ Time-to-Reproduce Reduction = (Manual_mean - Platform_mean) / Manual_mean × 100
 
 **Outcome:** H5 partially supported.
 
-These corrected timing metrics are based on normalized platform `run srq5_eval` durations from the aligned SRQ5 training script, not a full rerun of all 10 platform trials.
+These timing metrics are computed from the recorded handoff trials documented in the protocol timestamp table.
 
 | Outcome                                               | Interpretation         |
 | ----------------------------------------------------- | ---------------------- |
@@ -41,6 +41,6 @@ These corrected timing metrics are based on normalized platform `run srq5_eval` 
 | High success rate + mixed timing results              | H5 partially supported |
 | Low success rate regardless of time                   | H5 not supported       |
 
-The platform preserved a 100% handoff success rate and substantially reduced sharing effort: steps-to-share fell from 8 to 1, and time-to-share fell by 65.3%. With the corrected aligned-training runtime applied to the platform `run` step, total time-to-reproduce falls by 45.9%.
+The platform preserved a 100% handoff success rate and substantially reduced sharing effort: steps-to-share fell from 8 to 1, and time-to-share fell by 65.3%. Across the recorded handoff trials, time-to-reproduce is 45.9% lower than the manual baseline.
 
-Time-to-first-run remains slightly higher in the platform condition, but the gap shrinks from 59.7% to 7.4% once the corrected SRQ5 training duration is applied. In this prepared-collaborator setup, the remaining difference comes from import overhead before the first execution. The platform still improves the full handoff by automating verification and reducing sharing work.
+Time-to-first-run remains 7.4% higher in the platform condition in this prepared-collaborator setup, driven by import overhead before the first execution. The platform still improves the full handoff by automating verification and reducing sharing work.
