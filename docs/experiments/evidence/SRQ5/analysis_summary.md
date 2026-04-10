@@ -32,6 +32,8 @@ Time-to-Reproduce Reduction = (Manual_mean - Platform_mean) / Manual_mean × 100
 
 **Outcome:** H5 partially supported.
 
+These corrected timing metrics are based on normalized platform `run srq5_eval` durations from the aligned SRQ5 training script, not a full rerun of all 10 platform trials.
+
 | Outcome                                               | Interpretation         |
 | ----------------------------------------------------- | ---------------------- |
 | High success rate (≥90%) + significant time reduction | H5 strongly supported  |

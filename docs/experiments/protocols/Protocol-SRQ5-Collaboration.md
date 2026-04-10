@@ -672,22 +672,24 @@ Compare Machine A and Machine B environments:
 
 Derived cross-trial statistics and interpretation are maintained in [analysis_summary.md](../evidence/SRQ5/analysis_summary.md). Keep the per-trial data above as the evidence source for those calculations.
 
+The corrected timing metrics below are based on normalized platform `run srq5_eval` durations from the aligned SRQ5 training script, not a full rerun of all 10 platform trials.
+
 ### Primary Metrics (M5.1-M5.7)
 
-| Metric                     | Manual (Mean ± SD)  | Platform (Mean ± SD)  | Reduction (%)   | Target      |
-| -------------------------- | ------------------- | --------------------- | --------------- | ----------- |
-| M5.1: Steps-to-Share       | 8 (fixed)           | 1 (step 1 only)       |                 | Significant |
-| M5.2: Time-to-Share        |                     |                       |                 | Significant |
-| M5.3: Time-to-First-Run    |                     |                       |                 | Significant |
-| M5.4: Time-to-Reproduce    |                     |                       |                 | Significant |
-| M5.5: Handoff-Success-Rate |                     |                       |                 | High        |
+| Metric                     | Manual (Mean ± SD)  | Platform (Mean ± SD)  | Reduction (%)   | Target         |
+| -------------------------- | ------------------- | --------------------- | --------------- | -------------- |
+| M5.1: Steps-to-Share       | 8 (fixed)           | 1 (fixed)             | 87.5%           | ≥50% reduction |
+| M5.2: Time-to-Share        | 107.7 ± 24.1 sec    | 37.4 ± 18.2 sec       | 65.3%           | ≥50% reduction |
+| M5.3: Time-to-First-Run    | 52.6 ± 11.4 sec     | 56.5 ± 11.6 sec       | -7.4%           | ≥50% reduction |
+| M5.4: Time-to-Reproduce    | 122.3 ± 30.3 sec    | 66.2 ± 13.1 sec       | 45.9%           | ≥50% reduction |
+| M5.5: Handoff-Success-Rate | 100% (10/10)        | 100% (10/10)          | —               | ≥90%           |
 
 ### Secondary Metrics
 
-| Metric                    | Value        | Notes   |
-| ------------------------- | ------------ | ------- |
-| M5.6: Bundle-Completeness | /8           |         |
-| M5.7: Setup-Divergence    | # mismatches |         |
+| Metric                                   | Value          | Notes                                                                                                                                 |
+| ---------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| M5.6: Bundle-Completeness                | 8/8            | All required and optional components are present in the retained SRQ5 export bundle; recordings show the same structure across trials |
+| M5.7: Setup-Divergence (mean mismatches) | 3.0 mismatches | Recording comparison output shows mismatches on NumPy, PettingZoo, and PyTorch, while Python, OS, Gymnasium, Pydantic, and Ray match  |
 
 ### Success Rate Calculation
 
@@ -701,6 +703,7 @@ A handoff is **successful** if Researcher B's final episode reward mean (last 50
 
 ```
 Time-to-Share Reduction = (Manual_mean - Platform_mean) / Manual_mean × 100%
+Time-to-First-Run Reduction = (Manual_mean - Platform_mean) / Manual_mean × 100%
 Time-to-Reproduce Reduction = (Manual_mean - Platform_mean) / Manual_mean × 100%
 ```
 
@@ -710,7 +713,8 @@ Time-to-Reproduce Reduction = (Manual_mean - Platform_mean) / Manual_mean × 100
 | ----------------------------------------------------- | ----------------------------------------- |
 | High success rate (≥90%) + significant time reduction | H5 strongly supported                     |
 | High success rate + moderate time reduction           | H5 supported                              |
-| Low success rate regardless of time                   | H5 not supported - investigate failures   |
+| High success rate + mixed timing results              | H5 partially supported                    |
+| Low success rate regardless of time                   | H5 not supported                          |
 | Ceiling effect (100% both conditions)                 | Focus on time metrics for differentiation |
 
 ### Failure Mode Analysis

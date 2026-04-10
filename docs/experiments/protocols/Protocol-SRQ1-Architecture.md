@@ -69,7 +69,7 @@ For each SRQ, verify the architectural feature enables the required metric colle
 | SRQ3  | Config-Integrity                      | Frozen config + SHA256 config hash                              | M3.3             |
 | SRQ3  | Seed-Determinism                      | Centralized RNG propagation before dynamic import               | M3.4             |
 | SRQ4  | Heuristic-Compliance-Rate             | Consistent CLI structure, help text, and structured errors      | M4.4             |
-| SRQ4  | KLM-Predicted-Time / KLM-Reduction    | Compressed workflows via `run`, `compare`, `export`, `import`  | M4.5-M4.6        |
+| SRQ4  | KLM-Predicted-Time / KLM-Reduction    | Compressed workflows via `run`, `compare`, `export`, `import`   | M4.5-M4.6        |
 | SRQ5  | Steps-to-Share                        | `platform export` bundle creation                               | M5.1             |
 | SRQ5  | Time-to-Share                         | `platform export` bundle creation                               | M5.2             |
 | SRQ5  | Time-to-First-Run                     | `platform import` + imported-config execution path              | M5.3             |
@@ -82,27 +82,27 @@ For each SRQ, verify the architectural feature enables the required metric colle
 
 Attempt to execute each SRQ2-5 protocol:
 
-| Protocol                 | Execution Attempt   | Result   | Blocking Issues   |
-| ------------------------ | ------------------- | -------- | ----------------- |
-| P-SRQ2 (Efficiency)      | [x]                 | Pass     | None; completed trials produced `M2.1` and `M2.2` (`docs/experiments/evidence/SRQ2/analysis_summary.md`) |
+| Protocol                 | Execution Attempt   | Result   | Blocking Issues                                                                                                            |
+| ------------------------ | ------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------- |
+| P-SRQ2 (Efficiency)      | [x]                 | Pass     | None; completed trials produced `M2.1` and `M2.2` (`docs/experiments/evidence/SRQ2/analysis_summary.md`)                   |
 | P-SRQ3 (Reproducibility) | [x]                 | Pass     | None; 20/20 reproductions and unit-test checks produced `M3.1-M3.4` (`docs/experiments/evidence/SRQ3/analysis_summary.md`) |
-| P-SRQ4 (Usability)       | [x]                 | Pass     | None; heuristic audit and 7 KLM analyses produced `M4.4-M4.6` (`docs/experiments/evidence/SRQ4/analysis_summary.md`) |
-| P-SRQ5 (Collaboration)   | [x]                 | Pass     | None; 20 handoff cycles produced `M5.1-M5.7` (`docs/experiments/evidence/SRQ5/analysis_summary.md`) |
+| P-SRQ4 (Usability)       | [x]                 | Pass     | None; heuristic audit and 7 KLM analyses produced `M4.4-M4.6` (`docs/experiments/evidence/SRQ4/analysis_summary.md`)       |
+| P-SRQ5 (Collaboration)   | [x]                 | Pass     | None; 20 handoff cycles produced `M5.1-M5.7` (`docs/experiments/evidence/SRQ5/analysis_summary.md`)                        |
 
 ### Step 3: ADR Documentation Audit
 
 Verify all architectural decisions are documented:
 
-| ADR ID   | Decision                                                    | Documented?   | Location   |
-| -------- | ----------------------------------------------------------- | ------------- | ---------- |
-| L1       | CLI command style (subcommands)                             | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L1`, `Q1`) |
+| ADR ID   | Decision                                                    | Documented?   | Location                                                                 |
+| -------- | ----------------------------------------------------------- | ------------- | ------------------------------------------------------------------------ |
+| L1       | CLI command style (subcommands)                             | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L1`, `Q1`)                    |
 | L2       | Execution model (dynamic import)                            | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L2`, `Execution Model`, `Q3`) |
-| L3       | Validation library (pydantic)                               | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L3`, `Config System`, `Q2`) |
-| L4       | Essential metrics (reward_mean, loss, iteration, timestamp) | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L4`, `Logging System`, `Q5`) |
-| L5       | Checkpoints in bundle (include by default)                  | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L5`, `Export System`, `Q7`) |
-| L6       | Plotting library (matplotlib)                               | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L6`, `Analysis`, `Q6`) |
-| L7       | CLI argument style (convention over configuration)          | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L7`, `Commands`, `Q8`) |
-| L8       | Error display format (structured)                           | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L8`, `Error Handling`, `Q9`) |
+| L3       | Validation library (pydantic)                               | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L3`, `Config System`, `Q2`)   |
+| L4       | Essential metrics (reward_mean, loss, iteration, timestamp) | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L4`, `Logging System`, `Q5`)  |
+| L5       | Checkpoints in bundle (include by default)                  | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L5`, `Export System`, `Q7`)   |
+| L6       | Plotting library (matplotlib)                               | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L6`, `Analysis`, `Q6`)        |
+| L7       | CLI argument style (convention over configuration)          | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L7`, `Commands`, `Q8`)        |
+| L8       | Error display format (structured)                           | [x]           | `docs/LowLevelArchitectureBrainstorm.md` (`L8`, `Error Handling`, `Q9`)  |
 
 ---
 
@@ -110,32 +110,32 @@ Verify all architectural decisions are documented:
 
 ### Enablement Checklist
 
-| Component              | Required For           | Functional?   | Notes   |
-| ---------------------- | ---------------------- | ------------- | ------- |
-| CLI `run` command      | SRQ2, SRQ4, SRQ5       | [x]           | Implemented in `marl_platform/cli.py`; used to execute configs and imported bundles |
-| CLI `compare` command  | SRQ3, SRQ5             | [x]           | Implemented in `marl_platform/cli.py`; compares reward and AUC across experiments |
-| CLI `export` command   | SRQ5                   | [x]           | Implemented in `marl_platform/cli.py` + `marl_platform/export/bundle.py` |
-| CLI `import` command   | SRQ5                   | [x]           | Implemented in `marl_platform/cli.py` + `marl_platform/export/importer.py` |
-| Config loader          | SRQ2, SRQ3, SRQ4, SRQ5 | [x]           | `load_config()` resolves YAML into validated platform config |
+| Component              | Required For           | Functional?   | Notes                                                                                 |
+| ---------------------- | ---------------------- | ------------- | ------------------------------------------------------------------------------------- |
+| CLI `run` command      | SRQ2, SRQ4, SRQ5       | [x]           | Implemented in `marl_platform/cli.py`; used to execute configs and imported bundles   |
+| CLI `compare` command  | SRQ3, SRQ5             | [x]           | Implemented in `marl_platform/cli.py`; compares reward and AUC across experiments     |
+| CLI `export` command   | SRQ5                   | [x]           | Implemented in `marl_platform/cli.py` + `marl_platform/export/bundle.py`              |
+| CLI `import` command   | SRQ5                   | [x]           | Implemented in `marl_platform/cli.py` + `marl_platform/export/importer.py`            |
+| Config loader          | SRQ2, SRQ3, SRQ4, SRQ5 | [x]           | `load_config()` resolves YAML into validated platform config                          |
 | Config validator       | SRQ2, SRQ3, SRQ4, SRQ5 | [x]           | Pydantic schema in `marl_platform/config/schema.py` with structured validation errors |
-| Config hasher          | SRQ3, SRQ5             | [x]           | `hash_config()` writes `config_hash.txt` for integrity checks |
-| Seed propagation       | SRQ3                   | [x]           | `set_all_seeds()` runs before training-script import |
-| Metrics logger (JSONL) | SRQ2, SRQ3             | [x]           | `MetricsLogger` writes `logs/metrics.jsonl` per iteration |
-| Env fingerprint        | SRQ3, SRQ5             | [x]           | `capture_fingerprint()` / `save_fingerprint()` persist environment metadata |
-| Bundle creator         | SRQ5                   | [x]           | `export_bundle()` packages config, fingerprint, logs, script, scenario, checkpoints |
-| Bundle importer        | SRQ5                   | [x]           | `import_bundle()` validates bundle, extracts it, and rewrites config paths |
+| Config hasher          | SRQ3, SRQ5             | [x]           | `hash_config()` writes `config_hash.txt` for integrity checks                         |
+| Seed propagation       | SRQ3                   | [x]           | `set_all_seeds()` runs before training-script import                                  |
+| Metrics logger (JSONL) | SRQ2, SRQ3             | [x]           | `MetricsLogger` writes `logs/metrics.jsonl` per iteration                             |
+| Env fingerprint        | SRQ3, SRQ5             | [x]           | `capture_fingerprint()` / `save_fingerprint()` persist environment metadata           |
+| Bundle creator         | SRQ5                   | [x]           | `export_bundle()` packages config, fingerprint, logs, script, scenario, checkpoints   |
+| Bundle importer        | SRQ5                   | [x]           | `import_bundle()` validates bundle, extracts it, and rewrites config paths            |
 
 ### Architecture Requirements Verification
 
-| Requirement                | Why (Data Purpose)                            | From SRQ   | Implemented?   | Implemented Behavior   |
-| -------------------------- | --------------------------------------------- | ---------- | -------------- | ---------------------- |
-| Single CLI entry point     | Measure Steps-to-Complete                     | SRQ2       | [x]            | Typer app exposes a single `platform` entry point with subcommands in `marl_platform/cli.py` |
+| Requirement                | Why (Data Purpose)                            | From SRQ   | Implemented?   | Implemented Behavior                                                                                       |
+| -------------------------- | --------------------------------------------- | ---------- | -------------- | ---------------------------------------------------------------------------------------------------------- |
+| Single CLI entry point     | Measure Steps-to-Complete                     | SRQ2       | [x]            | Typer app exposes a single `platform` entry point with subcommands in `marl_platform/cli.py`               |
 | Unified config file        | Measure step reduction, enable config hashing | SRQ2, SRQ3 | [x]            | `load_config()` + `PlatformConfig` validate one YAML file; `save_frozen_config()` stores the executed copy |
-| Deterministic seed control | Measure Reproduce-Success-Rate                | SRQ3       | [x]            | `set_all_seeds()` seeds Python, NumPy, and Torch before dynamic import in `run_experiment()` |
-| Config hash at runtime     | Verify Config-Integrity                       | SRQ3       | [x]            | `hash_config()` computes SHA256 and writes `config_hash.txt` into the result bundle |
-| Clear error messages       | Measure Error-Rate, Recovery-Time             | SRQ4       | [x]            | `PlatformError` + `display_error()` emit `message`, contextual fields, and a concrete fix |
-| Export command             | Measure Steps-to-Share, Time-to-Share         | SRQ5       | [x]            | `platform export` packages the experiment into a validated shareable ZIP bundle |
-| Import command             | Measure Time-to-First-Run, Time-to-Reproduce  | SRQ5       | [x]            | `platform import` extracts the bundle, rewrites config paths, and enables direct rerun / comparison |
+| Deterministic seed control | Measure Reproduce-Success-Rate                | SRQ3       | [x]            | `set_all_seeds()` seeds Python, NumPy, and Torch before dynamic import in `run_experiment()`               |
+| Config hash at runtime     | Verify Config-Integrity                       | SRQ3       | [x]            | `hash_config()` computes SHA256 and writes `config_hash.txt` into the result bundle                        |
+| Clear error messages       | Measure Error-Rate, Recovery-Time             | SRQ4       | [x]            | `PlatformError` + `display_error()` emit `message`, contextual fields, and a concrete fix                  |
+| Export command             | Measure Steps-to-Share, Time-to-Share         | SRQ5       | [x]            | `platform export` packages the experiment into a validated shareable ZIP bundle                            |
+| Import command             | Measure Time-to-First-Run, Time-to-Reproduce  | SRQ5       | [x]            | `platform import` extracts the bundle, rewrites config paths, and enables direct rerun / comparison        |
 
 ---
 
@@ -158,7 +158,7 @@ H1 is validated if:
 
 ### Validation Statement
 
-`SRQ2`, `SRQ3`, `SRQ4`, and `SRQ5` were executed successfully and produced the required metrics: `M2.1-M2.2`, `M3.1-M3.4`, `M4.4-M4.6`, and `M5.1-M5.7`. Their downstream hypothesis outcomes differ (`H2` supported, `H3` strongly supported, `H4` supported, `H5` partially supported), but none of the protocols encountered an architectural blocker and each produced the intended evidence. On that basis, `H1` is supported: the implemented architecture was sufficient to execute the evaluation plan and collect its required metrics.
+`SRQ2`, `SRQ3`, `SRQ4`, and `SRQ5` were executed successfully and produced the required metrics: `M2.1-M2.2`, `M3.1-M3.4`, `M4.4-M4.6`, and `M5.1-M5.7`. Their downstream hypothesis outcomes differ (`H2` supported, `H3` strongly supported, `H4` supported, `H5` partially supported based on the corrected SRQ5 evidence), but none of the protocols encountered an architectural blocker and each produced the intended evidence. On that basis, `H1` is supported: the implemented architecture was sufficient to execute the evaluation plan and collect its required metrics.
 
 ### Reporting
 
