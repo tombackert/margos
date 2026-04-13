@@ -164,6 +164,7 @@ class TestCompareFingerprints:
         result = compare_fingerprints(fp, fp)
 
         assert result["all_match"] is True
+        assert result["critical_match"] is True
         assert result["python"][2] is True  # match flag
         assert result["os"][2] is True
 
@@ -176,6 +177,7 @@ class TestCompareFingerprints:
 
         assert result["python"] == ("3.11.0", "3.12.0", False)
         assert result["all_match"] is False
+        assert result["critical_match"] is False
 
     def test_different_os(self) -> None:
         """Detects different OS."""
@@ -186,6 +188,7 @@ class TestCompareFingerprints:
 
         assert result["os"][2] is False
         assert result["all_match"] is False
+        assert result["critical_match"] is False
 
     def test_different_package_versions(self) -> None:
         """Detects different package versions."""
@@ -205,6 +208,7 @@ class TestCompareFingerprints:
         assert result["packages"]["ray"] == ("2.0.0", "2.1.0", False)
         assert result["packages"]["torch"][2] is True
         assert result["all_match"] is False
+        assert result["critical_match"] is False
 
     def test_missing_package_in_current(self) -> None:
         """Handles package missing in current environment."""
@@ -250,7 +254,10 @@ class TestCompareFingerprints:
         assert "python" in result
         assert "os" in result
         assert "packages" in result
+        assert "runtime" in result
+        assert "build" in result
         assert "all_match" in result
+        assert "critical_match" in result
         assert len(result["python"]) == 3  # (bundle, current, match)
 
     def test_handles_empty_packages(self) -> None:
@@ -298,7 +305,10 @@ class TestFormatFingerprintComparison:
             "python": ("3.12.0", "3.12.0", True),
             "os": ("Linux", "Linux", True),
             "packages": {"ray": ("2.0.0", "2.0.0", True)},
+            "runtime": {},
+            "build": {},
             "all_match": True,
+            "critical_match": True,
         }
 
         result = format_fingerprint_comparison(comparison)
@@ -312,7 +322,10 @@ class TestFormatFingerprintComparison:
             "python": ("3.11.0", "3.12.0", False),
             "os": ("Linux", "Linux", True),
             "packages": {"ray": ("2.0.0", "2.1.0", False)},
+            "runtime": {},
+            "build": {},
             "all_match": False,
+            "critical_match": False,
         }
 
         result = format_fingerprint_comparison(comparison)
@@ -326,7 +339,10 @@ class TestFormatFingerprintComparison:
             "python": ("3.11.0", "3.12.0", False),
             "os": ("Linux", "Linux", True),
             "packages": {},
+            "runtime": {},
+            "build": {},
             "all_match": False,
+            "critical_match": False,
         }
 
         result = format_fingerprint_comparison(comparison)
@@ -341,7 +357,10 @@ class TestFormatFingerprintComparison:
             "python": ("3.12.0", "3.12.0", True),
             "os": ("Linux-5.10", "Darwin-21.0", False),
             "packages": {},
+            "runtime": {},
+            "build": {},
             "all_match": False,
+            "critical_match": False,
         }
 
         result = format_fingerprint_comparison(comparison)
@@ -359,7 +378,10 @@ class TestFormatFingerprintComparison:
                 "ray": ("2.0.0", "2.0.0", True),
                 "torch": ("2.0.0", "2.1.0", False),
             },
+            "runtime": {},
+            "build": {},
             "all_match": False,
+            "critical_match": False,
         }
 
         result = format_fingerprint_comparison(comparison)
@@ -374,7 +396,10 @@ class TestFormatFingerprintComparison:
             "python": ("3.12.0", "3.12.0", True),
             "os": ("Linux", "Linux", True),
             "packages": {"ray": ("2.0.0", "2.0.0", True)},
+            "runtime": {},
+            "build": {},
             "all_match": True,
+            "critical_match": True,
         }
 
         result = format_fingerprint_comparison(comparison)

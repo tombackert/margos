@@ -311,9 +311,17 @@ class TestGenerateSummary:
 class TestFormatComparison:
     """Tests for format_comparison function."""
 
-    def test_formats_passed_comparison(self) -> None:
-        """Formats passed comparison result."""
+    @staticmethod
+    def _comparison(**overrides) -> dict:
         comparison = {
+            "tail_reward_mean_match": True,
+            "tail_reward_mean_deviation": 0.005,
+            "tail_reward_mean_run": 100.5,
+            "tail_reward_mean_ref": 100.0,
+            "reward_window": 50,
+            "reward_window_run": 50,
+            "reward_window_ref": 50,
+            "tolerance": 0.05,
             "final_reward_match": True,
             "final_reward_deviation": 0.005,
             "final_reward_run": 100.5,
@@ -326,32 +334,38 @@ class TestFormatComparison:
             "config_hash_run": "abc123def456",
             "config_hash_ref": "abc123def456",
             "config_hash_source": {"run": "config_hash.txt", "reference": "config_hash.txt"},
+            "config_integrity_match": True,
+            "config_integrity_run": {"match": True, "source": "config.yaml"},
+            "config_integrity_ref": {"match": True, "source": "config.yaml"},
             "passed": True,
         }
+        comparison.update(overrides)
+        return comparison
+
+    def test_formats_passed_comparison(self) -> None:
+        """Formats passed comparison result."""
+        comparison = self._comparison()
 
         result = format_comparison(comparison)
 
         assert "PASSED" in result
         assert "| Yes" in result  # Table format has "| Yes"
         assert "Config Hash" in result
+        assert "Reward Mean L50" in result
 
     def test_formats_failed_comparison(self) -> None:
         """Formats failed comparison result."""
-        comparison = {
-            "final_reward_match": False,
-            "final_reward_deviation": 0.15,
-            "final_reward_run": 115.0,
-            "final_reward_ref": 100.0,
-            "auc_match": True,
-            "auc_deviation": 0.005,
-            "auc_run": 1005.0,
-            "auc_ref": 1000.0,
-            "config_hash_match": True,
-            "config_hash_run": "abc123def456",
-            "config_hash_ref": "abc123def456",
-            "config_hash_source": {"run": "config_hash.txt", "reference": "config_hash.txt"},
-            "passed": False,
-        }
+        comparison = self._comparison(
+            tail_reward_mean_match=False,
+            tail_reward_mean_deviation=0.15,
+            tail_reward_mean_run=115.0,
+            tail_reward_mean_ref=100.0,
+            final_reward_match=False,
+            final_reward_deviation=0.15,
+            final_reward_run=115.0,
+            final_reward_ref=100.0,
+            passed=False,
+        )
 
         result = format_comparison(comparison)
 
@@ -360,21 +374,12 @@ class TestFormatComparison:
 
     def test_includes_deviation_percentages(self) -> None:
         """Includes deviation as percentage."""
-        comparison = {
-            "final_reward_match": True,
-            "final_reward_deviation": 0.0075,
-            "final_reward_run": 100.75,
-            "final_reward_ref": 100.0,
-            "auc_match": True,
-            "auc_deviation": 0.0025,
-            "auc_run": 1002.5,
-            "auc_ref": 1000.0,
-            "config_hash_match": True,
-            "config_hash_run": "abc123def456",
-            "config_hash_ref": "abc123def456",
-            "config_hash_source": {"run": "config_hash.txt", "reference": "config_hash.txt"},
-            "passed": True,
-        }
+        comparison = self._comparison(
+            tail_reward_mean_deviation=0.0075,
+            tail_reward_mean_run=100.75,
+            auc_deviation=0.0025,
+            auc_run=1002.5,
+        )
 
         result = format_comparison(comparison)
 
@@ -383,21 +388,13 @@ class TestFormatComparison:
 
     def test_includes_actual_values(self) -> None:
         """Includes actual run and reference values."""
-        comparison = {
-            "final_reward_match": True,
-            "final_reward_deviation": 0.01,
-            "final_reward_run": 101.0,
-            "final_reward_ref": 100.0,
-            "auc_match": True,
-            "auc_deviation": 0.01,
-            "auc_run": 505.0,
-            "auc_ref": 500.0,
-            "config_hash_match": True,
-            "config_hash_run": "abc123def456",
-            "config_hash_ref": "abc123def456",
-            "config_hash_source": {"run": "config_hash.txt", "reference": "config_hash.txt"},
-            "passed": True,
-        }
+        comparison = self._comparison(
+            tail_reward_mean_deviation=0.01,
+            tail_reward_mean_run=101.0,
+            auc_deviation=0.01,
+            auc_run=505.0,
+            auc_ref=500.0,
+        )
 
         result = format_comparison(comparison)
 

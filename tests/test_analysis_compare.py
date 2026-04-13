@@ -15,6 +15,7 @@ def create_experiment_with_metrics(
     *,
     config: dict | None = None,
     config_hash: str | None = None,
+    config_integrity_match: bool = True,
     write_hash: bool = True,
     write_config: bool = True,
 ) -> Path:
@@ -45,6 +46,17 @@ def create_experiment_with_metrics(
             config_hash = hash_config(PlatformConfig(**config))
         (path / "config_hash.txt").write_text(config_hash)
 
+    (path / "config_integrity.yaml").write_text(
+        yaml.dump(
+            {
+                "start_hash": config_hash or "computed",
+                "end_hash": config_hash or "computed",
+                "match": config_integrity_match,
+                "source": "config.yaml",
+            }
+        )
+    )
+
     return path
 
 
@@ -64,18 +76,17 @@ class TestCompareRuns:
         result = compare_runs(str(run_dir), str(ref_dir))
 
         assert result["passed"] is True
-        assert result["final_reward_match"] is True
-        assert result["auc_match"] is True
+        assert result["tail_reward_mean_match"] is True
         assert result["config_hash_match"] is True
-        assert result["final_reward_deviation"] == 0.0
-        assert result["auc_deviation"] == 0.0
+        assert result["config_integrity_match"] is True
+        assert result["tail_reward_mean_deviation"] == 0.0
 
-    def test_within_tolerance_passes(self, tmp_path: Path) -> None:
+    def test_within_default_tolerance_passes(self, tmp_path: Path) -> None:
         """Runs within 1% tolerance pass."""
         run_metrics = [
             {"iteration": 1, "episode_reward_mean": -100.0},
             {"iteration": 2, "episode_reward_mean": -90.0},
-            {"iteration": 3, "episode_reward_mean": -80.5},  # 0.625% deviation
+            {"iteration": 3, "episode_reward_mean": -81.0},
         ]
         ref_metrics = [
             {"iteration": 1, "episode_reward_mean": -100.0},
@@ -88,7 +99,7 @@ class TestCompareRuns:
         result = compare_runs(str(run_dir), str(ref_dir))
 
         assert result["passed"] is True
-        assert result["final_reward_match"] is True
+        assert result["tail_reward_mean_match"] is True
         assert result["config_hash_match"] is True
 
     def test_outside_tolerance_fails(self, tmp_path: Path) -> None:
@@ -96,7 +107,7 @@ class TestCompareRuns:
         run_metrics = [
             {"iteration": 1, "episode_reward_mean": -100.0},
             {"iteration": 2, "episode_reward_mean": -90.0},
-            {"iteration": 3, "episode_reward_mean": -70.0},  # 12.5% deviation
+            {"iteration": 3, "episode_reward_mean": -60.0},
         ]
         ref_metrics = [
             {"iteration": 1, "episode_reward_mean": -100.0},
@@ -109,13 +120,13 @@ class TestCompareRuns:
         result = compare_runs(str(run_dir), str(ref_dir))
 
         assert result["passed"] is False
-        assert result["final_reward_match"] is False
+        assert result["tail_reward_mean_match"] is False
 
     def test_custom_tolerance(self, tmp_path: Path) -> None:
         """Supports custom tolerance value."""
         run_metrics = [
             {"iteration": 1, "episode_reward_mean": -100.0},
-            {"iteration": 2, "episode_reward_mean": -85.0},  # 5.5% deviation
+            {"iteration": 2, "episode_reward_mean": -80.0},
         ]
         ref_metrics = [
             {"iteration": 1, "episode_reward_mean": -100.0},
@@ -124,7 +135,7 @@ class TestCompareRuns:
         run_dir = create_experiment_with_metrics(tmp_path / "run", run_metrics)
         ref_dir = create_experiment_with_metrics(tmp_path / "ref", ref_metrics)
 
-        # With 1% tolerance (default) - should fail
+        # With 1% tolerance - should fail
         result_strict = compare_runs(str(run_dir), str(ref_dir), tolerance=0.01)
         assert result_strict["passed"] is False
 
@@ -132,8 +143,8 @@ class TestCompareRuns:
         result_loose = compare_runs(str(run_dir), str(ref_dir), tolerance=0.10)
         assert result_loose["passed"] is True
 
-    def test_final_reward_deviation_calculated(self, tmp_path: Path) -> None:
-        """Calculates final reward deviation correctly."""
+    def test_tail_reward_mean_deviation_calculated(self, tmp_path: Path) -> None:
+        """Calculates tail reward mean deviation correctly."""
         run_metrics = [{"iteration": 1, "episode_reward_mean": -80.0}]
         ref_metrics = [{"iteration": 1, "episode_reward_mean": -100.0}]
         run_dir = create_experiment_with_metrics(tmp_path / "run", run_metrics)
@@ -142,7 +153,7 @@ class TestCompareRuns:
         result = compare_runs(str(run_dir), str(ref_dir))
 
         # |-80 - -100| / |-100| = 20 / 100 = 0.2 (20%)
-        assert result["final_reward_deviation"] == pytest.approx(0.2)
+        assert result["tail_reward_mean_deviation"] == pytest.approx(0.2)
 
     def test_auc_deviation_calculated(self, tmp_path: Path) -> None:
         """Calculates AUC deviation correctly."""
@@ -162,13 +173,12 @@ class TestCompareRuns:
         # |10 - 20| / |20| = 10 / 20 = 0.5 (50%)
         assert result["auc_deviation"] == pytest.approx(0.5)
 
-    def test_both_conditions_required_to_pass(self, tmp_path: Path) -> None:
-        """Both final reward and AUC must match to pass."""
-        # Same final reward but different trajectory (different AUC)
+    def test_auc_difference_does_not_fail_pass(self, tmp_path: Path) -> None:
+        """AUC remains diagnostic and no longer gates pass/fail."""
         run_metrics = [
             {"iteration": 1, "episode_reward_mean": -100.0},
             {"iteration": 2, "episode_reward_mean": -50.0},
-            {"iteration": 3, "episode_reward_mean": -80.0},
+            {"iteration": 3, "episode_reward_mean": -120.0},
         ]
         ref_metrics = [
             {"iteration": 1, "episode_reward_mean": -100.0},
@@ -180,9 +190,9 @@ class TestCompareRuns:
 
         result = compare_runs(str(run_dir), str(ref_dir))
 
-        assert result["final_reward_match"] is True  # Same final reward
-        assert result["auc_match"] is False  # Different AUC
-        assert result["passed"] is False  # Overall fail
+        assert result["tail_reward_mean_match"] is True
+        assert result["auc_match"] is False
+        assert result["passed"] is True
 
     def test_handles_negative_rewards(self, tmp_path: Path) -> None:
         """Handles negative reward values correctly."""
@@ -211,7 +221,7 @@ class TestCompareRuns:
         result = compare_runs(str(run_dir), str(ref_dir))
 
         assert result["passed"] is True
-        assert result["final_reward_deviation"] == 0.0
+        assert result["tail_reward_mean_deviation"] == 0.0
 
     def test_returns_expected_structure(self, tmp_path: Path) -> None:
         """Returns dict with expected keys."""
@@ -221,17 +231,27 @@ class TestCompareRuns:
 
         result = compare_runs(str(run_dir), str(ref_dir))
 
+        assert "comparison_method" in result
+        assert "tail_reward_mean_match" in result
+        assert "tail_reward_mean_deviation" in result
+        assert "tail_reward_mean_run" in result
+        assert "tail_reward_mean_ref" in result
+        assert "reward_window" in result
+        assert "reward_window_run" in result
+        assert "reward_window_ref" in result
+        assert "tolerance" in result
         assert "final_reward_match" in result
         assert "final_reward_deviation" in result
         assert "auc_match" in result
         assert "auc_deviation" in result
         assert "passed" in result
         assert "config_hash_match" in result
+        assert "config_integrity_match" in result
         assert "config_hash_run" in result
         assert "config_hash_ref" in result
         assert "config_hash_source" in result
-        assert isinstance(result["final_reward_match"], bool)
-        assert isinstance(result["final_reward_deviation"], float)
+        assert isinstance(result["tail_reward_mean_match"], bool)
+        assert isinstance(result["tail_reward_mean_deviation"], float)
         assert isinstance(result["passed"], bool)
 
     def test_different_iteration_counts(self, tmp_path: Path) -> None:
@@ -248,11 +268,37 @@ class TestCompareRuns:
         run_dir = create_experiment_with_metrics(tmp_path / "run", run_metrics)
         ref_dir = create_experiment_with_metrics(tmp_path / "ref", ref_metrics)
 
-        # Should still work - compares final rewards
+        # Should still work - compares tail means using all available values
         result = compare_runs(str(run_dir), str(ref_dir))
 
-        assert "final_reward_match" in result
+        assert "tail_reward_mean_match" in result
         assert "auc_match" in result
+
+    def test_uses_last_50_rewards_when_available(self, tmp_path: Path) -> None:
+        """Tail mean uses exactly the last 50 reward values."""
+        run_metrics = [{"iteration": i, "episode_reward_mean": float(i)} for i in range(1, 61)]
+        ref_metrics = [{"iteration": i, "episode_reward_mean": float(i)} for i in range(1, 61)]
+        run_dir = create_experiment_with_metrics(tmp_path / "run", run_metrics)
+        ref_dir = create_experiment_with_metrics(tmp_path / "ref", ref_metrics)
+
+        result = compare_runs(str(run_dir), str(ref_dir))
+
+        assert result["reward_window"] == 50
+        assert result["reward_window_run"] == 50
+        assert result["reward_window_ref"] == 50
+        assert result["tail_reward_mean_run"] == pytest.approx(sum(range(11, 61)) / 50)
+
+    def test_uses_all_rewards_when_fewer_than_50_exist(self, tmp_path: Path) -> None:
+        """Tail mean falls back to all rewards on short runs."""
+        metrics = [{"iteration": i, "episode_reward_mean": float(i)} for i in range(1, 6)]
+        run_dir = create_experiment_with_metrics(tmp_path / "run", metrics)
+        ref_dir = create_experiment_with_metrics(tmp_path / "ref", metrics)
+
+        result = compare_runs(str(run_dir), str(ref_dir))
+
+        assert result["reward_window_run"] == 5
+        assert result["reward_window_ref"] == 5
+        assert result["tail_reward_mean_run"] == pytest.approx(3.0)
 
     def test_config_hash_mismatch_fails(self, tmp_path: Path) -> None:
         """Different config hashes fail strict reproducibility comparison."""
@@ -263,6 +309,17 @@ class TestCompareRuns:
         result = compare_runs(str(run_dir), str(ref_dir))
 
         assert result["config_hash_match"] is False
+        assert result["passed"] is False
+
+    def test_config_integrity_mismatch_fails(self, tmp_path: Path) -> None:
+        """Failed runtime config integrity fails comparison."""
+        metrics = [{"iteration": 1, "episode_reward_mean": -100.0}]
+        run_dir = create_experiment_with_metrics(tmp_path / "run", metrics, config_integrity_match=False)
+        ref_dir = create_experiment_with_metrics(tmp_path / "ref", metrics, config_integrity_match=True)
+
+        result = compare_runs(str(run_dir), str(ref_dir))
+
+        assert result["config_integrity_match"] is False
         assert result["passed"] is False
 
     def test_recomputes_hash_from_frozen_config_when_hash_missing(self, tmp_path: Path) -> None:

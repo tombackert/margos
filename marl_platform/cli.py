@@ -269,6 +269,7 @@ def run(
     If no experiment name is provided, shows a selection list.
     TensorBoard launches automatically and is available at http://localhost:6006.
     """
+    tb_process = None
     try:
         source = "config"  # Default source
 
@@ -312,12 +313,12 @@ def run(
 
         typer.echo("")
 
-        if tb_process is not None:
-            input("TensorBoard still running - press 'Enter' to close.")
-            tb_process.kill()
     except PlatformError as e:
         display_error(e, verbose=_verbose)
         raise typer.Exit(1)
+    finally:
+        if tb_process is not None and tb_process.poll() is None:
+            tb_process.kill()
 
 
 def resolve_experiment_path_extended(experiment: str, results_dir: str, imported_dir: str) -> Path:
@@ -354,11 +355,12 @@ def compare(
     results_dir: str = typer.Option("results", "--results-dir", "-d", help="Override results directory"),
     imported_dir: str = typer.Option("experiments/imported", "--imported-dir", "-i", help="Imported experiments directory"),
 ) -> None:
-    """Compare two experiments for reproducibility.
+    """Compare two experiments using the platform's default reproducibility rule.
 
-    Compares final reward, AUC, and frozen-config identity between experiments,
-    checking that metric deviations are within tolerance (default 1%) and that
-    config hashes match. This serves SRQ3 (reproducibility).
+    Compares the mean reward over the last 50 logged values, or all available
+    values if fewer than 50 are present, using the platform's default ±1%
+    tolerance. AUC is reported diagnostically, while pass/fail requires reward
+    agreement plus matching config identity and runtime config integrity.
 
     Examples:
         platform compare                           # Interactive selection for both
@@ -536,6 +538,17 @@ def import_(
             table = create_fingerprint_table(comparison)
             console.print()
             console.print(table)
+            if not comparison.get("critical_match", comparison["all_match"]):
+                console.print(
+                    "\n[yellow]Warning:[/yellow] Critical environment mismatches detected. "
+                    "Import and reproduction remain allowed, but validity is weakened until "
+                    "the environments are better aligned."
+                )
+            elif not comparison["all_match"]:
+                console.print(
+                    "\n[yellow]Warning:[/yellow] Non-critical environment differences detected. "
+                    "Reproduction remains allowed."
+                )
 
     except PlatformError as e:
         display_error(e, verbose=_verbose)

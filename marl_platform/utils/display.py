@@ -138,22 +138,26 @@ def create_comparison_table(comparison: dict) -> Table:
     table.add_column("Deviation / Source", justify="right")
     table.add_column("Match", justify="center")
 
-    # Final Reward row
-    final_match = comparison["final_reward_match"]
+    # Tail reward mean row
+    final_match = comparison["tail_reward_mean_match"]
     final_match_text = f"[{STYLE_OK}]Yes[/{STYLE_OK}]" if final_match else f"[{STYLE_FAIL}]No[/{STYLE_FAIL}]"
     table.add_row(
-        "Final Reward",
-        f"{comparison['final_reward_run']:.4f}",
-        f"{comparison['final_reward_ref']:.4f}",
-        f"{comparison['final_reward_deviation']:.2%}",
+        f"Reward Mean (last {comparison['reward_window']})",
+        f"{comparison['tail_reward_mean_run']:.4f}",
+        f"{comparison['tail_reward_mean_ref']:.4f}",
+        (
+            f"{comparison['tail_reward_mean_deviation']:.2%} "
+            f"(n={comparison['reward_window_run']}/{comparison['reward_window_ref']}, "
+            f"tol={comparison['tolerance']:.0%})"
+        ),
         final_match_text,
     )
 
-    # AUC row
+    # AUC row (diagnostic only)
     auc_match = comparison["auc_match"]
     auc_match_text = f"[{STYLE_OK}]Yes[/{STYLE_OK}]" if auc_match else f"[{STYLE_FAIL}]No[/{STYLE_FAIL}]"
     table.add_row(
-        "AUC",
+        "AUC (diagnostic)",
         f"{comparison['auc_run']:.4f}",
         f"{comparison['auc_ref']:.4f}",
         f"{comparison['auc_deviation']:.2%}",
@@ -173,6 +177,16 @@ def create_comparison_table(comparison: dict) -> Table:
         config_match_text,
     )
 
+    integrity_match = comparison["config_integrity_match"]
+    integrity_match_text = f"[{STYLE_OK}]Yes[/{STYLE_OK}]" if integrity_match else f"[{STYLE_FAIL}]No[/{STYLE_FAIL}]"
+    table.add_row(
+        "Config Integrity",
+        "pass" if comparison["config_integrity_run"]["match"] else "fail",
+        "pass" if comparison["config_integrity_ref"]["match"] else "fail",
+        comparison["config_integrity_run"]["source"],
+        integrity_match_text,
+    )
+
     return table
 
 
@@ -186,8 +200,16 @@ def create_fingerprint_table(comparison: dict) -> Table:
         Rich Table displaying fingerprint comparison.
     """
     all_match = comparison["all_match"]
-    status = "All Match" if all_match else "Differences Detected"
-    status_style = STYLE_OK if all_match else STYLE_FAIL
+    critical_match = comparison.get("critical_match", all_match)
+    if all_match:
+        status = "All Match"
+        status_style = STYLE_OK
+    elif critical_match:
+        status = "Non-critical Differences"
+        status_style = "yellow"
+    else:
+        status = "Critical Differences"
+        status_style = STYLE_FAIL
 
     table = Table(
         title=f"Environment Comparison - [{status_style}]{status}[/{status_style}]",
@@ -213,5 +235,11 @@ def create_fingerprint_table(comparison: dict) -> Table:
     # Packages
     for pkg, (bundle_ver, current_ver, match) in comparison["packages"].items():
         table.add_row(f"  {pkg}", bundle_ver, current_ver, status_text(match))
+
+    for name, (bundle_val, current_val, match) in comparison.get("runtime", {}).items():
+        table.add_row(f"  {name}", bundle_val, current_val, status_text(match))
+
+    for name, (bundle_val, current_val, match) in comparison.get("build", {}).items():
+        table.add_row(f"  {name}", bundle_val, current_val, status_text(match))
 
     return table

@@ -119,6 +119,10 @@ def export_bundle(
         if config_hash_path.exists():
             zf.write(config_hash_path, "config_hash.txt")
 
+        config_integrity_path = exp_path / "config_integrity.yaml"
+        if config_integrity_path.exists():
+            zf.write(config_integrity_path, "config_integrity.yaml")
+
         update_progress(4, 6, "Adding logs")
 
         # Add logs directory

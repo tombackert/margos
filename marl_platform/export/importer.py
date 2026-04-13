@@ -171,12 +171,8 @@ def compare_fingerprints(bundle_fp: dict, current_fp: dict) -> dict:
 
     Returns:
         Comparison dict with structure:
-        {
-            "python": (bundle_value, current_value, match),
-            "os": (bundle_value, current_value, match),
-            "packages": {pkg: (bundle_value, current_value, match), ...},
-            "all_match": bool
-        }
+        Includes top-level python/os checks plus package/runtime/build
+        sections, with `all_match` and `critical_match` summary flags.
     """
     result = {}
 
@@ -207,9 +203,43 @@ def compare_fingerprints(bundle_fp: dict, current_fp: dict) -> dict:
 
     result["packages"] = packages
 
+    runtime = {}
+    runtime_keys = set(bundle_fp.get("runtime", {}).keys()) | set(current_fp.get("runtime", {}).keys())
+    all_runtime_match = True
+    for key in sorted(runtime_keys):
+        bundle_val = bundle_fp.get("runtime", {}).get(key, "unknown")
+        current_val = current_fp.get("runtime", {}).get(key, "unknown")
+        match = bundle_val == current_val
+        runtime[key] = (bundle_val, current_val, match)
+        if not match:
+            all_runtime_match = False
+    result["runtime"] = runtime
+
+    build = {}
+    build_keys = set(bundle_fp.get("build", {}).keys()) | set(current_fp.get("build", {}).keys())
+    all_build_match = True
+    for key in sorted(build_keys):
+        bundle_val = bundle_fp.get("build", {}).get(key, "unknown")
+        current_val = current_fp.get("build", {}).get(key, "unknown")
+        match = bundle_val == current_val
+        build[key] = (bundle_val, current_val, match)
+        if not match:
+            all_build_match = False
+    result["build"] = build
+
     # Overall match
     result["all_match"] = (
-        result["python"][2] and result["os"][2] and all_packages_match
+        result["python"][2] and result["os"][2] and all_packages_match and all_runtime_match and all_build_match
+    )
+    critical_package_keys = {"ray", "torch", "numpy", "gymnasium", "pettingzoo", "pyzmq", "tensorboard"}
+    critical_runtime_keys = {"argos"}
+    critical_build_keys = {"controller_plugin", "loop_plugin"}
+    result["critical_match"] = (
+        result["python"][2]
+        and result["os"][2]
+        and all(result["packages"].get(key, ("unknown", "unknown", True))[2] for key in critical_package_keys)
+        and all(result["runtime"].get(key, ("unknown", "unknown", True))[2] for key in critical_runtime_keys)
+        and all(result["build"].get(key, ("unknown", "unknown", True))[2] for key in critical_build_keys)
     )
 
     return result
@@ -266,11 +296,29 @@ def format_fingerprint_comparison(comparison: dict) -> str:
         status = "[OK]" if match else "[MISMATCH]"
         lines.append(f"  {pkg:15} {bundle_ver:15} -> {current_ver:15} {status}")
 
+    if comparison.get("runtime"):
+        lines.append("")
+        lines.append("Runtime:")
+        lines.append("-" * 60)
+        for name, (bundle_val, current_val, match) in comparison["runtime"].items():
+            status = "[OK]" if match else "[MISMATCH]"
+            lines.append(f"  {name:15} {str(bundle_val):15} -> {str(current_val):15} {status}")
+
+    if comparison.get("build"):
+        lines.append("")
+        lines.append("Build:")
+        lines.append("-" * 60)
+        for name, (bundle_val, current_val, match) in comparison["build"].items():
+            status = "[OK]" if match else "[MISMATCH]"
+            lines.append(f"  {name:15} {str(bundle_val):15} -> {str(current_val):15} {status}")
+
     # Summary
     lines.append("")
     if comparison["all_match"]:
         lines.append("All environments match.")
+    elif comparison.get("critical_match", False):
+        lines.append("Warning: Non-critical environment differences detected. Results may vary.")
     else:
-        lines.append("Warning: Environment differences detected. Results may vary.")
+        lines.append("Warning: Critical environment differences detected. Results may vary.")
 
     return "\n".join(lines)

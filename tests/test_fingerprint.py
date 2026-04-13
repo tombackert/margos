@@ -19,6 +19,8 @@ class TestCaptureFingerprint:
         assert "os" in fp
         assert "platform" in fp
         assert "packages" in fp
+        assert "runtime" in fp
+        assert "build" in fp
         assert "captured_at" in fp
 
     def test_python_version_format(self) -> None:
@@ -48,7 +50,7 @@ class TestCaptureFingerprint:
         fp = capture_fingerprint()
 
         # These are the packages we track
-        expected_packages = ["ray", "torch", "numpy", "pydantic", "gymnasium", "pettingzoo"]
+        expected_packages = ["ray", "torch", "numpy", "pydantic", "gymnasium", "pettingzoo", "pyzmq", "tensorboard"]
         for pkg in expected_packages:
             assert pkg in fp["packages"]
 
@@ -104,6 +106,8 @@ class TestSaveFingerprint:
         assert loaded["python"] == fp["python"]
         assert loaded["os"] == fp["os"]
         assert loaded["packages"] == fp["packages"]
+        assert loaded["runtime"] == fp["runtime"]
+        assert loaded["build"] == fp["build"]
 
     def test_roundtrip_preserves_data(self, tmp_path: Path) -> None:
         """Save and load preserves all data."""
@@ -141,6 +145,7 @@ class TestCompareFingerprints:
         result = compare_fingerprints(fp1, fp2)
 
         assert result["all_match"] is True
+        assert result["critical_match"] is True
         assert result["python"][2] is True  # match flag
         assert result["os"][2] is True
 
@@ -152,6 +157,7 @@ class TestCompareFingerprints:
         result = compare_fingerprints(fp1, fp2)
 
         assert result["all_match"] is False
+        assert result["critical_match"] is False
         assert result["python"][2] is False  # match flag
         assert result["python"][0] == "3.10.0"  # bundle value
         assert result["python"][1] == "3.11.0"  # current value
@@ -167,6 +173,7 @@ class TestCompareFingerprints:
         assert result["packages"]["torch"][2] is False  # match flag
         assert result["packages"]["torch"][0] == "2.0.0"  # bundle value
         assert result["packages"]["torch"][1] == "2.0.1"  # current value
+        assert result["critical_match"] is False
 
     def test_missing_package_in_current(self) -> None:
         """Missing package in current is detected."""
@@ -215,6 +222,7 @@ class TestCompareFingerprints:
         result = compare_fingerprints(fp1, fp2)
 
         assert result["all_match"] is False
+        assert result["critical_match"] is False
         assert result["python"][2] is False  # match flag
         assert result["os"][2] is False
         assert result["packages"]["torch"][2] is False

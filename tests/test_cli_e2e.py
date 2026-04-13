@@ -220,6 +220,7 @@ class TestCompareCommand:
 
         assert result.exit_code == 0
         assert "FAILED" in result.stdout
+        assert "Reward Mean (last 50)" in result.stdout
         assert "Config Hash" in result.stdout
 
 

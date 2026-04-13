@@ -254,33 +254,47 @@ def format_comparison(comparison: dict) -> str:
     header = "| Metric       | Run          | Reference    | Deviation / Source | Match |"
     separator = "|--------------|--------------|--------------|--------------------|-------|"
 
-    final_match = "Yes" if comparison["final_reward_match"] else "No"
+    tail_match = "Yes" if comparison["tail_reward_mean_match"] else "No"
     auc_match = "Yes" if comparison["auc_match"] else "No"
     config_match = "Yes" if comparison["config_hash_match"] else "No"
+    integrity_match = "Yes" if comparison["config_integrity_match"] else "No"
 
     final_row = (
-        f"| Final Reward | {comparison['final_reward_run']:12.4f} | "
-        f"{comparison['final_reward_ref']:12.4f} | {comparison['final_reward_deviation']:9.2%} | {final_match:5} |"
+        f"| Reward Mean L50 | {comparison['tail_reward_mean_run']:12.4f} | "
+        f"{comparison['tail_reward_mean_ref']:12.4f} | {comparison['tail_reward_mean_deviation']:9.2%} | {tail_match:5} |"
     )
     auc_row = (
-        f"| AUC          | {comparison['auc_run']:12.4f} | "
+        f"| AUC (diag)   | {comparison['auc_run']:12.4f} | "
         f"{comparison['auc_ref']:12.4f} | {comparison['auc_deviation']:9.2%} | {auc_match:5} |"
     )
     config_row = (
         f"| Config Hash  | {comparison['config_hash_run'][:12]:12} | "
         f"{comparison['config_hash_ref'][:12]:12} | {comparison['config_hash_source']['run']:18} | {config_match:5} |"
     )
+    integrity_row = (
+        f"| Config Integrity | "
+        f"{'pass' if comparison['config_integrity_run']['match'] else 'fail':12} | "
+        f"{'pass' if comparison['config_integrity_ref']['match'] else 'fail':12} | "
+        f"{comparison['config_integrity_run']['source']:18} | {integrity_match:5} |"
+    )
 
     lines = [
         "Reproducibility Comparison",
         "-" * 70,
         f"Status: {status}",
+        (
+            "Primary metric: mean of last "
+            f"{comparison['reward_window']} reward values "
+            f"(run n={comparison['reward_window_run']}, ref n={comparison['reward_window_ref']}), "
+            f"tolerance {comparison['tolerance']:.0%}"
+        ),
         "",
         header,
         separator,
         final_row,
         auc_row,
         config_row,
+        integrity_row,
         separator,
         "",
     ]

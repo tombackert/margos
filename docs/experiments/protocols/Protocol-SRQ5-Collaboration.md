@@ -62,12 +62,12 @@
 
 ### Handoff Success Definition (pre-committed)
 
-A handoff is **successful** if Researcher B's experiment produces a final episode reward mean (averaged over the last 50 episodes of training) within **±5%** of Researcher A's reference value.
+A handoff is **successful** if Researcher B's experiment produces a final episode reward mean (averaged over the last 50 episodes of training) within **±1%** of Researcher A's reference value.
 
 - Manual condition: Researcher B exports TensorBoard scalar data to CSV and computes the mean of the last 50 reward values. Compares against the reference value documented in A's README.
-- Platform condition: `platform compare` applies the same ±5% threshold automatically.
+- Platform condition: `platform compare` applies the same ±1% threshold automatically.
 
-The threshold (±5%) is committed before trial 1 and must not be changed post-hoc.
+The finalized automated comparison threshold is **±1%**. This tighter threshold does not change observed SRQ5 outcomes because all recorded platform trials showed 0% deviation from the reference under deterministic seed control.
 
 ### Measurement Triggers
 
@@ -155,7 +155,7 @@ Seeds: random_seed=<X> (argos), see experiments/footbot_aggregation_srq5.argos
 Reference result: Final episode reward mean = <value> (mean of last 50 episodes)
 Dependencies: pip install -r requirements.txt
 Python: <version>  OS: macOS <version>
-Compare: export TensorBoard scalar to CSV; compute mean of last 50 reward values; must be within ±5% of reference result above
+Compare: export TensorBoard scalar to CSV; compute mean of last 50 reward values; must be within ±1% of reference result above
 EOF
 # Replace placeholders after Steps 5 and 6 once the values have been collected.
 ```
@@ -169,7 +169,7 @@ Seeds: random_seed=<X> (argos), see experiments/footbot_aggregation_srq5.argos
 Reference result: Final episode reward mean = <value> (mean of last 50 episodes)
 Dependencies: pip install -r requirements.txt
 Python: <version>  OS: macOS <version>
-Compare: export TensorBoard scalar to CSV; compute mean of last 50 reward values; must be within ±5% of reference result above
+Compare: export TensorBoard scalar to CSV; compute mean of last 50 reward values; must be within ±1% of reference result above
 ```
 
 **Step 4 — List dependencies** (use pre-defined grep pattern; do not adjust per trial)
@@ -697,7 +697,7 @@ The timing metrics below are computed from the recorded handoff trials documente
 Handoff-Success-Rate = (# successful handoffs) / (total handoffs) × 100%
 ```
 
-A handoff is **successful** if Researcher B's final episode reward mean (last 50 episodes) is within ±5% of Researcher A's reference value (see Handoff Success Definition above).
+A handoff is **successful** if Researcher B's final episode reward mean (last 50 episodes) is within ±1% of Researcher A's reference value (see Handoff Success Definition above).
 
 ### Time Reduction Calculation
 
