@@ -248,7 +248,8 @@ def format_comparison(comparison: dict) -> str:
     Returns:
         Formatted comparison text with table.
     """
-    status = "PASSED" if comparison["passed"] else "FAILED"
+    handoff_status = "PASSED" if comparison["handoff_pass"] else "FAILED"
+    repro_status = "PASSED" if comparison["repro_pass"] else "FAILED"
 
     # Build table
     header = "| Metric       | Run          | Reference    | Deviation / Source | Match |"
@@ -264,7 +265,7 @@ def format_comparison(comparison: dict) -> str:
         f"{comparison['tail_reward_mean_ref']:12.4f} | {comparison['tail_reward_mean_deviation']:9.2%} | {tail_match:5} |"
     )
     auc_row = (
-        f"| AUC (diag)   | {comparison['auc_run']:12.4f} | "
+        f"| AUC (SRQ3)   | {comparison['auc_run']:12.4f} | "
         f"{comparison['auc_ref']:12.4f} | {comparison['auc_deviation']:9.2%} | {auc_match:5} |"
     )
     config_row = (
@@ -281,7 +282,8 @@ def format_comparison(comparison: dict) -> str:
     lines = [
         "Reproducibility Comparison",
         "-" * 70,
-        f"Status: {status}",
+        f"SRQ5 Handoff Status: {handoff_status}",
+        f"SRQ3 Strict Status: {repro_status}",
         (
             "Primary metric: mean of last "
             f"{comparison['reward_window']} reward values "

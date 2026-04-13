@@ -31,6 +31,7 @@ def test_main_requires_auc_match_for_pass(monkeypatch, tmp_path, capsys) -> None
         lambda output_dir, ref_dir: {
             "final_reward_deviation": 0.0,
             "auc_deviation": 0.02,
+            "repro_pass": False,
             "passed": True,
             "auc_match": False,
             "config_hash_match": True,

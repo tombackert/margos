@@ -75,6 +75,8 @@ class TestCompareRuns:
 
         result = compare_runs(str(run_dir), str(ref_dir))
 
+        assert result["handoff_pass"] is True
+        assert result["repro_pass"] is True
         assert result["passed"] is True
         assert result["tail_reward_mean_match"] is True
         assert result["config_hash_match"] is True
@@ -98,6 +100,8 @@ class TestCompareRuns:
 
         result = compare_runs(str(run_dir), str(ref_dir))
 
+        assert result["handoff_pass"] is True
+        assert result["repro_pass"] is True
         assert result["passed"] is True
         assert result["tail_reward_mean_match"] is True
         assert result["config_hash_match"] is True
@@ -137,10 +141,14 @@ class TestCompareRuns:
 
         # With 1% tolerance - should fail
         result_strict = compare_runs(str(run_dir), str(ref_dir), tolerance=0.01)
+        assert result_strict["handoff_pass"] is False
+        assert result_strict["repro_pass"] is False
         assert result_strict["passed"] is False
 
         # With 10% tolerance - should pass
         result_loose = compare_runs(str(run_dir), str(ref_dir), tolerance=0.10)
+        assert result_loose["handoff_pass"] is True
+        assert result_loose["repro_pass"] is True
         assert result_loose["passed"] is True
 
     def test_tail_reward_mean_deviation_calculated(self, tmp_path: Path) -> None:
@@ -173,8 +181,8 @@ class TestCompareRuns:
         # |10 - 20| / |20| = 10 / 20 = 0.5 (50%)
         assert result["auc_deviation"] == pytest.approx(0.5)
 
-    def test_auc_difference_does_not_fail_pass(self, tmp_path: Path) -> None:
-        """AUC remains diagnostic and no longer gates pass/fail."""
+    def test_auc_difference_keeps_handoff_pass_but_fails_strict_repro(self, tmp_path: Path) -> None:
+        """AUC outside tolerance remains an SRQ5 pass but fails SRQ3 strict reproducibility."""
         run_metrics = [
             {"iteration": 1, "episode_reward_mean": -100.0},
             {"iteration": 2, "episode_reward_mean": -50.0},
@@ -192,6 +200,8 @@ class TestCompareRuns:
 
         assert result["tail_reward_mean_match"] is True
         assert result["auc_match"] is False
+        assert result["handoff_pass"] is True
+        assert result["repro_pass"] is False
         assert result["passed"] is True
 
     def test_handles_negative_rewards(self, tmp_path: Path) -> None:
@@ -209,6 +219,8 @@ class TestCompareRuns:
 
         result = compare_runs(str(run_dir), str(ref_dir))
 
+        assert result["handoff_pass"] is True
+        assert result["repro_pass"] is True
         assert result["passed"] is True
 
     def test_handles_zero_reference_final_reward(self, tmp_path: Path) -> None:
@@ -220,6 +232,8 @@ class TestCompareRuns:
 
         result = compare_runs(str(run_dir), str(ref_dir))
 
+        assert result["handoff_pass"] is True
+        assert result["repro_pass"] is True
         assert result["passed"] is True
         assert result["tail_reward_mean_deviation"] == 0.0
 
@@ -244,6 +258,8 @@ class TestCompareRuns:
         assert "final_reward_deviation" in result
         assert "auc_match" in result
         assert "auc_deviation" in result
+        assert "handoff_pass" in result
+        assert "repro_pass" in result
         assert "passed" in result
         assert "config_hash_match" in result
         assert "config_integrity_match" in result
@@ -252,6 +268,8 @@ class TestCompareRuns:
         assert "config_hash_source" in result
         assert isinstance(result["tail_reward_mean_match"], bool)
         assert isinstance(result["tail_reward_mean_deviation"], float)
+        assert isinstance(result["handoff_pass"], bool)
+        assert isinstance(result["repro_pass"], bool)
         assert isinstance(result["passed"], bool)
 
     def test_different_iteration_counts(self, tmp_path: Path) -> None:
@@ -309,7 +327,9 @@ class TestCompareRuns:
         result = compare_runs(str(run_dir), str(ref_dir))
 
         assert result["config_hash_match"] is False
-        assert result["passed"] is False
+        assert result["handoff_pass"] is True
+        assert result["repro_pass"] is False
+        assert result["passed"] is True
 
     def test_config_integrity_mismatch_fails(self, tmp_path: Path) -> None:
         """Failed runtime config integrity fails comparison."""
@@ -320,7 +340,26 @@ class TestCompareRuns:
         result = compare_runs(str(run_dir), str(ref_dir))
 
         assert result["config_integrity_match"] is False
-        assert result["passed"] is False
+        assert result["handoff_pass"] is True
+        assert result["repro_pass"] is False
+        assert result["passed"] is True
+
+    def test_missing_config_integrity_is_permissive_for_legacy_artifacts(self, tmp_path: Path) -> None:
+        """Missing runtime config integrity artifact preserves legacy replayability."""
+        metrics = [{"iteration": 1, "episode_reward_mean": -100.0}]
+        run_dir = create_experiment_with_metrics(tmp_path / "run", metrics)
+        ref_dir = create_experiment_with_metrics(tmp_path / "ref", metrics)
+        (run_dir / "config_integrity.yaml").unlink()
+
+        result = compare_runs(str(run_dir), str(ref_dir))
+
+        assert result["config_integrity_run"]["exists"] is False
+        assert result["config_integrity_run"]["match"] is True
+        assert result["config_integrity_run"]["source"] == "missing (legacy-permissive)"
+        assert result["config_integrity_match"] is True
+        assert result["handoff_pass"] is True
+        assert result["repro_pass"] is True
+        assert result["passed"] is True
 
     def test_recomputes_hash_from_frozen_config_when_hash_missing(self, tmp_path: Path) -> None:
         """Falls back to config.yaml when config_hash.txt is missing."""

@@ -65,7 +65,7 @@
 A handoff is **successful** if Researcher B's experiment produces a final episode reward mean (averaged over the last 50 episodes of training) within **±1%** of Researcher A's reference value.
 
 - Manual condition: Researcher B exports TensorBoard scalar data to CSV and computes the mean of the last 50 reward values. Compares against the reference value documented in A's README.
-- Platform condition: `platform compare` applies the same ±1% threshold automatically.
+- Platform condition: `platform compare` applies the same ±1% threshold automatically for the reported **SRQ5 handoff** status. The command also reports a stricter SRQ3 reproducibility status, but that stricter judgment is not used for M5.5.
 
 The initial SRQ5 draft specified a broader success tolerance. Before final analysis, this criterion was standardized to a stricter **±1%** threshold, computed on the mean of the final 50 reward values, and this finalized rule was used consistently in the reported evaluation. Because all successful platform trials showed **0% deviation** under the finalized comparison, this amendment did not affect the study outcome.
 
@@ -75,7 +75,7 @@ The initial SRQ5 draft specified a broader success tolerance. Before final analy
 | ----------------- | ----------------------------------------------- | ------------------------------------------------ |
 | Time-to-Share     | Decision made to share ("I want to share this") | Shareable artifact ready (zip/bundle created)    |
 | Time-to-First-Run | Bundle received on Machine B                    | First successful execution (any output produced) |
-| Time-to-Reproduce | Bundle received on Machine B                    | Results verified as matching (comparison passes) |
+| Time-to-Reproduce | Bundle received on Machine B                    | Results verified as matching (SRQ5 handoff status passes) |
 | Steps-to-Share    | First action toward sharing                     | Artifact ready for transfer                      |
 
 ### Controlled Variables

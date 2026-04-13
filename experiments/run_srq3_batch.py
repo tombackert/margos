@@ -104,7 +104,7 @@ def main() -> None:
 
             reward_dev_pct = comparison["final_reward_deviation"] * 100
             auc_dev_pct = comparison["auc_deviation"] * 100
-            passed = comparison["passed"] and comparison["auc_match"]
+            passed = comparison["repro_pass"]
             hash_match = comparison["config_hash_match"]
             integrity_match = comparison["config_integrity_match"]
 

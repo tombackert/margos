@@ -106,6 +106,7 @@ For each reproduction attempt (N=20):
    ```bash
    platform compare exp_XXX results/reference/
    ```
+   Use the reported **SRQ3 strict reproducibility** status for M3.1. The same command also reports an SRQ5-oriented handoff status, but that reward-only judgment is not used in this protocol.
 
 4. **Record outcome**
    - Final reward

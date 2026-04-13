@@ -39,7 +39,9 @@ def compare_runs(
         - auc_deviation: float (as percentage)
         - config_hash_match: bool
         - config_integrity_match: bool
-        - passed: bool (tail mean within tolerance and config checks match)
+        - handoff_pass: bool (SRQ5 reward-only handoff success)
+        - repro_pass: bool (SRQ3 strict reproducibility success)
+        - passed: bool (backward-compatible alias for handoff_pass)
     """
     run_path = Path(run_dir)
     ref_path = Path(reference_dir)
@@ -93,6 +95,8 @@ def compare_runs(
     # Check if within tolerance
     tail_mean_match = tail_mean_deviation <= tolerance
     auc_match = auc_deviation <= tolerance
+    handoff_pass = tail_mean_match
+    repro_pass = tail_mean_match and auc_match and config_hash_match and config_integrity_match
 
     return {
         "comparison_method": "tail_mean",
@@ -123,7 +127,10 @@ def compare_runs(
         "config_integrity_match": config_integrity_match,
         "config_integrity_run": run_integrity,
         "config_integrity_ref": ref_integrity,
-        "passed": tail_mean_match and config_hash_match and config_integrity_match,
+        "handoff_pass": handoff_pass,
+        "repro_pass": repro_pass,
+        # Backward-compatible alias used by SRQ5-oriented displays/callers.
+        "passed": handoff_pass,
     }
 
 
@@ -134,7 +141,7 @@ def _read_config_integrity(output_dir: Path) -> dict:
         return {
             "exists": False,
             "match": True,
-            "source": "missing",
+            "source": "missing (legacy-permissive)",
             "start_hash": None,
             "end_hash": None,
         }

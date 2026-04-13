@@ -337,6 +337,8 @@ class TestFormatComparison:
             "config_integrity_match": True,
             "config_integrity_run": {"match": True, "source": "config.yaml"},
             "config_integrity_ref": {"match": True, "source": "config.yaml"},
+            "handoff_pass": True,
+            "repro_pass": True,
             "passed": True,
         }
         comparison.update(overrides)
@@ -349,6 +351,8 @@ class TestFormatComparison:
         result = format_comparison(comparison)
 
         assert "PASSED" in result
+        assert "SRQ5 Handoff Status: PASSED" in result
+        assert "SRQ3 Strict Status: PASSED" in result
         assert "| Yes" in result  # Table format has "| Yes"
         assert "Config Hash" in result
         assert "Reward Mean L50" in result
@@ -364,13 +368,33 @@ class TestFormatComparison:
             final_reward_deviation=0.15,
             final_reward_run=115.0,
             final_reward_ref=100.0,
+            handoff_pass=False,
+            repro_pass=False,
             passed=False,
         )
 
         result = format_comparison(comparison)
 
         assert "FAILED" in result
+        assert "SRQ5 Handoff Status: FAILED" in result
+        assert "SRQ3 Strict Status: FAILED" in result
         assert "| No" in result  # Table format has "| No"
+
+    def test_formats_split_handoff_and_strict_statuses(self) -> None:
+        """Report shows when SRQ5 handoff passes but SRQ3 strict reproducibility fails."""
+        comparison = self._comparison(
+            auc_match=False,
+            auc_deviation=0.02,
+            handoff_pass=True,
+            repro_pass=False,
+            passed=True,
+        )
+
+        result = format_comparison(comparison)
+
+        assert "SRQ5 Handoff Status: PASSED" in result
+        assert "SRQ3 Strict Status: FAILED" in result
+        assert "AUC (SRQ3)" in result
 
     def test_includes_deviation_percentages(self) -> None:
         """Includes deviation as percentage."""

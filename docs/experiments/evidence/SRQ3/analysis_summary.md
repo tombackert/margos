@@ -41,6 +41,8 @@ Reward Deviation (%) = |run_reward - ref_reward| / ref_reward × 100
 AUC Deviation (%) = |run_AUC - ref_AUC| / ref_AUC × 100
 ```
 
+`platform compare` also reports an SRQ5-oriented reward-only handoff status, but SRQ3 uses the stricter reproducibility judgment above.
+
 ## Interpretation
 
 **Outcome:** H3 strongly supported — 100% success rate (20/20) with 0.0000% deviation across all runs, matching configuration identity, and passing runtime config-integrity verification.

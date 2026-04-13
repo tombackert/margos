@@ -43,7 +43,9 @@ These timing metrics are computed from the recorded handoff trials documented in
 
 The platform preserved a 100% handoff success rate and substantially reduced sharing effort: steps-to-share fell from 8 to 1, and time-to-share fell by 65.3%. Across the recorded handoff trials, time-to-reproduce is 45.9% lower than the manual baseline.
 
-The final SRQ5 comparison rule uses the mean of the last 50 reward values with a ±1% threshold for automated comparison. This threshold tightening does not change the observed SRQ5 outcomes because all recorded platform handoffs showed 0% deviation from the reference.
+The final SRQ5 comparison rule uses the mean of the last 50 reward values with a ±1% threshold for the reported SRQ5 handoff status. `platform compare` also exposes a stricter SRQ3 reproducibility status, but that stricter judgment is not part of M5.5. This threshold tightening does not change the observed SRQ5 outcomes because all recorded platform handoffs showed 0% deviation from the reference.
+
+Current `HEAD` also preserves permissive handling for legacy experiments that predate `config_integrity.yaml`, so the retained SRQ4/SRQ5 evidence artifacts remain directly re-validatable without checking out an older commit.
 
 These results support successful reproduction across separately prepared environments with documented residual package mismatches, rather than unrestricted portability across arbitrary environments.
 

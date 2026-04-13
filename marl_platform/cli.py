@@ -355,12 +355,13 @@ def compare(
     results_dir: str = typer.Option("results", "--results-dir", "-d", help="Override results directory"),
     imported_dir: str = typer.Option("experiments/imported", "--imported-dir", "-i", help="Imported experiments directory"),
 ) -> None:
-    """Compare two experiments using the platform's default reproducibility rule.
+    """Compare two experiments and report SRQ5 and SRQ3 outcomes.
 
     Compares the mean reward over the last 50 logged values, or all available
     values if fewer than 50 are present, using the platform's default ±1%
-    tolerance. AUC is reported diagnostically, while pass/fail requires reward
-    agreement plus matching config identity and runtime config integrity.
+    tolerance. The command reports:
+    - SRQ5 handoff success from reward agreement only
+    - SRQ3 strict reproducibility from reward, AUC, config identity, and runtime config integrity
 
     Examples:
         platform compare                           # Interactive selection for both

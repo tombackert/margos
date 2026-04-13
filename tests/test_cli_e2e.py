@@ -194,7 +194,7 @@ class TestCompareCommand:
         assert "Error" in result.stdout
 
     def test_compare_fails_on_config_hash_mismatch(self, tmp_path: Path) -> None:
-        """Strict compare fails when config hashes differ."""
+        """Compare output distinguishes SRQ5 handoff from SRQ3 strict reproducibility."""
         results_dir = tmp_path / "results"
         run_dir = results_dir / "run"
         ref_dir = results_dir / "ref"
@@ -219,8 +219,11 @@ class TestCompareCommand:
         )
 
         assert result.exit_code == 0
+        assert "SRQ5 Handoff" in result.stdout
+        assert "SRQ3 Strict" in result.stdout
+        assert "PASSED" in result.stdout
         assert "FAILED" in result.stdout
-        assert "Reward Mean (last 50)" in result.stdout
+        assert "Reward Mean" in result.stdout
         assert "Config Hash" in result.stdout
 
 

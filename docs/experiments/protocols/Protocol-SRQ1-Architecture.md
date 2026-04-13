@@ -113,7 +113,7 @@ Verify all architectural decisions are documented:
 | Component              | Required For           | Functional?   | Notes                                                                                 |
 | ---------------------- | ---------------------- | ------------- | ------------------------------------------------------------------------------------- |
 | CLI `run` command      | SRQ2, SRQ4, SRQ5       | [x]           | Implemented in `marl_platform/cli.py`; used to execute configs and imported bundles   |
-| CLI `compare` command  | SRQ3, SRQ5             | [x]           | Implemented in `marl_platform/cli.py`; compares reward and AUC across experiments     |
+| CLI `compare` command  | SRQ3, SRQ5             | [x]           | Implemented in `marl_platform/cli.py`; reports SRQ5 handoff success from reward matching and SRQ3 strict reproducibility from reward, AUC, and config checks |
 | CLI `export` command   | SRQ5                   | [x]           | Implemented in `marl_platform/cli.py` + `marl_platform/export/bundle.py`              |
 | CLI `import` command   | SRQ5                   | [x]           | Implemented in `marl_platform/cli.py` + `marl_platform/export/importer.py`            |
 | Config loader          | SRQ2, SRQ3, SRQ4, SRQ5 | [x]           | `load_config()` resolves YAML into validated platform config                          |

@@ -124,11 +124,19 @@ def create_comparison_table(comparison: dict) -> Table:
     Returns:
         Rich Table displaying comparison results.
     """
-    status = "PASSED" if comparison["passed"] else "FAILED"
-    status_style = STYLE_OK if comparison["passed"] else STYLE_FAIL
+    handoff_pass = comparison["handoff_pass"]
+    repro_pass = comparison["repro_pass"]
+    handoff_status = "PASSED" if handoff_pass else "FAILED"
+    handoff_style = STYLE_OK if handoff_pass else STYLE_FAIL
+    repro_status = "PASSED" if repro_pass else "FAILED"
+    repro_style = STYLE_OK if repro_pass else STYLE_FAIL
 
     table = Table(
-        title=f"Reproducibility Comparison - [{status_style}]{status}[/{status_style}]",
+        title=(
+            "Reproducibility Comparison - "
+            f"SRQ5 Handoff [{handoff_style}]{handoff_status}[/{handoff_style}] / "
+            f"SRQ3 Strict [{repro_style}]{repro_status}[/{repro_style}]"
+        ),
         show_header=True,
         header_style=STYLE_HEADER,
     )
@@ -137,6 +145,11 @@ def create_comparison_table(comparison: dict) -> Table:
     table.add_column("Reference", justify="right")
     table.add_column("Deviation / Source", justify="right")
     table.add_column("Match", justify="center")
+
+    handoff_match_text = f"[{handoff_style}]{handoff_status}[/{handoff_style}]"
+    repro_match_text = f"[{repro_style}]{repro_status}[/{repro_style}]"
+    table.add_row("SRQ5 Handoff", "-", "-", "reward mean only", handoff_match_text)
+    table.add_row("SRQ3 Strict", "-", "-", "reward + AUC + config checks", repro_match_text)
 
     # Tail reward mean row
     final_match = comparison["tail_reward_mean_match"]
@@ -153,11 +166,11 @@ def create_comparison_table(comparison: dict) -> Table:
         final_match_text,
     )
 
-    # AUC row (diagnostic only)
+    # AUC remains visible because it gates strict SRQ3 reproducibility.
     auc_match = comparison["auc_match"]
     auc_match_text = f"[{STYLE_OK}]Yes[/{STYLE_OK}]" if auc_match else f"[{STYLE_FAIL}]No[/{STYLE_FAIL}]"
     table.add_row(
-        "AUC (diagnostic)",
+        "AUC (SRQ3)",
         f"{comparison['auc_run']:.4f}",
         f"{comparison['auc_ref']:.4f}",
         f"{comparison['auc_deviation']:.2%}",
