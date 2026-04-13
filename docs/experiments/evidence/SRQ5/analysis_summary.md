@@ -45,4 +45,6 @@ The platform preserved a 100% handoff success rate and substantially reduced sha
 
 The final SRQ5 comparison rule uses the mean of the last 50 reward values with a ±1% threshold for automated comparison. This threshold tightening does not change the observed SRQ5 outcomes because all recorded platform handoffs showed 0% deviation from the reference.
 
+These results support successful reproduction across separately prepared environments with documented residual package mismatches, rather than unrestricted portability across arbitrary environments.
+
 Time-to-first-run remains 7.4% higher in the platform condition in this prepared-collaborator setup, driven by import overhead before the first execution. The platform still improves the full handoff by automating verification and reducing sharing work.

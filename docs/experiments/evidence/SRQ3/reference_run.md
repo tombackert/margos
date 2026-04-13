@@ -6,29 +6,29 @@
 
 ## Reference Run Details (aggregation_v1 — learning quality demo)
 
-| Field | Value |
-|-------|-------|
-| Experiment ID | aggregation_v1_20260310-170135 |
-| Config Hash | 4e502660f94eae091a85d95a2dbf465573b77f01e1e3565f94e6dea7328bc5fd |
-| Seed | 42 |
-| Final Reward | -19.1231 |
-| AUC | -10171.7911 |
-| Iterations | 300 |
-| Duration | 85 min |
-| Timestamp | 2026-03-10T17:01:57 → 2026-03-10T18:27:01 |
+| Field         | Value                                                            |
+| ------------- | ---------------------------------------------------------------- |
+| Experiment ID | aggregation_v1_20260310-170135                                   |
+| Config Hash   | 4e502660f94eae091a85d95a2dbf465573b77f01e1e3565f94e6dea7328bc5fd |
+| Seed          | 42                                                               |
+| Final Reward  | -19.1231                                                         |
+| AUC           | -10171.7911                                                      |
+| Iterations    | 300                                                              |
+| Duration      | 85 min                                                           |
+| Timestamp     | 2026-03-10T17:01:57 → 2026-03-10T18:27:01                        |
 
 ## SRQ3 Batch Reference (aggregation_srq3 — 10 iterations)
 
-| Field | Value |
-|-------|-------|
-| Experiment ID | aggregation_srq3_20260311-110742 |
-| Config Hash | b9ff14a67be24984cfc457a5116e2b70a2791b2f29bcf856c5782006e8614340 |
-| Seed | 42 |
-| Final Reward | -46.8277 |
-| AUC | -445.2401 |
-| Iterations | 10 |
-| Duration | ~6 min |
-| Timestamp | 2026-03-11T11:07:42 → 2026-03-11T11:10:06 |
+| Field         | Value                                                            |
+| ------------- | ---------------------------------------------------------------- |
+| Experiment ID | aggregation_srq3_20260413-171009                                 |
+| Config Hash   | 4bf92694c011b30981974b14e29a53fa69ac8d39cf754820cf04f608ade1aecd |
+| Seed          | 42                                                               |
+| Final Reward  | -46.8277                                                         |
+| AUC           | -445.2401                                                        |
+| Iterations    | 10                                                               |
+| Duration      | 1m 18s                                                           |
+| Timestamp     | 2026-04-13T17:10:30 → 2026-04-13T17:11:48                        |
 
 ## Notes
 

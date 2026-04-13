@@ -13,6 +13,7 @@ The script:
 
 import argparse
 import csv
+import signal
 import sys
 from pathlib import Path
 
@@ -26,6 +27,16 @@ from marl_platform.orchestrator import run_experiment
 
 CONFIG_PATH = str(ROOT / "experiments" / "configs" / "aggregation_srq3.yaml")
 CSV_PATH = ROOT / "docs" / "experiments" / "evidence" / "SRQ3" / "comparison_results.csv"
+CSV_FIELDS = [
+    "Run#",
+    "Reward",
+    "AUC",
+    "Reward Deviation (%)",
+    "AUC Deviation (%)",
+    "Pass/Fail",
+    "Config Hash Match",
+    "Config Integrity Match",
+]
 
 
 def get_run_stats(run_dir: str) -> tuple[float, float]:
@@ -43,13 +54,17 @@ def get_config_hash(run_dir: str) -> str:
     return hash_path.read_text().strip() if hash_path.exists() else "N/A"
 
 
+def reset_csv() -> None:
+    CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(CSV_PATH, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
+        writer.writeheader()
+
+
 def append_csv_row(row: dict) -> None:
     CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
-    write_header = not CSV_PATH.exists() or CSV_PATH.stat().st_size == 0
     with open(CSV_PATH, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Run#", "Reward", "AUC", "Reward Deviation (%)", "AUC Deviation (%)", "Pass/Fail", "Config Hash Match"])
-        if write_header:
-            writer.writeheader()
+        writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
         writer.writerow(row)
 
 
@@ -72,6 +87,8 @@ def main() -> None:
     print(f"  Config hash:  {ref_hash[:12]}...")
     print(f"\nRunning {args.n} reproduction attempts...\n")
 
+    reset_csv()
+
     pass_count = 0
     rewards = []
 
@@ -79,7 +96,9 @@ def main() -> None:
         print(f"[{i:2d}/{args.n}] Running aggregation_srq3...", end=" ", flush=True)
 
         try:
-            output_dir = run_experiment(CONFIG_PATH)
+            output_dir, tb_process = run_experiment(CONFIG_PATH)
+            if tb_process is not None and tb_process.poll() is None:
+                tb_process.send_signal(signal.SIGTERM)
             run_reward, run_auc = get_run_stats(output_dir)
             comparison = compare_runs(output_dir, reference_dir)
 
@@ -87,6 +106,7 @@ def main() -> None:
             auc_dev_pct = comparison["auc_deviation"] * 100
             passed = comparison["passed"]
             hash_match = comparison["config_hash_match"]
+            integrity_match = comparison["config_integrity_match"]
 
             status = "PASS" if passed else "FAIL"
             if passed:
@@ -103,6 +123,7 @@ def main() -> None:
                 "AUC Deviation (%)": f"{auc_dev_pct:.4f}",
                 "Pass/Fail": status,
                 "Config Hash Match": "Yes" if hash_match else "No",
+                "Config Integrity Match": "Yes" if integrity_match else "No",
             })
 
         except Exception as e:
@@ -115,6 +136,7 @@ def main() -> None:
                 "AUC Deviation (%)": "ERROR",
                 "Pass/Fail": "FAIL",
                 "Config Hash Match": "No",
+                "Config Integrity Match": "No",
             })
 
     # Summary statistics

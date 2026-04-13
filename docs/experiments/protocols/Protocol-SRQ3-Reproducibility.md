@@ -2,14 +2,14 @@
 
 ## Header
 
-| Field                | Value                                                                                                                                                                                                                                                     |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Protocol ID**      | P-SRQ3                                                                                                                                                                                                                                                    |
-| **SRQ Reference**    | SRQ3: To what extent does the platform's centralized configuration and seed management enable reliable self-reproducibility of MARL experiments?                                                                                                          |
-| **Hypothesis**       | H3: The platform achieves a Reproduce-Success-Rate of at least 90% within ±1% tolerance on final reward and AUC, with low Result-Variance across repeated platform reproductions, through centralized config management and deterministic seed control.   |
-| **Success Criteria** | Reproduce-Success-Rate ≥90%, low and stable Result-Variance across repeated runs                                                                                                                                                                          |
-| **Sample Size**      | N=20 reproduction attempts (raised from N≥10 in EvalPlanOverview to achieve 5% resolution on success rate, making the ≥90% threshold cleanly testable)                                                                                                    |
-| **Dependencies**     | Platform implementation complete, reference run established                                                                                                                                                                                               |
+| Field                | Value                                                                                                                                                                                                                                                                                              |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Protocol ID**      | P-SRQ3                                                                                                                                                                                                                                                                                             |
+| **SRQ Reference**    | SRQ3: To what extent does the platform's centralized configuration and seed management enable reliable self-reproducibility of MARL experiments?                                                                                                                                                   |
+| **Hypothesis**       | H3: The platform achieves a Reproduce-Success-Rate of at least 90% within ±1% tolerance on final reward and AUC, while preserving configuration identity and runtime config integrity across repeated platform reproductions through centralized config management and deterministic seed control. |
+| **Success Criteria** | Reproduce-Success-Rate ≥90%, low and stable Result-Variance across repeated runs                                                                                                                                                                                                                   |
+| **Sample Size**      | N=20 reproduction attempts (raised from N≥10 in EvalPlanOverview to achieve 5% resolution on success rate, making the ≥90% threshold cleanly testable)                                                                                                                                             |
+| **Dependencies**     | Platform implementation complete, reference run established                                                                                                                                                                                                                                        |
 
 ---
 
@@ -40,22 +40,25 @@
 
 ### Key Terms
 
-| Term                       | Definition                                                                              |
-| -------------------------- | --------------------------------------------------------------------------------------- |
-| **Reproduce-Success-Rate** | Percentage of runs matching reference within ±1% tolerance on BOTH final reward AND AUC |
-| **Result-Variance**        | Standard deviation of final reward across N runs                                        |
-| **Config-Integrity**       | Config hash at start matches config hash at end (100% expected)                         |
-| **Seed-Determinism**       | Same seed produces same RNG sequence (verified by unit test)                            |
-| **Tolerance**              | ±1% deviation from reference value                                                      |
+| Term                       | Definition                                                                                                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Reproduce-Success-Rate** | Percentage of runs matching reference within ±1% tolerance on BOTH final reward AND AUC, with matching configuration identity and passing runtime config-integrity verification |
+| **Result-Variance**        | Standard deviation of final reward across N runs                                                                                                                                |
+| **Config-Integrity**       | Config hash at start matches config hash at end (100% expected)                                                                                                                 |
+| **Seed-Determinism**       | Same seed produces same RNG sequence (verified by unit test)                                                                                                                    |
+| **Tolerance**              | ±1% deviation from reference value                                                                                                                                              |
 
 ### Tolerance Calculation
 
-A reproduction is **successful** if BOTH conditions are met:
+A reproduction is **successful** if all conditions are met:
 
 ```
 | run_reward - ref_reward | / ref_reward ≤ 0.01   (Final Reward within ±1%) |
 | run_AUC - ref_AUC       | / ref_AUC ≤ 0.01            (AUC within ±1%)    |
 ```
+
+- The reproduced run matches the reference configuration hash.
+- The runtime config-integrity check confirms that the frozen configuration remained unchanged throughout execution.
 
 ### Controlled Variables
 
@@ -109,15 +112,16 @@ For each reproduction attempt (N=20):
    - AUC
    - Pass/Fail status
    - Config hash match
+   - Config integrity match
 
 ### Phase 3: By-Design Verification
 
-These are platform features verified via unit tests, not repeated per-run:
+These are platform controls verified by the finalized implementation and supporting unit tests:
 
-| Feature          | Verification Method                               | Expected Outcome   |
-| ---------------- | ------------------------------------------------- | ------------------ |
-| Config-Integrity | Hash comparison: config at start vs config at end | 100% match         |
-| Seed-Determinism | Unit test: same seed → same RNG sequence          | Deterministic      |
+| Feature          | Verification Method                                      | Expected Outcome   |
+| ---------------- | -------------------------------------------------------- | ------------------ |
+| Config-Integrity | Runtime hash comparison: frozen config at start vs end   | 100% match         |
+| Seed-Determinism | Unit test: same seed → same RNG sequence                 | Deterministic      |
 
 ---
 
@@ -127,38 +131,38 @@ These are platform features verified via unit tests, not repeated per-run:
 
 | Field           | Value                                                            |
 | --------------- | ---------------------------------------------------------------- |
-| Experiment ID   | aggregation_srq3_20260311-110742                                 |
-| Platform Commit | `06eb747`                                                        |
-| Config Hash     | b9ff14a67be24984cfc457a5116e2b70a2791b2f29bcf856c5782006e8614340 |
+| Experiment ID   | aggregation_srq3_20260413-171009                                 |
+| Platform Commit | `ff77ced`                                                        |
+| Config Hash     | 4bf92694c011b30981974b14e29a53fa69ac8d39cf754820cf04f608ade1aecd |
 | Seed            | 42                                                               |
 | Final Reward    | -46.8277                                                         |
 | AUC             | -445.2401                                                        |
-| Timestamp       | 2026-03-11T11:07:42 → 2026-03-11T11:10:06                        |
+| Timestamp       | 2026-04-13T17:10:30 → 2026-04-13T17:11:48                        |
 
 ### Reproduction Attempts Template
 
-| Run #   | Final Reward   | AUC       | Reward Deviation (%)  | AUC Deviation (%)   | Pass?   | Config Hash Match   |
-| ------- | -------------- | --------- | --------------------- | ------------------- | ------- | ------------------- |
-| 1       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 2       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 3       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 4       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 5       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 6       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 7       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 8       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 9       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 10      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 11      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 12      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 13      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 14      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 15      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 16      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 17      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 18      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 19      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
-| 20      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   |
+| Run #   | Final Reward   | AUC       | Reward Deviation (%)  | AUC Deviation (%)   | Pass?   | Config Hash Match   | Config Integrity Match |
+| ------- | -------------- | --------- | --------------------- | ------------------- | ------- | ------------------- | ---------------------- |
+| 1       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 2       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 3       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 4       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 5       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 6       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 7       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 8       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 9       | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 10      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 11      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 12      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 13      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 14      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 15      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 16      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 17      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 18      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 19      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
+| 20      | -46.8277       | -445.2401 | 0.0000                | 0.0000              | Y       | Y                   | Y                      |
 
 ### Deviation Calculation
 
@@ -194,15 +198,15 @@ Pass = (Reward Deviation ≤ 1%) AND (AUC Deviation ≤ 1%)
 ### Success Rate Calculation
 
 ```
-Reproduce-Success-Rate = (# runs with BOTH reward AND AUC within ±1%) / N × 100%
+Reproduce-Success-Rate = (# runs matching reward and AUC within ±1%, with matching config hash and passing config-integrity check) / N × 100%
 ```
 
 ### By-Design Metrics (M3.3, M3.4)
 
-| Metric                  | Verification                         | Result   |
-| ----------------------- | ------------------------------------ | -------- |
-| Config-Integrity (M3.3) | Unit test: config hash unchanged     | Pass     |
-| Seed-Determinism (M3.4) | Unit test: same seed → same sequence | Pass     |
+| Metric                  | Verification                                                  | Result   |
+| ----------------------- | ------------------------------------------------------------- | -------- |
+| Config-Integrity (M3.3) | Runtime verification: config hash unchanged from start to end | Pass     |
+| Seed-Determinism (M3.4) | Unit test: same seed → same sequence                          | Pass     |
 
 ### Interpretation Guidelines
 

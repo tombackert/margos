@@ -60,14 +60,14 @@
 | **Bundle-Completeness**  | Checklist score of required components present in bundle       |
 | **Setup-Divergence**     | Differences between A's and B's environment configurations     |
 
-### Handoff Success Definition (pre-committed)
+### Handoff Success Definition
 
 A handoff is **successful** if Researcher B's experiment produces a final episode reward mean (averaged over the last 50 episodes of training) within **±1%** of Researcher A's reference value.
 
 - Manual condition: Researcher B exports TensorBoard scalar data to CSV and computes the mean of the last 50 reward values. Compares against the reference value documented in A's README.
 - Platform condition: `platform compare` applies the same ±1% threshold automatically.
 
-The finalized automated comparison threshold is **±1%**. This tighter threshold does not change observed SRQ5 outcomes because all recorded platform trials showed 0% deviation from the reference under deterministic seed control.
+The initial SRQ5 draft specified a broader success tolerance. Before final analysis, this criterion was standardized to a stricter **±1%** threshold, computed on the mean of the final 50 reward values, and this finalized rule was used consistently in the reported evaluation. Because all successful platform trials showed **0% deviation** under the finalized comparison, this amendment did not affect the study outcome.
 
 ### Measurement Triggers
 
