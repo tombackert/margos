@@ -4,11 +4,20 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 
 from marl_platform.analysis.compare import ComparisonError, compare_runs
 
 
-def create_experiment_with_metrics(path: Path, metrics: list[dict]) -> Path:
+def create_experiment_with_metrics(
+    path: Path,
+    metrics: list[dict],
+    *,
+    config: dict | None = None,
+    config_hash: str | None = None,
+    write_hash: bool = True,
+    write_config: bool = True,
+) -> Path:
     """Helper to create an experiment directory with metrics."""
     path.mkdir(parents=True, exist_ok=True)
     log_dir = path / "logs"
@@ -17,6 +26,25 @@ def create_experiment_with_metrics(path: Path, metrics: list[dict]) -> Path:
     with open(log_path, "w") as f:
         for m in metrics:
             f.write(json.dumps(m) + "\n")
+
+    if config is None:
+        config = {
+            "experiment": {"name": "test_experiment", "seed": 42},
+            "scenario": {"file": "/tmp/scenario.argos"},
+            "training": {"script": "/tmp/train.py"},
+            "output": {"dir": "results"},
+        }
+
+    if write_config:
+        (path / "config.yaml").write_text(yaml.dump(config))
+
+    if write_hash:
+        if config_hash is None:
+            from marl_platform.config import PlatformConfig, hash_config
+
+            config_hash = hash_config(PlatformConfig(**config))
+        (path / "config_hash.txt").write_text(config_hash)
+
     return path
 
 
@@ -38,6 +66,7 @@ class TestCompareRuns:
         assert result["passed"] is True
         assert result["final_reward_match"] is True
         assert result["auc_match"] is True
+        assert result["config_hash_match"] is True
         assert result["final_reward_deviation"] == 0.0
         assert result["auc_deviation"] == 0.0
 
@@ -60,6 +89,7 @@ class TestCompareRuns:
 
         assert result["passed"] is True
         assert result["final_reward_match"] is True
+        assert result["config_hash_match"] is True
 
     def test_outside_tolerance_fails(self, tmp_path: Path) -> None:
         """Runs outside 1% tolerance fail."""
@@ -196,6 +226,10 @@ class TestCompareRuns:
         assert "auc_match" in result
         assert "auc_deviation" in result
         assert "passed" in result
+        assert "config_hash_match" in result
+        assert "config_hash_run" in result
+        assert "config_hash_ref" in result
+        assert "config_hash_source" in result
         assert isinstance(result["final_reward_match"], bool)
         assert isinstance(result["final_reward_deviation"], float)
         assert isinstance(result["passed"], bool)
@@ -219,3 +253,60 @@ class TestCompareRuns:
 
         assert "final_reward_match" in result
         assert "auc_match" in result
+
+    def test_config_hash_mismatch_fails(self, tmp_path: Path) -> None:
+        """Different config hashes fail strict reproducibility comparison."""
+        metrics = [{"iteration": 1, "episode_reward_mean": -100.0}]
+        run_dir = create_experiment_with_metrics(tmp_path / "run", metrics, config_hash="runhash")
+        ref_dir = create_experiment_with_metrics(tmp_path / "ref", metrics, config_hash="refhash")
+
+        result = compare_runs(str(run_dir), str(ref_dir))
+
+        assert result["config_hash_match"] is False
+        assert result["passed"] is False
+
+    def test_recomputes_hash_from_frozen_config_when_hash_missing(self, tmp_path: Path) -> None:
+        """Falls back to config.yaml when config_hash.txt is missing."""
+        metrics = [{"iteration": 1, "episode_reward_mean": -100.0}]
+        config = {
+            "experiment": {"name": "shared", "seed": 42},
+            "scenario": {"file": "/tmp/scenario.argos"},
+            "training": {"script": "/tmp/train.py"},
+            "output": {"dir": "results"},
+        }
+        run_dir = create_experiment_with_metrics(
+            tmp_path / "run",
+            metrics,
+            config=config,
+            write_hash=False,
+        )
+        ref_dir = create_experiment_with_metrics(
+            tmp_path / "ref",
+            metrics,
+            config=config,
+            write_hash=False,
+        )
+
+        result = compare_runs(str(run_dir), str(ref_dir))
+
+        assert result["config_hash_match"] is True
+        assert result["config_hash_source"] == {
+            "run": "config.yaml",
+            "reference": "config.yaml",
+        }
+
+    def test_missing_config_artifacts_raise_error(self, tmp_path: Path) -> None:
+        """Comparison fails when config identity cannot be resolved."""
+        metrics = [{"iteration": 1, "episode_reward_mean": -100.0}]
+        run_dir = create_experiment_with_metrics(
+            tmp_path / "run",
+            metrics,
+            write_hash=False,
+            write_config=False,
+        )
+        ref_dir = create_experiment_with_metrics(tmp_path / "ref", metrics)
+
+        with pytest.raises(ComparisonError) as exc_info:
+            compare_runs(str(run_dir), str(ref_dir))
+
+        assert "config identity" in exc_info.value.message.lower()

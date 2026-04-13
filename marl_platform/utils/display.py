@@ -135,7 +135,7 @@ def create_comparison_table(comparison: dict) -> Table:
     table.add_column("Metric", style=STYLE_ITEM_NAME)
     table.add_column("Run", justify="right")
     table.add_column("Reference", justify="right")
-    table.add_column("Deviation", justify="right")
+    table.add_column("Deviation / Source", justify="right")
     table.add_column("Match", justify="center")
 
     # Final Reward row
@@ -158,6 +158,19 @@ def create_comparison_table(comparison: dict) -> Table:
         f"{comparison['auc_ref']:.4f}",
         f"{comparison['auc_deviation']:.2%}",
         auc_match_text,
+    )
+
+    # Config row
+    config_match = comparison["config_hash_match"]
+    config_match_text = f"[{STYLE_OK}]Yes[/{STYLE_OK}]" if config_match else f"[{STYLE_FAIL}]No[/{STYLE_FAIL}]"
+    run_hash = comparison["config_hash_run"]
+    ref_hash = comparison["config_hash_ref"]
+    table.add_row(
+        "Config Hash",
+        run_hash[:12],
+        ref_hash[:12],
+        comparison["config_hash_source"]["run"],
+        config_match_text,
     )
 
     return table

@@ -4,6 +4,7 @@ These tests exercise the full workflow through the CLI entry point,
 validating the complete integration from user command to output.
 """
 
+import json
 import time
 from pathlib import Path
 
@@ -48,7 +49,7 @@ def main(config, callbacks, output_dir):
         config_data = {
             "experiment": {"name": "test_exp", "seed": 42},
             "scenario": {"file": "scenarios/test.argos"},
-            "training": {"script": "training/train.py"},
+            "training": {"script": "training/train.py", "tensorboard": False},
             "output": {"dir": str(results_dir)},
         }
         config_file.write_text(yaml.dump(config_data))
@@ -71,6 +72,7 @@ def main(config, callbacks, output_dir):
         output_dir = output_dirs[0]
         assert (output_dir / "config.yaml").exists()
         assert (output_dir / "config_hash.txt").exists()
+        assert (output_dir / "config_integrity.yaml").exists()
         assert (output_dir / "env_fingerprint.yaml").exists()
         assert (output_dir / "logs").is_dir()
         assert (output_dir / "checkpoints").is_dir()
@@ -99,7 +101,7 @@ def main(config, callbacks, output_dir):
         config_data = {
             "experiment": {"name": "my_experiment", "seed": 42},
             "scenario": {"file": "scenarios/test.argos"},
-            "training": {"script": "training/train.py"},
+            "training": {"script": "training/train.py", "tensorboard": False},
             "output": {"dir": str(results_dir)},
         }
         config_file.write_text(yaml.dump(config_data))
@@ -166,7 +168,7 @@ def main(config, callbacks, output_dir):
         config_data = {
             "experiment": {"name": "fail_exp", "seed": 42},
             "scenario": {"file": "scenarios/test.argos"},
-            "training": {"script": "training/train.py"},
+            "training": {"script": "training/train.py", "tensorboard": False},
             "output": {"dir": str(results_dir)},
         }
         config_file.write_text(yaml.dump(config_data))
@@ -190,6 +192,35 @@ class TestCompareCommand:
 
         assert result.exit_code == 1
         assert "Error" in result.stdout
+
+    def test_compare_fails_on_config_hash_mismatch(self, tmp_path: Path) -> None:
+        """Strict compare fails when config hashes differ."""
+        results_dir = tmp_path / "results"
+        run_dir = results_dir / "run"
+        ref_dir = results_dir / "ref"
+
+        for target in (run_dir, ref_dir):
+            (target / "logs").mkdir(parents=True)
+            with open(target / "logs" / "metrics.jsonl", "w") as f:
+                f.write(json.dumps({"iteration": 1, "episode_reward_mean": -100.0}) + "\n")
+            (target / "config.yaml").write_text(yaml.dump({
+                "experiment": {"name": target.name, "seed": 42},
+                "scenario": {"file": "/tmp/scenario.argos"},
+                "training": {"script": "/tmp/train.py"},
+                "output": {"dir": "results"},
+            }))
+
+        (run_dir / "config_hash.txt").write_text("runhash")
+        (ref_dir / "config_hash.txt").write_text("refhash")
+
+        result = runner.invoke(
+            app,
+            ["compare", "run", "ref", "--results-dir", str(results_dir)],
+        )
+
+        assert result.exit_code == 0
+        assert "FAILED" in result.stdout
+        assert "Config Hash" in result.stdout
 
 
 class TestExportCommand:
@@ -272,7 +303,7 @@ def main(config, callbacks, output_dir):
         config_data = {
             "experiment": {"name": "seed_test", "seed": 42},
             "scenario": {"file": "scenarios/test.argos"},
-            "training": {"script": "training/train.py"},
+            "training": {"script": "training/train.py", "tensorboard": False},
             "output": {"dir": str(results_dir)},
         }
         config_file.write_text(yaml.dump(config_data))
@@ -317,7 +348,7 @@ def main(config, callbacks, output_dir):
         config_data = {
             "experiment": {"name": "hash_test", "seed": 42},
             "scenario": {"file": "scenarios/test.argos"},
-            "training": {"script": "training/train.py"},
+            "training": {"script": "training/train.py", "tensorboard": False},
             "output": {"dir": str(results_dir)},
         }
         config_file.write_text(yaml.dump(config_data))
@@ -363,7 +394,7 @@ class TestOutputStructure:
         config_data = {
             "experiment": {"name": "my_exp", "seed": 42},
             "scenario": {"file": "scenarios/test.argos"},
-            "training": {"script": "training/train.py"},
+            "training": {"script": "training/train.py", "tensorboard": False},
             "output": {"dir": str(results_dir)},
         }
         config_file.write_text(yaml.dump(config_data))
@@ -402,7 +433,7 @@ class TestOutputStructure:
         config_data = {
             "experiment": {"name": "freeze_test", "seed": 123},
             "scenario": {"file": "scenarios/test.argos"},
-            "training": {"script": "training/train.py"},
+            "training": {"script": "training/train.py", "tensorboard": False},
             "output": {"dir": str(results_dir)},
         }
         config_file.write_text(yaml.dump(config_data))

@@ -41,6 +41,7 @@ class ArgosEnv(ParallelEnv):
         port: Optional[int] = None,
         port_base: int = 5555,
         port_env_vars: Tuple[str, ...] = ("ARGOS_ZMQ_PORT", "ZOO_ZMQ_PORT", "ZMQ_PORT"),
+        seed: Optional[int] = None,
         **kwargs: Any,
     ):
         """ARGoS ParallelEnv wrapper.
@@ -129,6 +130,9 @@ class ArgosEnv(ParallelEnv):
         )
         self._launch_simulator()
         self.logger.debug("Simulator launched", config=self._active_config_path)
+
+        if seed is not None:
+            self._apply_seed_and_restart(seed)
 
         # Action mapping (discrete -> controller command)
         self._action_index_to_name = [

@@ -322,6 +322,10 @@ class TestFormatComparison:
             "auc_deviation": 0.003,
             "auc_run": 1003.0,
             "auc_ref": 1000.0,
+            "config_hash_match": True,
+            "config_hash_run": "abc123def456",
+            "config_hash_ref": "abc123def456",
+            "config_hash_source": {"run": "config_hash.txt", "reference": "config_hash.txt"},
             "passed": True,
         }
 
@@ -329,6 +333,7 @@ class TestFormatComparison:
 
         assert "PASSED" in result
         assert "| Yes" in result  # Table format has "| Yes"
+        assert "Config Hash" in result
 
     def test_formats_failed_comparison(self) -> None:
         """Formats failed comparison result."""
@@ -341,6 +346,10 @@ class TestFormatComparison:
             "auc_deviation": 0.005,
             "auc_run": 1005.0,
             "auc_ref": 1000.0,
+            "config_hash_match": True,
+            "config_hash_run": "abc123def456",
+            "config_hash_ref": "abc123def456",
+            "config_hash_source": {"run": "config_hash.txt", "reference": "config_hash.txt"},
             "passed": False,
         }
 
@@ -360,6 +369,10 @@ class TestFormatComparison:
             "auc_deviation": 0.0025,
             "auc_run": 1002.5,
             "auc_ref": 1000.0,
+            "config_hash_match": True,
+            "config_hash_run": "abc123def456",
+            "config_hash_ref": "abc123def456",
+            "config_hash_source": {"run": "config_hash.txt", "reference": "config_hash.txt"},
             "passed": True,
         }
 
@@ -379,6 +392,10 @@ class TestFormatComparison:
             "auc_deviation": 0.01,
             "auc_run": 505.0,
             "auc_ref": 500.0,
+            "config_hash_match": True,
+            "config_hash_run": "abc123def456",
+            "config_hash_ref": "abc123def456",
+            "config_hash_source": {"run": "config_hash.txt", "reference": "config_hash.txt"},
             "passed": True,
         }
 

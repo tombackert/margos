@@ -41,18 +41,21 @@ def main(
     # Prepare scenario file with library paths
     scenario_template = config["scenario"]["file"]
     scenario_path = prepare_scenario(scenario_template)
+    experiment_seed = config["experiment"]["seed"]
 
     # Get training iterations
     iterations = config.get("training", {}).get("iterations", 10)
 
     # Environment creator
     def env_creator(cfg: dict) -> ParallelPettingZooEnv:
+        env_seed = cfg.get("seed", experiment_seed)
         env = ArgosEnv(
             argos_file=scenario_path,
             max_steps=100,
             reward_fn=aggregation_reward,
             quiet=True,
             startup_delay=3.0,
+            seed=env_seed,
         )
         return ParallelPettingZooEnv(env)
 
@@ -64,8 +67,9 @@ def main(
         enable_rl_module_and_learner=False,
         enable_env_runner_and_connector_v2=False,
     )
-    algo_config = algo_config.environment("aggregation")
+    algo_config = algo_config.environment("aggregation", env_config={"seed": experiment_seed})
     algo_config = algo_config.framework("torch")
+    algo_config = algo_config.debugging(seed=experiment_seed)
     algo_config = algo_config.env_runners(
         num_env_runners=0,
         rollout_fragment_length="auto",  # aligns with train_batch_size, no episode truncation

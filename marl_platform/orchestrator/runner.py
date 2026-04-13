@@ -11,7 +11,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from marl_platform.config import load_config, resolve_paths, save_frozen_config, hash_config
+import yaml
+
+from marl_platform.config import (
+    PlatformConfig,
+    hash_config,
+    load_config,
+    resolve_paths,
+    save_frozen_config,
+)
 from marl_platform.logging import create_logger, create_tensorboard_logger
 from marl_platform.utils.errors import ConfigNotFoundError, TrainingError, ValidationError
 from marl_platform.utils.fingerprint import capture_fingerprint, save_fingerprint
@@ -113,12 +121,61 @@ def run_experiment(config_path: str) -> str:
 
     try:
         execute_training_script(script_path, config, callbacks, output_dir)
+        verify_config_integrity(output_dir, config_hash)
     finally:
         for cb in callbacks:
             if hasattr(cb, 'close'):
                 cb.close()
 
     return str(output_dir), tb_process
+
+
+def verify_config_integrity(output_dir: Path, expected_hash: str) -> Path:
+    """Recompute the frozen-config hash after training and persist the result."""
+    output_dir = Path(output_dir)
+    config_path = output_dir / "config.yaml"
+    if not config_path.exists():
+        raise TrainingError(
+            message="Frozen config missing after training",
+            context={"output_dir": str(output_dir)},
+            fix="Ensure config.yaml remains present for the full run",
+        )
+
+    try:
+        with open(config_path) as f:
+            raw_config = yaml.safe_load(f)
+        config = PlatformConfig(**raw_config)
+    except Exception as e:
+        raise TrainingError(
+            message="Frozen config could not be re-validated after training",
+            context={"output_dir": str(output_dir), "error": str(e)},
+            fix="Ensure config.yaml remains valid and unchanged during the run",
+        ) from e
+
+    end_hash = hash_config(config)
+    integrity = {
+        "start_hash": expected_hash,
+        "end_hash": end_hash,
+        "match": expected_hash == end_hash,
+        "source": "config.yaml",
+    }
+
+    integrity_path = output_dir / "config_integrity.yaml"
+    with open(integrity_path, "w") as f:
+        yaml.dump(integrity, f, default_flow_style=False, sort_keys=False)
+
+    if not integrity["match"]:
+        raise TrainingError(
+            message="Frozen config changed during training",
+            context={
+                "output_dir": str(output_dir),
+                "start_hash": expected_hash,
+                "end_hash": end_hash,
+            },
+            fix="Ensure the frozen config is not modified after run start",
+        )
+
+    return integrity_path
 
 
 def create_output_dir(config: Any) -> Path:

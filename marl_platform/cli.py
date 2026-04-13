@@ -356,8 +356,9 @@ def compare(
 ) -> None:
     """Compare two experiments for reproducibility.
 
-    Compares final reward and AUC between experiments, checking if deviations
-    are within tolerance (default 1%). This serves SRQ3 (reproducibility).
+    Compares final reward, AUC, and frozen-config identity between experiments,
+    checking that metric deviations are within tolerance (default 1%) and that
+    config hashes match. This serves SRQ3 (reproducibility).
 
     Examples:
         platform compare                           # Interactive selection for both

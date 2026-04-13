@@ -251,11 +251,12 @@ def format_comparison(comparison: dict) -> str:
     status = "PASSED" if comparison["passed"] else "FAILED"
 
     # Build table
-    header = "| Metric       | Run          | Reference    | Deviation | Match |"
-    separator = "|--------------|--------------|--------------|-----------|-------|"
+    header = "| Metric       | Run          | Reference    | Deviation / Source | Match |"
+    separator = "|--------------|--------------|--------------|--------------------|-------|"
 
     final_match = "Yes" if comparison["final_reward_match"] else "No"
     auc_match = "Yes" if comparison["auc_match"] else "No"
+    config_match = "Yes" if comparison["config_hash_match"] else "No"
 
     final_row = (
         f"| Final Reward | {comparison['final_reward_run']:12.4f} | "
@@ -264,6 +265,10 @@ def format_comparison(comparison: dict) -> str:
     auc_row = (
         f"| AUC          | {comparison['auc_run']:12.4f} | "
         f"{comparison['auc_ref']:12.4f} | {comparison['auc_deviation']:9.2%} | {auc_match:5} |"
+    )
+    config_row = (
+        f"| Config Hash  | {comparison['config_hash_run'][:12]:12} | "
+        f"{comparison['config_hash_ref'][:12]:12} | {comparison['config_hash_source']['run']:18} | {config_match:5} |"
     )
 
     lines = [
@@ -275,6 +280,7 @@ def format_comparison(comparison: dict) -> str:
         separator,
         final_row,
         auc_row,
+        config_row,
         separator,
         "",
     ]

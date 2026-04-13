@@ -81,13 +81,12 @@ def main() -> None:
         try:
             output_dir = run_experiment(CONFIG_PATH)
             run_reward, run_auc = get_run_stats(output_dir)
-            run_hash = get_config_hash(output_dir)
             comparison = compare_runs(output_dir, reference_dir)
 
             reward_dev_pct = comparison["final_reward_deviation"] * 100
             auc_dev_pct = comparison["auc_deviation"] * 100
             passed = comparison["passed"]
-            hash_match = run_hash == ref_hash
+            hash_match = comparison["config_hash_match"]
 
             status = "PASS" if passed else "FAIL"
             if passed:

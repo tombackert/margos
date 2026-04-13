@@ -1,6 +1,6 @@
 """Config loading and validation."""
 
-from .loader import hash_config, load_config, resolve_paths, save_frozen_config
+from .loader import hash_config, load_config, read_config_hash, resolve_paths, save_frozen_config
 from .schema import (
     ExperimentConfig,
     OutputConfig,
@@ -13,6 +13,7 @@ __all__ = [
     "load_config",
     "resolve_paths",
     "hash_config",
+    "read_config_hash",
     "save_frozen_config",
     "PlatformConfig",
     "ExperimentConfig",

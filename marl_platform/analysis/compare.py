@@ -2,10 +2,10 @@
 
 from pathlib import Path
 
-import numpy as np
-
+from marl_platform.config import read_config_hash
 from marl_platform.analysis.report import calculate_auc, read_metrics
 from marl_platform.utils.errors import PlatformError
+from marl_platform.utils.errors import ValidationError
 
 
 class ComparisonError(PlatformError):
@@ -35,7 +35,8 @@ def compare_runs(
         - final_reward_deviation: float (as percentage)
         - auc_match: bool
         - auc_deviation: float (as percentage)
-        - passed: bool (both within tolerance)
+        - config_hash_match: bool
+        - passed: bool (metrics within tolerance and config hashes match)
     """
     run_path = Path(run_dir)
     ref_path = Path(reference_dir)
@@ -54,6 +55,19 @@ def compare_runs(
     # Calculate AUCs
     run_auc = calculate_auc(run_metrics)
     ref_auc = calculate_auc(ref_metrics)
+
+    # Resolve config identity from persisted artifacts
+    try:
+        run_hash, run_hash_source = read_config_hash(run_path)
+        ref_hash, ref_hash_source = read_config_hash(ref_path)
+    except ValidationError as e:
+        raise ComparisonError(
+            message="Failed to resolve config identity for comparison",
+            context=e.context,
+            fix=e.fix,
+        ) from e
+
+    config_hash_match = run_hash == ref_hash
 
     # Calculate deviations (handle zero reference gracefully)
     if ref_final != 0:
@@ -79,5 +93,12 @@ def compare_runs(
         "auc_deviation": auc_deviation,
         "auc_run": run_auc,
         "auc_ref": ref_auc,
-        "passed": final_match and auc_match,
+        "config_hash_match": config_hash_match,
+        "config_hash_run": run_hash,
+        "config_hash_ref": ref_hash,
+        "config_hash_source": {
+            "run": run_hash_source,
+            "reference": ref_hash_source,
+        },
+        "passed": final_match and auc_match and config_hash_match,
     }

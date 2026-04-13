@@ -224,17 +224,22 @@ def main(config, callbacks, output_dir):
         config_file.write_text(yaml.dump(config_data))
 
         # Run experiment
-        output_dir = run_experiment(str(config_file))
+        output_dir, _ = run_experiment(str(config_file))
 
         # Verify outputs
         output_path = Path(output_dir)
         assert output_path.exists()
         assert (output_path / "config.yaml").exists()
         assert (output_path / "config_hash.txt").exists()
+        assert (output_path / "config_integrity.yaml").exists()
         assert (output_path / "env_fingerprint.yaml").exists()
         assert (output_path / "logs").exists()
         assert (output_path / "checkpoints").exists()
         assert (output_path / "training_complete.txt").exists()
+
+        integrity = yaml.safe_load((output_path / "config_integrity.yaml").read_text())
+        assert integrity["match"] is True
+        assert integrity["source"] == "config.yaml"
 
     def test_seeds_set_before_training(self, tmp_path: Path) -> None:
         """Seeds are set before training script imports."""
@@ -279,14 +284,91 @@ def main(config, callbacks, output_dir):
         config_file.write_text(yaml.dump(config_data))
 
         # Run twice and compare
-        output1 = run_experiment(str(config_file))
+        output1, _ = run_experiment(str(config_file))
         val1 = Path(output1).joinpath("random_value.txt").read_text()
 
-        output2 = run_experiment(str(config_file))
+        output2, _ = run_experiment(str(config_file))
         val2 = Path(output2).joinpath("random_value.txt").read_text()
 
         # Same seed should produce same random value
         assert val1 == val2
+
+    def test_config_integrity_recomputed_after_training(self, tmp_path: Path) -> None:
+        """Runtime integrity artifact records start/end config hashes."""
+        from marl_platform.orchestrator import run_experiment
+
+        configs_dir = tmp_path / "experiments" / "configs"
+        scenarios_dir = tmp_path / "experiments" / "scenarios"
+        training_dir = tmp_path / "experiments" / "training"
+        results_dir = tmp_path / "results"
+
+        configs_dir.mkdir(parents=True)
+        scenarios_dir.mkdir(parents=True)
+        training_dir.mkdir(parents=True)
+        results_dir.mkdir(parents=True)
+
+        (scenarios_dir / "test.argos").write_text("<argos></argos>")
+        (training_dir / "train.py").write_text("def main(config, callbacks, output_dir): pass")
+
+        config_file = configs_dir / "integrity.yaml"
+        config_file.write_text(
+            yaml.dump(
+                {
+                    "experiment": {"name": "integrity", "seed": 42},
+                    "scenario": {"file": "scenarios/test.argos"},
+                    "training": {"script": "training/train.py", "tensorboard": False},
+                    "output": {"dir": str(results_dir)},
+                }
+            )
+        )
+
+        output_dir, _ = run_experiment(str(config_file))
+        output_dir = Path(output_dir)
+        integrity = yaml.safe_load((output_dir / "config_integrity.yaml").read_text())
+
+        assert integrity["match"] is True
+        assert integrity["start_hash"] == integrity["end_hash"]
+
+    def test_config_integrity_mismatch_fails_run(self, tmp_path: Path) -> None:
+        """Run fails when the frozen config changes during execution."""
+        from marl_platform.orchestrator import run_experiment
+        from marl_platform.utils.errors import TrainingError
+
+        configs_dir = tmp_path / "experiments" / "configs"
+        scenarios_dir = tmp_path / "experiments" / "scenarios"
+        training_dir = tmp_path / "experiments" / "training"
+        results_dir = tmp_path / "results"
+
+        configs_dir.mkdir(parents=True)
+        scenarios_dir.mkdir(parents=True)
+        training_dir.mkdir(parents=True)
+        results_dir.mkdir(parents=True)
+
+        (scenarios_dir / "test.argos").write_text("<argos></argos>")
+        (training_dir / "train.py").write_text("""
+from pathlib import Path
+
+def main(config, callbacks, output_dir):
+    config_path = Path(output_dir) / "config.yaml"
+    config_path.write_text(config_path.read_text().replace("seed: 42", "seed: 43"))
+""")
+
+        config_file = configs_dir / "integrity_fail.yaml"
+        config_file.write_text(
+            yaml.dump(
+                {
+                    "experiment": {"name": "integrity_fail", "seed": 42},
+                    "scenario": {"file": "scenarios/test.argos"},
+                    "training": {"script": "training/train.py", "tensorboard": False},
+                    "output": {"dir": str(results_dir)},
+                }
+            )
+        )
+
+        with pytest.raises(TrainingError) as exc_info:
+            run_experiment(str(config_file))
+
+        assert "frozen config changed" in exc_info.value.message.lower()
 
     def test_fingerprint_captured(self, tmp_path: Path) -> None:
         """Environment fingerprint is captured."""
@@ -318,7 +400,7 @@ def main(config, callbacks, output_dir):
         }
         config_file.write_text(yaml.dump(config_data))
 
-        output_dir = run_experiment(str(config_file))
+        output_dir, _ = run_experiment(str(config_file))
 
         # Verify fingerprint
         fp_path = Path(output_dir) / "env_fingerprint.yaml"

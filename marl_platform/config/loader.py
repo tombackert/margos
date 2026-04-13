@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import ValidationError as PydanticValidationError
@@ -140,3 +141,61 @@ def save_frozen_config(config: PlatformConfig, output_dir: Path) -> Path:
         yaml.dump(config.model_dump(), f, default_flow_style=False, sort_keys=False)
 
     return config_path
+
+
+def read_config_hash(output_dir: str | Path) -> tuple[str, Literal["config_hash.txt", "config.yaml"]]:
+    """Read an experiment config hash from artifacts.
+
+    Prefers the persisted ``config_hash.txt`` artifact. If it is missing,
+    recomputes the hash from the frozen ``config.yaml``.
+
+    Args:
+        output_dir: Experiment output directory containing config artifacts.
+
+    Returns:
+        Tuple of (config_hash, source_artifact).
+
+    Raises:
+        ValidationError: If neither artifact is present or the frozen config is invalid.
+    """
+    output_path = Path(output_dir)
+
+    config_hash_path = output_path / "config_hash.txt"
+    if config_hash_path.exists():
+        return config_hash_path.read_text().strip(), "config_hash.txt"
+
+    config_path = output_path / "config.yaml"
+    if not config_path.exists():
+        raise ValidationError(
+            message="Config integrity artifacts missing",
+            context={"Path": str(output_path)},
+            fix="Ensure the run contains config_hash.txt or config.yaml",
+        )
+
+    try:
+        with open(config_path) as f:
+            raw_config = yaml.safe_load(f)
+    except yaml.YAMLError as e:
+        raise ValidationError(
+            message="Frozen config is invalid YAML",
+            context={"Path": str(config_path), "Error": str(e)},
+            fix="Regenerate the experiment artifacts from a valid run",
+        )
+
+    if raw_config is None:
+        raise ValidationError(
+            message="Frozen config is empty",
+            context={"Path": str(config_path)},
+            fix="Regenerate the experiment artifacts from a valid run",
+        )
+
+    try:
+        config = PlatformConfig(**raw_config)
+    except PydanticValidationError as e:
+        raise ValidationError(
+            message="Frozen config does not match schema",
+            context={"Path": str(config_path), "Error": str(e)},
+            fix="Regenerate the experiment artifacts from a valid run",
+        )
+
+    return hash_config(config), "config.yaml"

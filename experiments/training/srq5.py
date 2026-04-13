@@ -33,8 +33,10 @@ def main(
     scenario_path = prepare_scenario(scenario_template)
     iterations = config.get("training", {}).get("iterations", 10)
     env_name = "aggregation_srq5"
+    experiment_seed = config["experiment"]["seed"]
 
     def env_creator(env_config: dict) -> ParallelPettingZooEnv:
+        env_seed = env_config.get("seed", experiment_seed)
         env = ArgosEnv(
             argos_file=env_config.get("argos_file", scenario_path),
             expected_num_agents=env_config.get("expected_num_agents", 5),
@@ -43,6 +45,7 @@ def main(
             quiet=True,
             controller_log_level="ERROR",
             loop_log_level="ERROR",
+            seed=env_seed,
         )
         return ParallelPettingZooEnv(env)
 
@@ -56,6 +59,7 @@ def main(
             env_config={
                 "argos_file": scenario_path,
                 "expected_num_agents": 5,
+                "seed": experiment_seed,
             },
         )
         .api_stack(
@@ -63,6 +67,7 @@ def main(
             enable_env_runner_and_connector_v2=False,
         )
         .framework("torch")
+        .debugging(seed=experiment_seed, log_level="ERROR")
         .env_runners(
             num_env_runners=0,
             rollout_fragment_length="auto",
@@ -73,7 +78,6 @@ def main(
             minibatch_size=500,
             num_epochs=10,
         )
-        .debugging(log_level="ERROR")
     )
 
     algo = algo_config.build()
