@@ -36,7 +36,7 @@ These are excluded because authoring scenario-specific content takes the same ti
 - [x] Training configured for short duration (5 iterations for measurement)
 
 ### Pre-Execution Checklist
-- [x] Baseline workflow documented (8 measured steps: 6 timed + 2 counted-only)
+- [x] Baseline workflow documented (6 measured steps, all timed)
 - [x] Platform workflow documented (2 steps, all timed)
 - [x] .argos scenario file and training script pre-prepared (not created during trials)
 - [x] Screen recording tested
@@ -195,16 +195,16 @@ At `Training Complete`, the platform run has already written the experiment arti
 | Mean Time (Manual)    | Σ Time_Manual / N_Manual                           | 87.0 s |
 | Mean Time (Platform)  | Σ Time_Platform / N_Platform                       | 19.0 s |
 | Time Reduction        | (Mean_Manual - Mean_Platform) / Mean_Manual × 100% | 78.2%  |
-| Mean Steps (Manual)   | Σ Steps_Manual / N_Manual                          | 8.0    |
+| Mean Steps (Manual)   | Σ Steps_Manual / N_Manual                          | 6.0    |
 | Mean Steps (Platform) | Σ Steps_Platform / N_Platform                      | 2.0    |
-| Step Reduction        | (Mean_Manual - Mean_Platform) / Mean_Manual × 100% | 75.0%  |
+| Step Reduction        | (Mean_Manual - Mean_Platform) / Mean_Manual × 100% | 66.7%  |
 
 ### Summary Statistics Template
 
 | Metric                   | Manual (Mean ± SD) | Platform (Mean ± SD) | Min / Max (Manual) | Min / Max (Platform) | Reduction (%) | Target Met?  |
 | ------------------------ | ------------------ | -------------------- | ------------------ | -------------------- | ------------- | ------------ |
 | Time-to-Complete (M2.1)  | 87.0 ± 15.0 s      | 19.0 ± 1.4 s         | 69 s / 103 s       | 18 s / 21 s          | 78.2%         | ✓ YES (≥50%) |
-| Steps-to-Complete (M2.2) | 8.0 ± 0            | 2.0 ± 0              | 8 / 8              | 2 / 2                | 75.0%         | ✓ YES (≥50%) |
+| Steps-to-Complete (M2.2) | 6.0 ± 0            | 2.0 ± 0              | 6 / 6              | 2 / 2                | 66.7%         | ✓ YES (≥50%) |
 
 ### Statistical Analysis
 
@@ -252,7 +252,7 @@ At `Training Complete`, the platform run has already written the experiment arti
 | Learning effects                                              | Multiple trials, interleaved conditions, document trial order                                                                                                                                                                                                                                                  |
 | Training time excluded                                        | Clearly stated — measures workflow efficiency, not compute optimization                                                                                                                                                                                                                                        |
 | Expert user                                                   | Acknowledged — results may not generalize to novices (covered by SRQ4)                                                                                                                                                                                                                                         |
-| Time metric is conservative lower bound                       | Glue script + debug excluded from timing (written once, highly variable). Clearly stated in results. Step metric (75% reduction, 8→2) is the primary evidence for H2. Time reduction is expected to exceed 50% but may understate true advantage.                                                              |
+| Time metric is conservative lower bound                       | Glue script + debug excluded from repeated-trial measurement (written once, highly variable). Clearly stated in results. Step metric (66.7% reduction, 6→2) is the primary evidence for H2. Time reduction is expected to exceed 50% but may understate true advantage.                                        |
 | Manual baseline is researcher-defined, not literature-derived | Documented explicitly in SRQ2EfficiencyBrainstorm.md with tool-by-tool rationale (Part 5). Risk R2 acknowledged in brainstorm; mitigated by D6 (empirical documentation before trials). Comparison is internally valid: both conditions use the same underlying tools; the platform adds orchestration on top. |
 
 ---
