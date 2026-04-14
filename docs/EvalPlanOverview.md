@@ -71,7 +71,7 @@ This table consolidates all measured EvalPlan outcomes across `SRQ2`-`SRQ5` in o
 
 - `H1` supported: the architecture was sufficient because `SRQ2`-`SRQ5` protocols all executed and produced the required evidence.
 - `H2` supported: the platform clearly improves workflow efficiency, reducing both human time and repeated manual steps.
-- `H3` strongly supported: self-reproducibility was effectively perfect in the executed study, with `100%` success and `0.0000` variance.
+- `H3` strongly supported: self-reproducibility was effectively perfect in the executed study, with `100%` success and `0.0000 SD`.
 - `H4` supported: the platform shows strong usability as a design artifact, with good heuristic compliance and substantially lower predicted interaction complexity.
 - `H5` partially supported: collaboration is reliable and substantially faster overall, but import overhead prevented the platform from meeting every preregistered timing target.
 
