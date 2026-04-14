@@ -170,12 +170,12 @@ Without R: 4.15*(no R1)=3.15 + 14.95 + 2.95 = **21.05 s**
 
 Without R: 4.15*(no R1)=3.15 + 19.35*(no R5)=14.35 + 3.15 + 1.35 = **22.00 s**
 
-**Platform:**
+**Platform (results shown automatically at end of run):**
 
-| Step      | Action                        | Operators        | Time (s)                  |
-| --------- | ----------------------------- | ---------------- | ------------------------- |
-| 1         | Type: `platform show` + Enter | M + K(13) + R(1) | 1.35 + 2.60 + 1.00 = 4.95 |
-| **Total** |                               |                  | **4.95 s**                |
+| Step      | Action                                                                                          | Operators        | Time (s)                  |
+| --------- | ----------------------------------------------------------------------------------------------- | ---------------- | ------------------------- |
+| 1         | Review the already-printed `Training Complete` summary from `platform run` for final reward/AUC | M + K(13) + R(1) | 1.35 + 2.60 + 1.00 = 4.95 |
+| **Total** |                                                                                                 |                  | **4.95 s**                |
 
 Without R: 1.35 + 2.60 = **3.95 s**
 
@@ -286,11 +286,11 @@ Without R: 5.35*(no R1)=4.35 + 6.55*(no R5)=1.55 + 4.95*(no R1)=3.95 + 1.55 = **
 
 **Tasks T1 and T2 (Configure/Modify)** show 0% reduction. Both conditions use VS Code (IDE + mouse) and configure the same parameters (name, seed, iterations for T1; one parameter for T2). Explorer file operations and Ctrl+F search are identical regardless of file format (Python vs YAML). The platform's value for configuration tasks is structural — config validation, schema enforcement, reproducibility guarantees — not interaction speed.
 
-**Tasks T3–T7** show large reductions (58–88%) because the platform replaces complex multi-step workflows with single short commands:
-- T3: `platform run` replaces 59-char `PYTHONPATH=...` invocation
+**Tasks T3–T7** show large reductions (58–88%) because the platform replaces complex multi-step workflows with short interactive commands:
+- T3: `platform run` + interactive selection replaces the 59-char `PYTHONPATH=...` invocation
 - T4: TensorBoard link printed automatically vs manual path discovery + launch
-- T5: `platform show` replaces TensorBoard navigation + manual data extraction
-- T6: Interactive selection replaces manual `ls` + `zip` with correct path
-- T7: `platform import` + `platform run` replaces unzip + path editing + re-invocation
+- T5: final reward/AUC are shown automatically in the `Training Complete` summary instead of requiring TensorBoard navigation + manual data extraction
+- T6: `platform export` + interactive selection replaces manual `ls` + `zip` with correct path
+- T7: `platform import` + `platform run`, both with interactive selection, replace unzip + path editing + re-invocation
 
 **Conclusion:** H4's KLM-Reduction criterion is met at 56.9% (weighted). T1/T2 near-zero reduction is expected and honest — the platform does not improve file-editing tasks. The 56.9% weighted reduction is driven entirely by T3–T7, where platform automation replaces fragmented multi-step manual workflows.

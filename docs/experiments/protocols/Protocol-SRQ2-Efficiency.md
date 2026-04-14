@@ -70,8 +70,8 @@ These are excluded because authoring scenario-specific content takes the same ti
 | --------------------------------- | ----------------------------------------------- | ------------------------------------------------- |
 | `.argos` scenario file            | Identical work in both conditions               | Pre-prepared before trial; clock starts after     |
 | Training script / RLlib config    | Identical work in both conditions               | Pre-prepared before trial; clock starts after     |
-| Write glue script (ARGoS ↔ RLlib) | Written once before all trials; highly variable | Counted as 1 fixed step in step metric; not timed |
-| Debug integration issues          | Written once before all trials; highly variable | Counted as 1 fixed step in step metric; not timed |
+| Write glue script (ARGoS ↔ RLlib) | Written once before all trials; highly variable | Excluded from workflow comparison; not timed      |
+| Debug integration issues          | Written once before all trials; highly variable | Excluded from workflow comparison; not timed      |
 
 **Implication:** The timed time metric is a **conservative lower bound**. Glue script + debug represent substantial real manual effort that is not captured in timing. This limitation must be stated in the analysis.
 
@@ -81,7 +81,7 @@ These are excluded because authoring scenario-specific content takes the same ti
 | ----------------- | --------- | -------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | Time-to-Complete  | Manual    | First keystroke/click **after** .argos + training script exist | `results/aggregation_srq2/report/` folder created with CSV + SVG saved |
 | Time-to-Complete  | Platform  | First keystroke/click **after** .argos + training script exist | Training Complete summary table printed to terminal by `platform run`  |
-| Steps-to-Complete | Both      | First action (including uncounted glue/debug steps)            | Final output ready (report folder / summary table)                     |
+| Steps-to-Complete | Both      | First repeated workflow action                                 | Final output ready (report folder / summary table)                     |
 | Time-to-Setup     | Both      | First keystroke/click after .argos + training script exist     | Training command submitted (Enter pressed)                             |
 | Time-to-Report    | Manual    | First keystroke/click after training completes                 | `results/aggregation_srq2/report/` folder with CSV + SVG saved         |
 | Time-to-Report    | Platform  | Training completes                                             | Training Complete summary table printed (automatic)                    |
@@ -101,25 +101,23 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 ### Condition A: Manual Workflow (Baseline)
 
-**Total steps: 8 (6 timed + 2 counted-only)**
+**Total steps: 6 (all repeated workflow steps; all timed)**
 
 *Pre-existing (not measured): `.argos` scenario file, RLlib config — identical effort in both conditions.*
 
-| Phase    | Step   | Protocol Action                    | Concrete Command / Action                                                                                                     | Timed?            |
-| -------- | ------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| Setup    | 1      | Write glue script (ARGoS ↔ RLlib)  | `src/zoo/argos_env.py` (ZMQ bridge)                                                                                           | No — counted only |
-| Setup    | 2      | Debug integration issues           | (resolved prior to trials)                                                                                                    | No — counted only |
-| Setup    | 3      | Configure paths, seeds, parameters | Edit constants at top of `scripts/ray_footbot_aggregation_srq2.py`                                                            | Yes               |
-| Training | 4      | Start training manually            | `PYTHONPATH=src python scripts/ray_footbot_aggregation_srq2.py`                                                               | Yes               |
-| Training | 5      | Monitor training                   | `tensorboard --logdir results/aggregation_srq2_{timestamp}/tensorboard/` → open browser                                       | Yes               |
-| Training | (wait) | Wait for completion                | —                                                                                                                             | Excluded          |
-| Analysis | 6      | Extract metrics as CSV             | TensorBoard UI → `ray/tune/episode_reward_mean` → Download as CSV                                                             | Yes               |
-| Analysis | 7      | Save training curve image          | TensorBoard UI → click download icon on plot → Save as `training_curve.svg`                                                   | Yes               |
-| Analysis | 8      | Export to report folder            | `mkdir -p results/aggregation_srq2/report && mv $HOME/Downloads/*.csv $HOME/Downloads/*.svg results/aggregation_srq2/report/` | Yes               |
+| Phase    | Step   | Protocol Action                    | Concrete Command / Action                                                                                                     | Timed?   |
+| -------- | ------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Setup    | 1      | Configure paths, seeds, parameters | Edit constants at top of `scripts/ray_footbot_aggregation_srq2.py`                                                            | Yes      |
+| Training | 2      | Start training manually            | `PYTHONPATH=src python scripts/ray_footbot_aggregation_srq2.py`                                                               | Yes      |
+| Training | 3      | Monitor training                   | `tensorboard --logdir results/aggregation_srq2_{timestamp}/tensorboard/` → open browser                                       | Yes      |
+| Training | (wait) | Wait for completion                | —                                                                                                                             | Excluded |
+| Analysis | 4      | Extract metrics as CSV             | TensorBoard UI → `ray/tune/episode_reward_mean` → Download as CSV                                                             | Yes      |
+| Analysis | 5      | Save training curve image          | TensorBoard UI → click download icon on plot → Save as `training_curve.svg`                                                   | Yes      |
+| Analysis | 6      | Export to report folder            | `mkdir -p results/aggregation_srq2/report && mv $HOME/Downloads/*.csv $HOME/Downloads/*.svg results/aggregation_srq2/report/` | Yes      |
 
-**Timed steps: 1 (setup) + 2 (training) + 3 (analysis) = 6 timed steps counted toward Time-to-Complete**
+**Repeated-workflow steps: 1 (setup) + 2 (training) + 3 (analysis) = 6 steps counted toward Steps-to-Complete and Time-to-Complete**
 
-**Baseline Derivation Note:** The manual workflow was derived from the natural interface sequence of the specific toolchain used in this study (ARGoS + Ray RLlib + TensorBoard), as documented in SRQ2EfficiencyBrainstorm.md Part 5. Steps 6-8 use TensorBoard's browser UI because RLlib writes TensorBoard-compatible event files by default — the browser UI is the zero-extra-tooling path for exporting those logs. This baseline is researcher-defined, not derived from a literature survey of MARL workflows. The brainstorm explicitly acknowledges this (R2) and decision D6 specifies documenting the baseline empirically before trials begin.
+**Baseline Derivation Note:** The manual workflow was derived from the natural interface sequence of the specific toolchain used in this study (ARGoS + Ray RLlib + TensorBoard), as documented in SRQ2EfficiencyBrainstorm.md Part 5. Steps 4-6 use TensorBoard's browser UI because RLlib writes TensorBoard-compatible event files by default — the browser UI is the zero-extra-tooling path for exporting those logs. This baseline is researcher-defined, not derived from a literature survey of MARL workflows. The brainstorm explicitly acknowledges this (R2) and decision D6 specifies documenting the baseline empirically before trials begin.
 
 ### Condition B: Platform Workflow
 
@@ -127,11 +125,13 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 *Pre-existing (not measured): `.argos` scenario file, custom training script — identical effort in both conditions.*
 
-| Phase    | Step   | Protocol Action                                              | Concrete Command                                 | Timed?   |
-| -------- | ------ | ------------------------------------------------------------ | ------------------------------------------------ | -------- |
-| Setup    | 1      | Fill unified config (from template)                          | Edit `experiments/configs/aggregation_srq2.yaml` | Yes      |
-| Training | 2      | Run experiment                                               | `platform run aggregation_srq2`                  | Yes      |
-| Training | (wait) | (Auto-logging + Training Complete summary printed on finish) | —                                                | Excluded |
+| Phase    | Step   | Protocol Action                                              | Concrete Command / Action                                            | Timed?   |
+| -------- | ------ | ------------------------------------------------------------ | -------------------------------------------------------------------- | -------- |
+| Setup    | 1      | Fill unified config (from template)                          | Edit `experiments/configs/aggregation_srq2.yaml`                     | Yes      |
+| Training | 2      | Run experiment                                               | `platform run` → select `aggregation_srq2` from the interactive list | Yes      |
+| Training | (wait) | (Auto-logging + Training Complete summary printed on finish) | —                                                                    | Excluded |
+
+At `Training Complete`, the platform run has already written the experiment artifacts and logs into `results/`. The terminal summary is therefore treated as the point where final run artifacts are available for inspection, even though the manual baseline continues with explicit CSV/SVG export into `results/.../report/`.
 
 ### Trial Protocol
 
@@ -140,7 +140,7 @@ These are excluded because authoring scenario-specific content takes the same ti
 1. **Start screen recording**
 2. **State trial ID and condition** (verbal or written)
 3. **Perform workflow** — count each step as performed
-4. **Stop screen recording** when final report is saved
+4. **Stop screen recording** when the final workflow output is ready (manual: report folder saved; platform: `Training Complete` summary visible)
 5. **Post-hoc timing** — review the video and mark four timestamps:
    - `T1` = first keystroke/click
    - `T2` = training command submitted (Enter pressed)
@@ -172,15 +172,15 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 | Trial | Condition | Steps | T1 (s) | T2 (s) | T3 (s) | T4 (s) | Time = (T2−T1)+(T4−T3) | Errors | Notes |
 | ----- | --------- | ----- | ------ | ------ | ------ | ------ | ---------------------- | ------ | ----- |
-| 1     | Manual    | 8     | 0:02   | 0:23   | 0:52   | 2:10   | 99                     |        |       |
+| 1     | Manual    | 6     | 0:02   | 0:23   | 0:52   | 2:10   | 99                     |        |       |
 | 2     | Platform  | 2     | 0:04   | 0:21   | 1:07   | 1:10   | 20                     |        |       |
-| 3     | Manual    | 8     | 0:01   | 0:22   | 0:51   | 2:00   | 90                     |        |       |
+| 3     | Manual    | 6     | 0:01   | 0:22   | 0:51   | 2:00   | 90                     |        |       |
 | 4     | Platform  | 2     | 0:01   | 0:20   | 1:09   | 1:11   | 21                     |        |       |
-| 5     | Manual    | 8     | 0:02   | 0:17   | 0:47   | 1:41   | 69                     |        |       |
+| 5     | Manual    | 6     | 0:02   | 0:17   | 0:47   | 1:41   | 69                     |        |       |
 | 6     | Platform  | 2     | 0:01   | 0:16   | 1:02   | 1:05   | 18                     |        |       |
-| 7     | Manual    | 8     | 0:05   | 0:26   | 0:55   | 2:17   | 103                    |        |       |
+| 7     | Manual    | 6     | 0:05   | 0:26   | 0:55   | 2:17   | 103                    |        |       |
 | 8     | Platform  | 2     | 0:01   | 0:17   | 1:03   | 1:05   | 18                     |        |       |
-| 9     | Manual    | 8     | 0:01   | 0:22   | 0:52   | 1:45   | 74                     |        |       |
+| 9     | Manual    | 6     | 0:01   | 0:22   | 0:52   | 1:45   | 74                     |        |       |
 | 10    | Platform  | 2     | 0:01   | 0:16   | 1:02   | 1:05   | 18                     |        |       |
 
 
