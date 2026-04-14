@@ -46,25 +46,33 @@
 
 ## Executed Results Overview
 
-This table consolidates all measured EvalPlan outcomes across `SRQ2`-`SRQ5`. Dropped SRQ4 behavioral metrics (`M4.1`, `M4.2`, `M4.3`, `M4.7`) are excluded because they were not executed.
+This table consolidates all measured EvalPlan outcomes across `SRQ2`-`SRQ5` in one quick-reference summary. The `Baseline` and `Target` columns show the comparison baseline, threshold, or verification criterion used for interpretation. Dropped SRQ4 behavioral metrics (`M4.1`, `M4.2`, `M4.3`, `M4.7`) are excluded because they were not executed.
 
-| Metric ID | Definition                      | Result           | Analysis                                                                      |
-| --------- | ------------------------------- | ---------------- | ----------------------------------------------------------------------------- |
-| `M2.1`    | Time-to-Complete                | 78.2% reduction  | Exceeds the preregistered `>=50%` efficiency target.                          |
-| `M2.2`    | Steps-to-Complete               | 66.7% reduction  | Exceeds the preregistered `>=50%` effort-reduction target.                    |
-| `M3.1`    | Reproduce-Success-Rate          | 100% (20/20)     | Exceeds the `>=90%` reproducibility target.                                   |
-| `M3.2`    | Result-Variance                 | 0.0000 SD        | Final rewards were fully stable across the 20 automated reproductions.        |
-| `M3.3`    | Config-Integrity                | Pass             | Runtime config-hash verification passed from start to end.                    |
-| `M3.4`    | Seed-Determinism                | Pass             | Unit-test verification confirmed deterministic seed propagation.              |
-| `M4.4`    | Heuristic-Compliance-Rate       | 30/35 (85.7%)    | Exceeds the `>=80%` usability target.                                         |
-| `M4.5`    | KLM-Predicted-Time              | 10.42 sec/task   | Weighted platform interaction cost remained low across the evaluated tasks.   |
-| `M4.6`    | KLM-Reduction                   | 56.9% reduction  | Exceeds the `>=50%` interaction-complexity reduction target.                  |
-| `M5.1`    | Steps-to-Share                  | 87.5% reduction  | Strong sharing-effort reduction relative to the manual handoff baseline.      |
-| `M5.2`    | Time-to-Share                   | 65.3% reduction  | Exceeds the preregistered `>=50%` sharing-time target.                        |
-| `M5.3`    | Time-to-First-Run               | -7.4% reduction  | Misses the preregistered `>=50%` target; import overhead outweighed the gain. |
-| `M5.4`    | Time-to-Reproduce               | 45.9% reduction  | Improves substantially but remains below the preregistered `>=50%` target.    |
-| `M5.5`    | Handoff-Success-Rate            | 100% (10/10)     | Exceeds the `>=90%` collaboration success target.                             |
-| `M5.6`    | Bundle-Completeness             | 8/8              | All required bundle components were present in the retained SRQ5 export.      |
-| `M5.7`    | Setup-Divergence                | 3.0 mismatches   | Residual environment mismatches remained limited and explicitly documented.   |
+| Metric ID | Definition                | Baseline                                          | Target                           | Result            | Analysis                                                                                                                          |
+| --------- | ------------------------- | ------------------------------------------------- | -------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `M2.1`    | Time-to-Complete          | Manual `87.0 s`                                   | `>=50%` reduction                | `78.2%` reduction | Strong efficiency gain across the measured workflow; manual coordination overhead drops sharply.                                  |
+| `M2.2`    | Steps-to-Complete         | Manual `6.0` steps                                | `>=50%` reduction                | `66.7%` reduction | The platform materially compresses the repeated workflow, supporting the SRQ2 efficiency claim.                                   |
+| `M3.1`    | Reproduce-Success-Rate    | —                                                 | `>=90%` success rate             | `100% (20/20)`    | Reproducibility is the strongest empirical result: every automated rerun matched the reference criteria.                          |
+| `M3.2`    | Result-Variance           | —                                                 | Low / stable variance            | `0.0000 SD`       | Repeated runs were effectively identical, reinforcing that SRQ3 is not only successful but also stable.                           |
+| `M3.3`    | Config-Integrity          | —                                                 | Runtime verification must pass   | `Pass`            | Frozen configuration remained unchanged during execution, supporting trustworthy reruns.                                          |
+| `M3.4`    | Seed-Determinism          | —                                                 | Unit-test verification must pass | `Pass`            | Deterministic seed propagation held under test, closing a common reproducibility failure point.                                   |
+| `M4.4`    | Heuristic-Compliance-Rate | —                                                 | `>=80%` (`28/35`)                | `30/35 (85.7%)`   | The design clears the heuristic quality bar, especially for consistency, error prevention, and help/documentation.                |
+| `M4.5`    | KLM-Predicted-Time        | Analytical metric; lower is better                | —                                | `10.42 sec/task`  | Predicted interaction cost is low on the platform path, indicating streamlined execution once the workflow is known.              |
+| `M4.6`    | KLM-Reduction             | Manual KLM `169.25 s`                             | `>=50%` reduction                | `56.9%` reduction | Interaction complexity falls substantially, with most gains concentrated in train, monitor, results, export, and reproduce tasks. |
+| `M5.1`    | Steps-to-Share            | Manual `8` steps                                  | `>=50%` reduction                | `87.5%` reduction | Sharing effort drops dramatically, showing that export packaging removes most handoff friction.                                   |
+| `M5.2`    | Time-to-Share             | Manual `107.7 s`                                  | `>=50%` reduction                | `65.3%` reduction | Preparing an experiment for handoff is clearly faster on the platform path.                                                       |
+| `M5.3`    | Time-to-First-Run         | Manual `52.6 s`                                   | `>=50%` reduction                | `-7.4%` reduction | First-run latency is the main collaboration weakness: import/setup overhead outweighs the workflow simplification here.           |
+| `M5.4`    | Time-to-Reproduce         | Manual `122.3 s`                                  | `>=50%` reduction                | `45.9%` reduction | End-to-end reproduction is meaningfully faster, but it narrowly misses the preregistered threshold.                               |
+| `M5.5`    | Handoff-Success-Rate      | —                                                 | `>=90%` success rate             | `100% (10/10)`    | Collaboration remains highly reliable even though not all timing targets were met.                                                |
+| `M5.6`    | Bundle-Completeness       | All `8/8` expected components present             | —                                | `8/8`             | The retained export bundle was complete, supporting robust transferability of experiment artifacts.                               |
+| `M5.7`    | Setup-Divergence          | Cross-environment mismatch count; lower is better | —                                | `3.0 mismatches`  | Some environment drift remains, but it was limited, measurable, and did not prevent successful handoff reproduction.              |
 
-Detailed calculations, raw tables, and interpretation notes remain in the SRQ-specific evidence files under `docs/experiments/evidence/SRQ2` through `SRQ5`.
+### Project-Level Findings
+
+- `H1` supported: the architecture was sufficient because `SRQ2`-`SRQ5` protocols all executed and produced the required evidence.
+- `H2` supported: the platform clearly improves workflow efficiency, reducing both human time and repeated manual steps.
+- `H3` strongly supported: self-reproducibility was effectively perfect in the executed study, with `100%` success and `0.0000` variance.
+- `H4` supported: the platform shows strong usability as a design artifact, with good heuristic compliance and substantially lower predicted interaction complexity.
+- `H5` partially supported: collaboration is reliable and substantially faster overall, but import overhead prevented the platform from meeting every preregistered timing target.
+
+For thesis quick-reference purposes, this section is the compact summary of project findings; detailed calculations, raw tables, and caveats remain in the SRQ-specific evidence files under `docs/experiments/evidence/SRQ2` through `SRQ5`.
