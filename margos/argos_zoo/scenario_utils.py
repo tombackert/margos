@@ -6,7 +6,7 @@ from typing import Optional
 
 
 def get_plugin_paths() -> tuple[Path, Path]:
-    """Get absolute paths to built platform plugin libraries.
+    """Get absolute paths to built Margos plugin libraries.
 
     Returns:
         Tuple of (controller_lib_path, loop_functions_lib_path)
@@ -16,7 +16,7 @@ def get_plugin_paths() -> tuple[Path, Path]:
     """
     # Find repo root by looking for argos_plugins directory
     current = Path(__file__).resolve()
-    repo_root = current.parent.parent.parent  # argos_zoo -> marl_platform -> repo_root
+    repo_root = current.parent.parent.parent  # argos_zoo -> margos -> repo_root
 
     controller = repo_root / "argos_plugins/build/controllers/libmy_ipc_controller.dylib"
     loop_fn = repo_root / "argos_plugins/build/loop_functions/libzoo_loop_functions.dylib"
@@ -42,8 +42,8 @@ def prepare_scenario(
     """Prepare a scenario file by substituting library paths.
 
     Takes a scenario template with placeholders:
-    - MARL_PLATFORM_CONTROLLER_LIB
-    - MARL_PLATFORM_LOOP_LIB
+    - MARGOS_CONTROLLER_LIB
+    - MARGOS_LOOP_LIB
 
     And substitutes them with absolute paths to the built plugins.
 
@@ -64,8 +64,8 @@ def prepare_scenario(
     controller_lib, loop_lib = get_plugin_paths()
 
     content = template_path.read_text()
-    content = content.replace("MARL_PLATFORM_CONTROLLER_LIB", str(controller_lib))
-    content = content.replace("MARL_PLATFORM_LOOP_LIB", str(loop_lib))
+    content = content.replace("MARGOS_CONTROLLER_LIB", str(controller_lib))
+    content = content.replace("MARGOS_LOOP_LIB", str(loop_lib))
 
     if output_path is None:
         fd, output_path = tempfile.mkstemp(suffix=".argos", prefix="scenario_")

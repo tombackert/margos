@@ -1,13 +1,13 @@
-"""Aggregation training script following platform convention.
+"""Aggregation training script following Margos convention.
 
-Platform calls: main(config, callbacks, output_dir, progress=None)
+Margos calls: main(config, callbacks, output_dir, progress=None)
 """
 
 import os
 from pathlib import Path
 from typing import Any, Optional
 
-from marl_platform.utils.ray_logging import setup_ray_environment, init_ray
+from margos.utils.ray_logging import setup_ray_environment, init_ray
 
 # Setup Ray environment before any Ray imports
 setup_ray_environment()
@@ -19,10 +19,10 @@ def main(
     output_dir: str,
     progress: Optional[Any] = None,
 ) -> None:
-    """Training entry point called by platform orchestrator.
+    """Training entry point called by Margos orchestrator.
 
     Args:
-        config: Full experiment config (PlatformConfig as dict)
+        config: Full experiment config (MargosConfig as dict)
         callbacks: List of RLlib callbacks (includes MetricsLogger)
         output_dir: Path for checkpoints
         progress: Optional TrainingProgress for reporting progress
@@ -36,7 +36,7 @@ def main(
     from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
     from ray.tune.registry import register_env
 
-    from marl_platform.argos_zoo import ArgosEnv, aggregation_reward, prepare_scenario
+    from margos.argos_zoo import ArgosEnv, aggregation_reward, prepare_scenario
 
     # Prepare scenario file with library paths
     scenario_template = config["scenario"]["file"]
@@ -90,7 +90,7 @@ def main(
     for i in range(iterations):
         result = algo.train()
 
-        # Call platform callbacks manually (avoids Ray serialization issues)
+        # Call Margos callbacks manually (avoids Ray serialization issues)
         for cb in callbacks:
             cb.on_train_result(algorithm=algo, result=result)
 

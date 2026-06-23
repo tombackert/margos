@@ -11,12 +11,12 @@
 
 ### Step 1: Thesis Goal
 - Research question: Does an integrated platform improve efficiency, reproducibility, usability, collaboration compared to fragmented workflows?
-- This is answered by collecting comparative data (Platform vs Baseline)
+- This is answered by collecting comparative data (Margos vs Baseline)
 
 ### Step 2: Data Requirements
 To answer SRQ2-5, we need to collect:
 
-| SRQ | Data Required | Platform Must Enable |
+| SRQ | Data Required | Margos Must Enable |
 | --- | ------------- | -------------------- |
 | SRQ2 | Time-to-Complete, Steps-to-Complete | Single command E2E, measurable workflow |
 | SRQ3 | Reproduce-Success-Rate, Result-Variance | Deterministic execution, config hashing |
@@ -148,7 +148,7 @@ This is prerequisite logic, not result optimization. The architecture enables th
 
 | What we are NOT claiming                        | What we ARE claiming                                                  |
 | ----------------------------------------------- | --------------------------------------------------------------------- |
-| "Our platform achieves exactly 50% improvement" | "Integration achieves X% improvement over fragmentation" (X measured) |
+| "Margos achieves exactly 50% improvement" | "Integration achieves X% improvement over fragmentation" (X measured) |
 | "We designed the best possible architecture"    | "We designed architecture sufficient to run the evaluation"           |
 | "Thresholds were chosen correctly upfront"      | "We measure actual improvement and report it"                         |
 

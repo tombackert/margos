@@ -5,18 +5,18 @@
 | Field                | Value                                                                                                                                                                                                   |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Protocol ID**      | P-SRQ2                                                                                                                                                                                                  |
-| **SRQ Reference**    | SRQ2: To what extent does the platform reduce time and effort across the full experiment lifecycle (setup, training management, and analysis) compared to manual workflows?                             |
-| **Hypothesis**       | H2: The platform reduces Time-to-Complete by ≥50% and Steps-to-Complete by ≥50% compared to manual experiment workflows, measuring human effort across the full pipeline (excluding compute wait time). |
+| **SRQ Reference**    | SRQ2: To what extent does Margos reduce time and effort across the full experiment lifecycle (setup, training management, and analysis) compared to manual workflows?                             |
+| **Hypothesis**       | H2: Margos reduces Time-to-Complete by ≥50% and Steps-to-Complete by ≥50% compared to manual experiment workflows, measuring human effort across the full pipeline (excluding compute wait time). |
 | **Success Criteria** | ≥50% reduction on Time-to-Complete AND ≥50% reduction on Steps-to-Complete                                                                                                                              |
 | **Sample Size**      | N ≥ 5 trials per condition                                                                                                                                                                              |
-| **Dependencies**     | Platform implementation complete, baseline workflow documented                                                                                                                                          |
+| **Dependencies**     | Margos implementation complete, baseline workflow documented                                                                                                                                          |
 
 ---
 
 ## Prerequisites
 
 ### Required Artifacts
-- [x] Platform CLI operational (`run`)
+- [x] Margos CLI operational (`run`)
 - [x] Test experiment config (`aggregation_srq2.yaml`)
 - [x] Screen recording software installed
 - [x] Step log template prepared
@@ -25,19 +25,19 @@
 ### Scope Boundary (Pre-existing Artifacts — NOT Measured)
 The following artifacts must exist before any trial begins. They represent identical work in both conditions and are excluded from measurement:
 - [x] `.argos` scenario file prepared (same file used in both conditions)
-- [x] Training script prepared (platform condition) / RLlib config prepared (manual condition)
+- [x] Training script prepared (Margos condition) / RLlib config prepared (manual condition)
 
-These are excluded because authoring scenario-specific content takes the same time regardless of platform. Measuring them would add noise, not signal.
+These are excluded because authoring scenario-specific content takes the same time regardless of Margos. Measuring them would add noise, not signal.
 
 ### Environment Setup
 - [x] Same hardware for all trials
-- [x] Platform installed and accessible
+- [x] Margos installed and accessible
 - [x] ARGoS + RLlib manual workflow components available
 - [x] Training configured for short duration (5 iterations for measurement)
 
 ### Pre-Execution Checklist
 - [x] Baseline workflow documented (6 measured steps, all timed)
-- [x] Platform workflow documented (2 steps, all timed)
+- [x] Margos workflow documented (2 steps, all timed)
 - [x] .argos scenario file and training script pre-prepared (not created during trials)
 - [x] Screen recording tested
 - [x] Trial order randomized or documented
@@ -80,11 +80,11 @@ These are excluded because authoring scenario-specific content takes the same ti
 | Metric            | Condition | Start Trigger                                                  | Stop Trigger                                                           |
 | ----------------- | --------- | -------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | Time-to-Complete  | Manual    | First keystroke/click **after** .argos + training script exist | `results/aggregation_srq2/report/` folder created with CSV + SVG saved |
-| Time-to-Complete  | Platform  | First keystroke/click **after** .argos + training script exist | Training Complete summary table printed to terminal by `platform run`  |
+| Time-to-Complete  | Margos  | First keystroke/click **after** .argos + training script exist | Training Complete summary table printed to terminal by `margos run`  |
 | Steps-to-Complete | Both      | First repeated workflow action                                 | Final output ready (report folder / summary table)                     |
 | Time-to-Setup     | Both      | First keystroke/click after .argos + training script exist     | Training command submitted (Enter pressed)                             |
 | Time-to-Report    | Manual    | First keystroke/click after training completes                 | `results/aggregation_srq2/report/` folder with CSV + SVG saved         |
-| Time-to-Report    | Platform  | Training completes                                             | Training Complete summary table printed (automatic)                    |
+| Time-to-Report    | Margos  | Training completes                                             | Training Complete summary table printed (automatic)                    |
 
 ### Controlled Variables
 
@@ -119,7 +119,7 @@ These are excluded because authoring scenario-specific content takes the same ti
 
 **Baseline Derivation Note:** The manual workflow was derived from the natural interface sequence of the specific toolchain used in this study (ARGoS + Ray RLlib + TensorBoard), as documented in SRQ2EfficiencyBrainstorm.md Part 5. Steps 4-6 use TensorBoard's browser UI because RLlib writes TensorBoard-compatible event files by default — the browser UI is the zero-extra-tooling path for exporting those logs. This baseline is researcher-defined, not derived from a literature survey of MARL workflows. The brainstorm explicitly acknowledges this (R2) and decision D6 specifies documenting the baseline empirically before trials begin.
 
-### Condition B: Platform Workflow
+### Condition B: Margos Workflow
 
 **Total steps: 2 (all timed)**
 
@@ -128,10 +128,10 @@ These are excluded because authoring scenario-specific content takes the same ti
 | Phase    | Step   | Protocol Action                                              | Concrete Command / Action                                            | Timed?   |
 | -------- | ------ | ------------------------------------------------------------ | -------------------------------------------------------------------- | -------- |
 | Setup    | 1      | Fill unified config (from template)                          | Edit `experiments/configs/aggregation_srq2.yaml`                     | Yes      |
-| Training | 2      | Run experiment                                               | `platform run` → select `aggregation_srq2` from the interactive list | Yes      |
+| Training | 2      | Run experiment                                               | `margos run` → select `aggregation_srq2` from the interactive list | Yes      |
 | Training | (wait) | (Auto-logging + Training Complete summary printed on finish) | —                                                                    | Excluded |
 
-At `Training Complete`, the platform run has already written the experiment artifacts and logs into `results/`. The terminal summary is therefore treated as the point where final run artifacts are available for inspection, even though the manual baseline continues with explicit CSV/SVG export into `results/.../report/`.
+At `Training Complete`, the `margos run` command has already written the experiment artifacts and logs into `results/`. The terminal summary is therefore treated as the point where final run artifacts are available for inspection, even though the manual baseline continues with explicit CSV/SVG export into `results/.../report/`.
 
 ### Trial Protocol
 
@@ -140,7 +140,7 @@ At `Training Complete`, the platform run has already written the experiment arti
 1. **Start screen recording**
 2. **State trial ID and condition** (verbal or written)
 3. **Perform workflow** — count each step as performed
-4. **Stop screen recording** when the final workflow output is ready (manual: report folder saved; platform: `Training Complete` summary visible)
+4. **Stop screen recording** when the final workflow output is ready (manual: report folder saved; Margos: `Training Complete` summary visible)
 5. **Post-hoc timing** — review the video and mark four timestamps:
    - `T1` = first keystroke/click
    - `T2` = training command submitted (Enter pressed)
@@ -154,15 +154,15 @@ At `Training Complete`, the platform run has already written the experiment arti
 | Trial | Condition | Notes          |
 | ----- | --------- | -------------- |
 | 1     | Manual    | Baseline first |
-| 2     | Platform  |                |
+| 2     | Margos  |                |
 | 3     | Manual    |                |
-| 4     | Platform  |                |
+| 4     | Margos  |                |
 | 5     | Manual    |                |
-| 6     | Platform  |                |
+| 6     | Margos  |                |
 | 7     | Manual    |                |
-| 8     | Platform  |                |
+| 8     | Margos  |                |
 | 9     | Manual    |                |
-| 10    | Platform  |                |
+| 10    | Margos  |                |
 
 ---
 
@@ -173,15 +173,15 @@ At `Training Complete`, the platform run has already written the experiment arti
 | Trial | Condition | Steps | T1 (s) | T2 (s) | T3 (s) | T4 (s) | Time = (T2−T1)+(T4−T3) | Errors | Notes |
 | ----- | --------- | ----- | ------ | ------ | ------ | ------ | ---------------------- | ------ | ----- |
 | 1     | Manual    | 6     | 0:02   | 0:23   | 0:52   | 2:10   | 99                     |        |       |
-| 2     | Platform  | 2     | 0:04   | 0:21   | 1:07   | 1:10   | 20                     |        |       |
+| 2     | Margos  | 2     | 0:04   | 0:21   | 1:07   | 1:10   | 20                     |        |       |
 | 3     | Manual    | 6     | 0:01   | 0:22   | 0:51   | 2:00   | 90                     |        |       |
-| 4     | Platform  | 2     | 0:01   | 0:20   | 1:09   | 1:11   | 21                     |        |       |
+| 4     | Margos  | 2     | 0:01   | 0:20   | 1:09   | 1:11   | 21                     |        |       |
 | 5     | Manual    | 6     | 0:02   | 0:17   | 0:47   | 1:41   | 69                     |        |       |
-| 6     | Platform  | 2     | 0:01   | 0:16   | 1:02   | 1:05   | 18                     |        |       |
+| 6     | Margos  | 2     | 0:01   | 0:16   | 1:02   | 1:05   | 18                     |        |       |
 | 7     | Manual    | 6     | 0:05   | 0:26   | 0:55   | 2:17   | 103                    |        |       |
-| 8     | Platform  | 2     | 0:01   | 0:17   | 1:03   | 1:05   | 18                     |        |       |
+| 8     | Margos  | 2     | 0:01   | 0:17   | 1:03   | 1:05   | 18                     |        |       |
 | 9     | Manual    | 6     | 0:01   | 0:22   | 0:52   | 1:45   | 74                     |        |       |
-| 10    | Platform  | 2     | 0:01   | 0:16   | 1:02   | 1:05   | 18                     |        |       |
+| 10    | Margos  | 2     | 0:01   | 0:16   | 1:02   | 1:05   | 18                     |        |       |
 
 
 ---
@@ -193,15 +193,15 @@ At `Training Complete`, the platform run has already written the experiment arti
 | Metric                | Formula                                            | Result |
 | --------------------- | -------------------------------------------------- | ------ |
 | Mean Time (Manual)    | Σ Time_Manual / N_Manual                           | 87.0 s |
-| Mean Time (Platform)  | Σ Time_Platform / N_Platform                       | 19.0 s |
-| Time Reduction        | (Mean_Manual - Mean_Platform) / Mean_Manual × 100% | 78.2%  |
+| Mean Time (Margos)    | Σ Time_Margos / N_Margos                           | 19.0 s |
+| Time Reduction        | (Mean_Manual - Mean_Margos) / Mean_Manual × 100%   | 78.2%  |
 | Mean Steps (Manual)   | Σ Steps_Manual / N_Manual                          | 6.0    |
-| Mean Steps (Platform) | Σ Steps_Platform / N_Platform                      | 2.0    |
-| Step Reduction        | (Mean_Manual - Mean_Platform) / Mean_Manual × 100% | 66.7%  |
+| Mean Steps (Margos)   | Σ Steps_Margos / N_Margos                          | 2.0    |
+| Step Reduction        | (Mean_Manual - Mean_Margos) / Mean_Manual × 100%   | 66.7%  |
 
 ### Summary Statistics Template
 
-| Metric                   | Manual (Mean ± SD) | Platform (Mean ± SD) | Min / Max (Manual) | Min / Max (Platform) | Reduction (%) | Target Met?  |
+| Metric                   | Manual (Mean ± SD) | Margos (Mean ± SD) | Min / Max (Manual) | Min / Max (Margos) | Reduction (%) | Target Met?  |
 | ------------------------ | ------------------ | -------------------- | ------------------ | -------------------- | ------------- | ------------ |
 | Time-to-Complete (M2.1)  | 87.0 ± 15.0 s      | 19.0 ± 1.4 s         | 69 s / 103 s       | 18 s / 21 s          | 78.2%         | ✓ YES (≥50%) |
 | Steps-to-Complete (M2.2) | 6.0 ± 0            | 2.0 ± 0              | 6 / 6              | 2 / 2                | 66.7%         | ✓ YES (≥50%) |
@@ -216,7 +216,7 @@ At `Training Complete`, the platform run has already written the experiment arti
 
 | Result                  | Interpretation                                                |
 | ----------------------- | ------------------------------------------------------------- |
-| ≥50% reduction on both  | H2 supported - platform achieves efficiency target            |
+| ≥50% reduction on both  | H2 supported - Margos achieves efficiency target            |
 | ≥50% on one metric only | H2 partially supported - discuss implications                 |
 | <50% on both            | H2 not supported - report actual values, discuss significance |
 
@@ -253,7 +253,7 @@ At `Training Complete`, the platform run has already written the experiment arti
 | Training time excluded                                        | Clearly stated — measures workflow efficiency, not compute optimization                                                                                                                                                                                                                                        |
 | Expert user                                                   | Acknowledged — results may not generalize to novices (covered by SRQ4)                                                                                                                                                                                                                                         |
 | Time metric is conservative lower bound                       | Glue script + debug excluded from repeated-trial measurement (written once, highly variable). Clearly stated in results. Step metric (66.7% reduction, 6→2) is the primary evidence for H2. Time reduction is expected to exceed 50% but may understate true advantage.                                        |
-| Manual baseline is researcher-defined, not literature-derived | Documented explicitly in SRQ2EfficiencyBrainstorm.md with tool-by-tool rationale (Part 5). Risk R2 acknowledged in brainstorm; mitigated by D6 (empirical documentation before trials). Comparison is internally valid: both conditions use the same underlying tools; the platform adds orchestration on top. |
+| Manual baseline is researcher-defined, not literature-derived | Documented explicitly in SRQ2EfficiencyBrainstorm.md with tool-by-tool rationale (Part 5). Risk R2 acknowledged in brainstorm; mitigated by D6 (empirical documentation before trials). Comparison is internally valid: both conditions use the same underlying tools; Margos adds orchestration on top. |
 
 ---
 

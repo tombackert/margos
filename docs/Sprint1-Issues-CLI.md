@@ -4,7 +4,7 @@
 
 **Problem identified:** The original CLI design required explicit paths:
 ```
-platform run --config experiments/configs/exp_v1.yaml
+margos run --config experiments/configs/exp_v1.yaml
 ```
 
 **Issue:** This contradicts SRQ2 (efficiency). Every extra argument = more steps, more errors.
@@ -13,10 +13,10 @@ platform run --config experiments/configs/exp_v1.yaml
 
 | Command | Old (Complex) | New (Simple) |
 |---------|---------------|--------------|
-| run | `platform run --config experiments/configs/exp.yaml` | `platform run exp` |
-| report | `platform report --experiment results/exp_123/` | `platform report exp_123` |
-| export | `platform export --experiment results/exp_123/` | `platform export exp_123` |
-| import | `platform import bundles/bundle.zip` | `platform import bundle.zip` |
+| run | `margos run --config experiments/configs/exp.yaml` | `margos run exp` |
+| report | `margos report --experiment results/exp_123/` | `margos report exp_123` |
+| export | `margos export --experiment results/exp_123/` | `margos export exp_123` |
+| import | `margos import bundles/bundle.zip` | `margos import bundle.zip` |
 
 **Conventions:**
 - Configs live in `experiments/configs/` → user only provides name
@@ -53,8 +53,8 @@ From LowLevelArchitectureBrainstorm.md:
 
 - [ ] Create repository structure:
   ```
-  marl-platform/
-  ├── platform/
+  margos/
+  ├── margos/
   │   ├── __init__.py
   │   ├── cli.py
   │   ├── config/
@@ -81,18 +81,18 @@ From LowLevelArchitectureBrainstorm.md:
       └── CLAUDE.md
   ```
 - [ ] Create `pyproject.toml` with:
-  - Name: `marl-platform`
+  - Name: `margos`
   - Dependencies: `typer`, `pyyaml`, `pydantic`
-  - Entry point: `platform = "platform.cli:app"`
+  - Entry point: `margos = "margos.cli:app"`
 - [ ] Create `cli.py` with Typer app skeleton (4 commands as stubs)
 - [ ] Verify installation: `pip install -e .`
-- [ ] Verify help: `platform --help` shows all commands
+- [ ] Verify help: `margos --help` shows all commands
 
 ### Acceptance Criteria
 
 ```bash
-$ platform --help
-Usage: platform [OPTIONS] COMMAND [ARGS]...
+$ margos --help
+Usage: margos [OPTIONS] COMMAND [ARGS]...
 
 Commands:
   run      Run an experiment
@@ -100,8 +100,8 @@ Commands:
   export   Export experiment bundle
   import   Import experiment bundle
 
-$ platform run --help
-Usage: platform run [OPTIONS] EXPERIMENT
+$ margos run --help
+Usage: margos run [OPTIONS] EXPERIMENT
 ...
 ```
 
@@ -134,7 +134,7 @@ The `run` command is the primary entry point for users. It should be as simple a
 
 **Convention:**
 - User provides: experiment name (e.g., `exp_v1`)
-- Platform resolves: `experiments/configs/exp_v1.yaml`
+- Margos resolves: `experiments/configs/exp_v1.yaml`
 
 ### Interface
 
@@ -159,7 +159,7 @@ def run(
 - [ ] Validate config file exists before proceeding
 - [ ] Create stub for orchestrator call:
   ```python
-  # platform/orchestrator/__init__.py
+  # margos/orchestrator/__init__.py
   def run_experiment(config_path: str) -> str:
       """Stub: Returns output directory path."""
       raise NotImplementedError("Orchestrator not yet implemented")
@@ -171,25 +171,25 @@ def run(
 
 ```bash
 # Happy path (stub returns mock path)
-$ platform run exp_v1
+$ margos run exp_v1
 Running experiment: exp_v1
 Config: experiments/configs/exp_v1.yaml
 Output: results/exp_v1_20240115-143022/
 
 # Config not found
-$ platform run nonexistent
+$ margos run nonexistent
 Error: Config file not found
   Path: experiments/configs/nonexistent.yaml
   Fix: Create the config file or check the experiment name
 
 # With explicit path (escape hatch)
-$ platform run /absolute/path/to/config.yaml
+$ margos run /absolute/path/to/config.yaml
 Running experiment from: /absolute/path/to/config.yaml
 ```
 
 ### Definition of Done
 
-- [ ] `platform run <name>` resolves to correct config path
+- [ ] `margos run <name>` resolves to correct config path
 - [ ] Missing config shows clear error with path and fix suggestion
 - [ ] Absolute paths work as escape hatch
 - [ ] Orchestrator stub is called with resolved path
@@ -214,7 +214,7 @@ Implement the `report` command that generates analysis for an experiment.
 
 **Convention:**
 - User provides: experiment ID (e.g., `exp_v1_20240115-143022`)
-- Platform resolves: `results/exp_v1_20240115-143022/`
+- Margos resolves: `results/exp_v1_20240115-143022/`
 
 ### Interface
 
@@ -235,7 +235,7 @@ def report(
 - [ ] Validate directories exist
 - [ ] Create stub for analysis call:
   ```python
-  # platform/analysis/__init__.py
+  # margos/analysis/__init__.py
   def generate_report(experiment_dir: str, reference_dir: str = None) -> str:
       """Stub: Returns report directory path."""
       raise NotImplementedError("Analysis not yet implemented")
@@ -246,18 +246,18 @@ def report(
 
 ```bash
 # Basic report
-$ platform report exp_v1_20240115-143022
+$ margos report exp_v1_20240115-143022
 Generating report for: exp_v1_20240115-143022
 Report saved to: results/exp_v1_20240115-143022/report/
 
 # With reference comparison
-$ platform report exp_v1_20240115-143022 --reference exp_v1_20240114-120000
+$ margos report exp_v1_20240115-143022 --reference exp_v1_20240114-120000
 Generating report with comparison...
 Reference: results/exp_v1_20240114-120000/
 Report saved to: results/exp_v1_20240115-143022/report/
 
 # Experiment not found
-$ platform report nonexistent
+$ margos report nonexistent
 Error: Experiment not found
   Path: results/nonexistent/
   Fix: Check the experiment ID or run `ls results/` to see available experiments
@@ -265,7 +265,7 @@ Error: Experiment not found
 
 ### Definition of Done
 
-- [ ] `platform report <id>` resolves to correct results path
+- [ ] `margos report <id>` resolves to correct results path
 - [ ] Optional `--reference` works for comparison
 - [ ] Missing experiment shows clear error
 - [ ] Analysis stub is called with resolved paths
@@ -290,7 +290,7 @@ Implement the `export` command that bundles an experiment for sharing.
 
 **Convention:**
 - User provides: experiment ID
-- Platform resolves: `results/<experiment_id>/`
+- Margos resolves: `results/<experiment_id>/`
 - Output default: `bundles/<experiment_id>.zip`
 
 ### Interface
@@ -311,7 +311,7 @@ def export(
 - [ ] Validate experiment directory exists
 - [ ] Create stub for export call:
   ```python
-  # platform/export/__init__.py
+  # margos/export/__init__.py
   def export_bundle(experiment_dir: str, output_path: str) -> str:
       """Stub: Returns bundle path."""
       raise NotImplementedError("Export not yet implemented")
@@ -322,16 +322,16 @@ def export(
 
 ```bash
 # Default output
-$ platform export exp_v1_20240115-143022
+$ margos export exp_v1_20240115-143022
 Exporting experiment: exp_v1_20240115-143022
 Bundle created: bundles/exp_v1_20240115-143022.zip
 
 # Custom output
-$ platform export exp_v1_20240115-143022 --output my_bundle.zip
+$ margos export exp_v1_20240115-143022 --output my_bundle.zip
 Bundle created: bundles/my_bundle.zip
 
 # Experiment not found
-$ platform export nonexistent
+$ margos export nonexistent
 Error: Experiment not found
   Path: results/nonexistent/
   Fix: Check the experiment ID or run `ls results/` to see available experiments
@@ -339,7 +339,7 @@ Error: Experiment not found
 
 ### Definition of Done
 
-- [ ] `platform export <id>` creates bundle with default name
+- [ ] `margos export <id>` creates bundle with default name
 - [ ] `--output` allows custom bundle name
 - [ ] Missing experiment shows clear error
 - [ ] Export stub is called with resolved paths
@@ -364,7 +364,7 @@ Implement the `import` command that unpacks an experiment bundle.
 
 **Convention:**
 - User provides: bundle filename (e.g., `exp_v1.zip`)
-- Platform resolves: `bundles/exp_v1.zip`
+- Margos resolves: `bundles/exp_v1.zip`
 - Output: `experiments/imported/<name>/`
 
 Note: In code, use `import_` as function name (Typer maps to `import` in CLI).
@@ -386,7 +386,7 @@ def import_(
 - [ ] Validate bundle file exists
 - [ ] Create stub for import call:
   ```python
-  # platform/export/__init__.py
+  # margos/export/__init__.py
   def import_bundle(bundle_path: str) -> str:
       """Stub: Returns imported experiment path."""
       raise NotImplementedError("Import not yet implemented")
@@ -398,7 +398,7 @@ def import_(
 
 ```bash
 # Import bundle
-$ platform import exp_v1.zip
+$ margos import exp_v1.zip
 Importing bundle: bundles/exp_v1.zip
 Imported to: experiments/imported/exp_v1/
 
@@ -407,10 +407,10 @@ Environment comparison:
   torch: 2.0.0 -> 2.0.0 ✓
   rllib: 2.5.0 -> 2.5.0 ✓
 
-Ready to run: platform run imported/exp_v1
+Ready to run: margos run imported/exp_v1
 
 # Bundle not found
-$ platform import nonexistent.zip
+$ margos import nonexistent.zip
 Error: Bundle not found
   Path: bundles/nonexistent.zip
   Fix: Check the filename or run `ls bundles/` to see available bundles
@@ -418,7 +418,7 @@ Error: Bundle not found
 
 ### Definition of Done
 
-- [ ] `platform import <file>` resolves to correct bundle path
+- [ ] `margos import <file>` resolves to correct bundle path
 - [ ] Missing bundle shows clear error
 - [ ] Import stub is called with resolved path
 - [ ] Success message shows path to imported experiment
@@ -460,22 +460,22 @@ Error: <What went wrong>
 
 - [ ] Create error display utility:
   ```python
-  # platform/utils/errors.py
-  class PlatformError(Exception):
+  # margos/utils/errors.py
+  class MargosError(Exception):
       def __init__(self, message: str, context: dict = None, fix: str = None):
           self.message = message
           self.context = context or {}
           self.fix = fix
 
-  def display_error(error: PlatformError):
+  def display_error(error: MargosError):
       """Format and display error to user."""
   ```
 - [ ] Create common error types:
   ```python
-  class ConfigNotFoundError(PlatformError): ...
-  class ExperimentNotFoundError(PlatformError): ...
-  class BundleNotFoundError(PlatformError): ...
-  class ValidationError(PlatformError): ...
+  class ConfigNotFoundError(MargosError): ...
+  class ExperimentNotFoundError(MargosError): ...
+  class BundleNotFoundError(MargosError): ...
+  class ValidationError(MargosError): ...
   ```
 - [ ] Add global exception handler to CLI app
 - [ ] Add `--verbose` flag for full traceback (debugging)
@@ -485,19 +485,19 @@ Error: <What went wrong>
 
 ```bash
 # Normal error (clean)
-$ platform run nonexistent
+$ margos run nonexistent
 Error: Config file not found
   Path: experiments/configs/nonexistent.yaml
   Fix: Create the config file or check the experiment name
 
 # Verbose error (debugging)
-$ platform run nonexistent --verbose
+$ margos run nonexistent --verbose
 Error: Config file not found
   Path: experiments/configs/nonexistent.yaml
   Fix: Create the config file or check the experiment name
 
 Traceback (most recent call last):
-  File "platform/cli.py", line 42, in run
+  File "margos/cli.py", line 42, in run
     config_path = resolve_config_path(experiment)
   ...
 ConfigNotFoundError: Config file not found
@@ -538,7 +538,7 @@ Add visual feedback during long-running operations like training.
 ### Acceptance Criteria
 
 ```bash
-$ platform run exp_v1
+$ margos run exp_v1
 Running experiment: exp_v1
 ⠋ Starting training...
 Training: [████████░░░░░░░░░░░░] 40/100 iterations

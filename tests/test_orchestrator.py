@@ -12,10 +12,10 @@ class TestCreateOutputDir:
 
     def test_creates_directory(self, tmp_path: Path) -> None:
         """Output directory is created."""
-        from marl_platform.config.schema import PlatformConfig, ExperimentConfig, ScenarioConfig, TrainingConfig, OutputConfig
-        from marl_platform.orchestrator import create_output_dir
+        from margos.config.schema import MargosConfig, ExperimentConfig, ScenarioConfig, TrainingConfig, OutputConfig
+        from margos.orchestrator import create_output_dir
 
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment=ExperimentConfig(name="test_exp", seed=42),
             scenario=ScenarioConfig(file="test.argos"),
             training=TrainingConfig(script="test.py"),
@@ -29,10 +29,10 @@ class TestCreateOutputDir:
 
     def test_creates_logs_subdir(self, tmp_path: Path) -> None:
         """Logs subdirectory is created."""
-        from marl_platform.config.schema import PlatformConfig, ExperimentConfig, ScenarioConfig, TrainingConfig, OutputConfig
-        from marl_platform.orchestrator import create_output_dir
+        from margos.config.schema import MargosConfig, ExperimentConfig, ScenarioConfig, TrainingConfig, OutputConfig
+        from margos.orchestrator import create_output_dir
 
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment=ExperimentConfig(name="test_exp", seed=42),
             scenario=ScenarioConfig(file="test.argos"),
             training=TrainingConfig(script="test.py"),
@@ -46,10 +46,10 @@ class TestCreateOutputDir:
 
     def test_creates_checkpoints_subdir(self, tmp_path: Path) -> None:
         """Checkpoints subdirectory is created."""
-        from marl_platform.config.schema import PlatformConfig, ExperimentConfig, ScenarioConfig, TrainingConfig, OutputConfig
-        from marl_platform.orchestrator import create_output_dir
+        from margos.config.schema import MargosConfig, ExperimentConfig, ScenarioConfig, TrainingConfig, OutputConfig
+        from margos.orchestrator import create_output_dir
 
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment=ExperimentConfig(name="test_exp", seed=42),
             scenario=ScenarioConfig(file="test.argos"),
             training=TrainingConfig(script="test.py"),
@@ -63,10 +63,10 @@ class TestCreateOutputDir:
 
     def test_directory_name_format(self, tmp_path: Path) -> None:
         """Directory name follows expected format."""
-        from marl_platform.config.schema import PlatformConfig, ExperimentConfig, ScenarioConfig, TrainingConfig, OutputConfig
-        from marl_platform.orchestrator import create_output_dir
+        from margos.config.schema import MargosConfig, ExperimentConfig, ScenarioConfig, TrainingConfig, OutputConfig
+        from margos.orchestrator import create_output_dir
 
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment=ExperimentConfig(name="my_experiment", seed=42),
             scenario=ScenarioConfig(file="test.argos"),
             training=TrainingConfig(script="test.py"),
@@ -88,8 +88,8 @@ class TestExecuteTrainingScript:
 
     def test_script_not_found_raises_error(self, tmp_path: Path) -> None:
         """Missing script raises TrainingError."""
-        from marl_platform.orchestrator import execute_training_script
-        from marl_platform.utils.errors import TrainingError
+        from margos.orchestrator import execute_training_script
+        from margos.utils.errors import TrainingError
 
         with pytest.raises(TrainingError) as exc_info:
             execute_training_script(
@@ -103,8 +103,8 @@ class TestExecuteTrainingScript:
 
     def test_script_missing_main_raises_error(self, tmp_path: Path) -> None:
         """Script without main() raises TrainingError."""
-        from marl_platform.orchestrator import execute_training_script
-        from marl_platform.utils.errors import TrainingError
+        from margos.orchestrator import execute_training_script
+        from margos.utils.errors import TrainingError
 
         # Create script without main
         script = tmp_path / "no_main.py"
@@ -122,8 +122,8 @@ class TestExecuteTrainingScript:
 
     def test_script_syntax_error_raises_error(self, tmp_path: Path) -> None:
         """Script with syntax error raises TrainingError."""
-        from marl_platform.orchestrator import execute_training_script
-        from marl_platform.utils.errors import TrainingError
+        from margos.orchestrator import execute_training_script
+        from margos.utils.errors import TrainingError
 
         # Create script with syntax error
         script = tmp_path / "syntax_error.py"
@@ -141,8 +141,8 @@ class TestExecuteTrainingScript:
 
     def test_valid_script_executes(self, tmp_path: Path) -> None:
         """Valid training script executes successfully."""
-        from marl_platform.config.schema import PlatformConfig, ExperimentConfig, ScenarioConfig, TrainingConfig, OutputConfig
-        from marl_platform.orchestrator import execute_training_script
+        from margos.config.schema import MargosConfig, ExperimentConfig, ScenarioConfig, TrainingConfig, OutputConfig
+        from margos.orchestrator import execute_training_script
 
         # Create valid training script
         script = tmp_path / "train.py"
@@ -153,7 +153,7 @@ def main(config, callbacks, output_dir):
     Path(output_dir).joinpath("executed.txt").write_text("success")
 """)
 
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment=ExperimentConfig(name="test", seed=42),
             scenario=ScenarioConfig(file="test.argos"),
             training=TrainingConfig(script=str(script)),
@@ -180,15 +180,15 @@ class TestRunExperiment:
 
     def test_config_not_found_raises_error(self, tmp_path: Path) -> None:
         """Missing config raises ConfigNotFoundError."""
-        from marl_platform.orchestrator import run_experiment
-        from marl_platform.utils.errors import ConfigNotFoundError
+        from margos.orchestrator import run_experiment
+        from margos.utils.errors import ConfigNotFoundError
 
         with pytest.raises(ConfigNotFoundError):
             run_experiment(str(tmp_path / "nonexistent.yaml"))
 
     def test_full_pipeline_executes(self, tmp_path: Path) -> None:
         """Full pipeline creates expected outputs."""
-        from marl_platform.orchestrator import run_experiment
+        from margos.orchestrator import run_experiment
 
         # Create directory structure
         configs_dir = tmp_path / "experiments" / "configs"
@@ -243,7 +243,7 @@ def main(config, callbacks, output_dir):
 
     def test_seeds_set_before_training(self, tmp_path: Path) -> None:
         """Seeds are set before training script imports."""
-        from marl_platform.orchestrator import run_experiment
+        from margos.orchestrator import run_experiment
         import random
 
         # Create directory structure
@@ -295,7 +295,7 @@ def main(config, callbacks, output_dir):
 
     def test_config_integrity_recomputed_after_training(self, tmp_path: Path) -> None:
         """Runtime integrity artifact records start/end config hashes."""
-        from marl_platform.orchestrator import run_experiment
+        from margos.orchestrator import run_experiment
 
         configs_dir = tmp_path / "experiments" / "configs"
         scenarios_dir = tmp_path / "experiments" / "scenarios"
@@ -331,8 +331,8 @@ def main(config, callbacks, output_dir):
 
     def test_config_integrity_mismatch_fails_run(self, tmp_path: Path) -> None:
         """Run fails when the frozen config changes during execution."""
-        from marl_platform.orchestrator import run_experiment
-        from marl_platform.utils.errors import TrainingError
+        from margos.orchestrator import run_experiment
+        from margos.utils.errors import TrainingError
 
         configs_dir = tmp_path / "experiments" / "configs"
         scenarios_dir = tmp_path / "experiments" / "scenarios"
@@ -372,7 +372,7 @@ def main(config, callbacks, output_dir):
 
     def test_fingerprint_captured(self, tmp_path: Path) -> None:
         """Environment fingerprint is captured."""
-        from marl_platform.orchestrator import run_experiment
+        from margos.orchestrator import run_experiment
 
         # Create directory structure
         configs_dir = tmp_path / "experiments" / "configs"

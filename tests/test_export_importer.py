@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from marl_platform.export.importer import (
+from margos.export.importer import (
     ImportError,
     compare_fingerprints,
     format_fingerprint_comparison,

@@ -25,7 +25,7 @@ class TrainingProgress:
     """Progress reporter for training scripts.
 
     Provides a clean interface for training scripts to report progress
-    to the platform's progress bar.
+    to Margos' progress bar.
 
     Usage in training script:
         def main(config, callbacks, output_dir, progress=None):

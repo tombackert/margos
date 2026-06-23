@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from marl_platform.export.bundle import BundleError, create_manifest, export_bundle
+from margos.export.bundle import BundleError, create_manifest, export_bundle
 
 # Import helpers from conftest (pytest automatically loads conftest.py)
 from tests.conftest import create_experiment_dir as create_minimal_experiment
@@ -41,13 +41,13 @@ class TestCreateManifest:
         assert "exported_at" in manifest
         assert "T" in manifest["exported_at"]  # ISO format
 
-    def test_includes_platform_version(self, tmp_path: Path) -> None:
-        """Manifest includes platform version."""
+    def test_includes_margos_version(self, tmp_path: Path) -> None:
+        """Manifest includes Margos version."""
         exp_dir = create_minimal_experiment(tmp_path / "exp")
 
         manifest = create_manifest(exp_dir)
 
-        assert "platform_version" in manifest
+        assert "margos_version" in manifest
 
 
 class TestExportBundle:

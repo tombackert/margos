@@ -1,4 +1,4 @@
-"""Shared fixtures for MARL platform tests."""
+"""Shared fixtures for Margos tests."""
 
 import json
 import zipfile
@@ -79,7 +79,7 @@ def create_valid_bundle(path: Path, exp_name: str = "test_exp") -> Path:
             "version": "1.0",
             "experiment_name": exp_name,
             "exported_at": "2024-01-01T10:00:00",
-            "platform_version": "0.1.0",
+            "margos_version": "0.1.0",
         }
         zf.writestr("manifest.yaml", yaml.dump(manifest))
 

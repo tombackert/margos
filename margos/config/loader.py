@@ -8,19 +8,19 @@ from typing import Literal
 import yaml
 from pydantic import ValidationError as PydanticValidationError
 
-from marl_platform.utils.errors import ConfigNotFoundError, ValidationError
+from margos.utils.errors import ConfigNotFoundError, ValidationError
 
-from .schema import PlatformConfig
+from .schema import MargosConfig
 
 
-def load_config(path: str) -> PlatformConfig:
+def load_config(path: str) -> MargosConfig:
     """Load and validate config from YAML file.
 
     Args:
         path: Path to the YAML config file.
 
     Returns:
-        Validated PlatformConfig object.
+        Validated MargosConfig object.
 
     Raises:
         ConfigNotFoundError: Config file doesn't exist.
@@ -49,7 +49,7 @@ def load_config(path: str) -> PlatformConfig:
         )
 
     try:
-        return PlatformConfig(**raw_config)
+        return MargosConfig(**raw_config)
     except PydanticValidationError as e:
         errors = e.errors()
         if errors:
@@ -67,7 +67,7 @@ def load_config(path: str) -> PlatformConfig:
         )
 
 
-def resolve_paths(config: PlatformConfig, base_dir: Path) -> PlatformConfig:
+def resolve_paths(config: MargosConfig, base_dir: Path) -> MargosConfig:
     """Resolve relative paths in config to absolute paths.
 
     Args:
@@ -75,7 +75,7 @@ def resolve_paths(config: PlatformConfig, base_dir: Path) -> PlatformConfig:
         base_dir: Base directory for resolving relative paths (typically experiments/).
 
     Returns:
-        New PlatformConfig with resolved absolute paths.
+        New MargosConfig with resolved absolute paths.
 
     Raises:
         ValidationError: Referenced files don't exist.
@@ -98,7 +98,7 @@ def resolve_paths(config: PlatformConfig, base_dir: Path) -> PlatformConfig:
             fix=f"Create the training script or check the path in config",
         )
 
-    return PlatformConfig(
+    return MargosConfig(
         experiment=config.experiment,
         scenario=config.scenario.model_copy(update={"file": str(scenario_path)}),
         training=config.training.model_copy(update={"script": str(script_path)}),
@@ -106,7 +106,7 @@ def resolve_paths(config: PlatformConfig, base_dir: Path) -> PlatformConfig:
     )
 
 
-def hash_config(config: PlatformConfig) -> str:
+def hash_config(config: MargosConfig) -> str:
     """Generate SHA256 hash of config for integrity verification.
 
     Normalizes the config by converting to JSON with sorted keys
@@ -122,7 +122,7 @@ def hash_config(config: PlatformConfig) -> str:
     return hashlib.sha256(normalized.encode()).hexdigest()
 
 
-def save_frozen_config(config: PlatformConfig, output_dir: Path) -> Path:
+def save_frozen_config(config: MargosConfig, output_dir: Path) -> Path:
     """Save frozen copy of config to output directory.
 
     Args:
@@ -190,7 +190,7 @@ def read_config_hash(output_dir: str | Path) -> tuple[str, Literal["config_hash.
         )
 
     try:
-        config = PlatformConfig(**raw_config)
+        config = MargosConfig(**raw_config)
     except PydanticValidationError as e:
         raise ValidationError(
             message="Frozen config does not match schema",

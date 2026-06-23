@@ -2,14 +2,14 @@
 
 ## Sprint Goal
 
-Complete the pipeline from `platform run exp` → actual training → logged results. User can run a real experiment (aggregation scenario) end-to-end with deterministic seeding.
+Complete the pipeline from `margos run exp` → actual training → logged results. User can run a real experiment (aggregation scenario) end-to-end with deterministic seeding.
 
 **Milestone Target:** MS4 - "Thin Slice" End-to-End
 
 **Entry Criteria:** Sprint 1 (CLI) completed - all commands exist as stubs
 
 **Exit Criteria:**
-- `platform run aggregation_test` executes real training via ArgosToZoo
+- `margos run aggregation_test` executes real training via ArgosToZoo
 - Metrics logged to `results/<exp>/logs/metrics.jsonl`
 - Config frozen + hashed in output directory
 - Environment fingerprint captured
@@ -48,7 +48,7 @@ Complete the pipeline from `platform run exp` → actual training → logged res
                              └────────┘          └────────┘
 ```
 
-### Data Flow: `platform run aggregation_test`
+### Data Flow: `margos run aggregation_test`
 
 ```
 1. CLI parses command → calls run_experiment(config_path)
@@ -109,7 +109,7 @@ output:
 ### Files to Create
 
 ```
-platform/config/
+margos/config/
 ├── __init__.py
 ├── loader.py    # Load, parse, resolve paths
 └── schema.py    # Pydantic models + validation
@@ -118,7 +118,7 @@ platform/config/
 ### Interface
 
 ```python
-# platform/config/schema.py
+# margos/config/schema.py
 from pydantic import BaseModel
 
 class ExperimentConfig(BaseModel):
@@ -135,7 +135,7 @@ class TrainingConfig(BaseModel):
 class OutputConfig(BaseModel):
     dir: str = "results/"
 
-class PlatformConfig(BaseModel):
+class MargosConfig(BaseModel):
     experiment: ExperimentConfig
     scenario: ScenarioConfig
     training: TrainingConfig
@@ -143,13 +143,13 @@ class PlatformConfig(BaseModel):
 ```
 
 ```python
-# platform/config/loader.py
+# margos/config/loader.py
 import hashlib
 import yaml
 from pathlib import Path
-from .schema import PlatformConfig
+from .schema import MargosConfig
 
-def load_config(path: str) -> PlatformConfig:
+def load_config(path: str) -> MargosConfig:
     """
     Load and validate config from YAML file.
 
@@ -159,21 +159,21 @@ def load_config(path: str) -> PlatformConfig:
     """
     pass
 
-def resolve_paths(config: PlatformConfig, base_dir: Path) -> PlatformConfig:
+def resolve_paths(config: MargosConfig, base_dir: Path) -> MargosConfig:
     """
     Resolve relative paths in config to absolute paths.
     Base directory is typically experiments/.
     """
     pass
 
-def hash_config(config: PlatformConfig) -> str:
+def hash_config(config: MargosConfig) -> str:
     """
     Generate SHA256 hash of config for integrity verification.
     Normalizes config (sorted keys, no whitespace variance).
     """
     pass
 
-def save_frozen_config(config: PlatformConfig, output_dir: Path) -> Path:
+def save_frozen_config(config: MargosConfig, output_dir: Path) -> Path:
     """
     Save frozen copy of config to output directory.
     Returns path to saved config.
@@ -183,8 +183,8 @@ def save_frozen_config(config: PlatformConfig, output_dir: Path) -> Path:
 
 ### Tasks
 
-- [ ] Create `platform/config/schema.py` with pydantic models
-- [ ] Create `platform/config/loader.py` with load/validate/hash functions
+- [ ] Create `margos/config/schema.py` with pydantic models
+- [ ] Create `margos/config/loader.py` with load/validate/hash functions
 - [ ] Implement path resolution (relative → absolute)
 - [ ] Implement config hashing (SHA256, normalized)
 - [ ] Add validation for:
@@ -219,7 +219,7 @@ assert hash_config(config) != hash_config(config2)
 ### Definition of Done
 
 - [ ] Pydantic schema validates all config fields
-- [ ] `load_config()` returns validated PlatformConfig
+- [ ] `load_config()` returns validated MargosConfig
 - [ ] `resolve_paths()` converts relative to absolute paths
 - [ ] `hash_config()` produces deterministic SHA256
 - [ ] Validation errors include field location and fix suggestion
@@ -257,7 +257,7 @@ Note: ARGoS seeding is handled by ArgosToZoo via `env.reset(seed=X)`.
 ### Interface
 
 ```python
-# platform/utils/seeds.py
+# margos/utils/seeds.py
 
 def set_all_seeds(seed: int) -> None:
     """
@@ -286,7 +286,7 @@ def get_seed_state() -> dict:
 
 ### Tasks
 
-- [ ] Create `platform/utils/seeds.py`
+- [ ] Create `margos/utils/seeds.py`
 - [ ] Implement `set_all_seeds()` for all RNG sources
 - [ ] Handle case where torch/numpy not installed (graceful skip)
 - [ ] Add logging to confirm which sources were seeded
@@ -357,7 +357,7 @@ env_fingerprint:
 ### Interface
 
 ```python
-# platform/utils/fingerprint.py
+# margos/utils/fingerprint.py
 from pathlib import Path
 
 def capture_fingerprint() -> dict:
@@ -415,7 +415,7 @@ def compare_fingerprints(current: dict, reference: dict) -> dict:
 
 ### Tasks
 
-- [ ] Create `platform/utils/fingerprint.py`
+- [ ] Create `margos/utils/fingerprint.py`
 - [ ] Implement `capture_fingerprint()` using `sys`, `platform`, `importlib.metadata`
 - [ ] Implement `save_fingerprint()` to YAML
 - [ ] Implement `compare_fingerprints()` for import verification
@@ -479,7 +479,7 @@ From LowLevelArchitectureBrainstorm.md:
 ### Interface
 
 ```python
-# platform/logging/callbacks.py
+# margos/logging/callbacks.py
 from ray.rllib.algorithms.callbacks import DefaultCallbacks
 from pathlib import Path
 import json
@@ -518,7 +518,7 @@ class MetricsLogger(DefaultCallbacks):
 ```
 
 ```python
-# platform/logging/__init__.py
+# margos/logging/__init__.py
 
 def create_logger(output_dir: Path) -> MetricsLogger:
     """Factory function to create configured MetricsLogger."""
@@ -538,9 +538,9 @@ def read_metrics(log_path: Path) -> list[dict]:
 
 ### Tasks
 
-- [ ] Create `platform/logging/callbacks.py` with `MetricsLogger`
+- [ ] Create `margos/logging/callbacks.py` with `MetricsLogger`
 - [ ] Implement `on_train_result` to extract and log metrics
-- [ ] Create `platform/logging/__init__.py` with factory and reader
+- [ ] Create `margos/logging/__init__.py` with factory and reader
 - [ ] Handle missing metrics gracefully (use None)
 - [ ] Ensure log file is created with parent directories
 - [ ] Write unit tests with mock RLlib results
@@ -597,7 +597,7 @@ Set up ArgosToZoo as a dependency and verify integration works. ATZ provides the
 
 From DesignBrainstorm.md:
 - ATZ is an existing, proven implementation
-- Platform wraps ATZ, doesn't modify it
+- Margos wraps ATZ, doesn't modify it
 - `ArgosEnv` manages ARGoS subprocess internally
 - Seeding via `env.reset(seed=X)` which rewrites `.argos` file
 
@@ -684,7 +684,7 @@ def test_argos_seeding():
 
 ### Definition of Done
 
-- [ ] ArgosToZoo importable from platform code
+- [ ] ArgosToZoo importable from Margos code
 - [ ] ARGoS accessible from command line
 - [ ] Integration tests pass
 - [ ] Setup documented
@@ -714,7 +714,7 @@ From LowLevelArchitectureBrainstorm.md:
 ### Interface
 
 ```python
-# platform/orchestrator/runner.py
+# margos/orchestrator/runner.py
 from pathlib import Path
 from datetime import datetime
 
@@ -744,7 +744,7 @@ def run_experiment(config_path: str) -> str:
     """
     pass
 
-def create_output_dir(config: PlatformConfig) -> Path:
+def create_output_dir(config: MargosConfig) -> Path:
     """
     Create timestamped output directory.
 
@@ -758,7 +758,7 @@ def create_output_dir(config: PlatformConfig) -> Path:
 
 def execute_training_script(
     script_path: Path,
-    config: PlatformConfig,
+    config: MargosConfig,
     callbacks: list,
     output_dir: Path
 ) -> None:
@@ -811,7 +811,7 @@ def run_experiment(config_path: str) -> str:
 
 ### Tasks
 
-- [ ] Create `platform/orchestrator/runner.py`
+- [ ] Create `margos/orchestrator/runner.py`
 - [ ] Implement `run_experiment()` with full pipeline
 - [ ] Implement `create_output_dir()` with timestamp format
 - [ ] Implement `execute_training_script()` with dynamic import
@@ -843,7 +843,7 @@ except AttributeError:
 
 ```bash
 # Run with valid config
-$ platform run test_exp
+$ margos run test_exp
 Running experiment: test_exp
 Config: experiments/configs/test_exp.yaml
 Output: results/test_exp_20240115-143022/
@@ -894,7 +894,7 @@ experiments/
 ├── scenarios/
 │   └── aggregation_test.argos    # Minimal ARGoS scenario (5 robots, small arena)
 ├── training/
-│   └── aggregation.py            # Training script following platform convention
+│   └── aggregation.py            # Training script following Margos convention
 └── configs/
     └── aggregation_test.yaml     # Test config (10 iterations for fast testing)
 ```
@@ -912,9 +912,9 @@ experiments/
 ```python
 # experiments/training/aggregation.py
 """
-Aggregation training script following platform convention.
+Aggregation training script following Margos convention.
 
-Platform calls: main(config, callbacks, output_dir)
+Margos calls: main(config, callbacks, output_dir)
 """
 
 def aggregation_reward(observations: dict, actions: dict, info: dict) -> dict:
@@ -926,10 +926,10 @@ def aggregation_reward(observations: dict, actions: dict, info: dict) -> dict:
 
 def main(config: dict, callbacks: list, output_dir: str):
     """
-    Training entry point called by platform orchestrator.
+    Training entry point called by Margos orchestrator.
 
     Args:
-        config: Full experiment config (PlatformConfig as dict)
+        config: Full experiment config (MargosConfig as dict)
         callbacks: List of RLlib callbacks (includes MetricsLogger)
         output_dir: Path for checkpoints
     """
@@ -996,7 +996,7 @@ output:
 - [ ] Create `aggregation.py` training script following convention
 - [ ] Create `aggregation_test.yaml` config
 - [ ] Implement simple aggregation reward function
-- [ ] Run full E2E test: `platform run aggregation_test`
+- [ ] Run full E2E test: `margos run aggregation_test`
 - [ ] Verify output directory structure
 - [ ] Verify metrics logged
 - [ ] Verify reproducibility: run twice with same seed, compare results
@@ -1011,12 +1011,12 @@ echo "=== E2E Test: Aggregation Scenario ==="
 
 # Run 1
 echo "Running first experiment..."
-platform run aggregation_test
+margos run aggregation_test
 RUN1_DIR=$(ls -td results/aggregation_test_* | head -1)
 
 # Run 2 (same seed should produce same results)
 echo "Running second experiment (same seed)..."
-platform run aggregation_test
+margos run aggregation_test
 RUN2_DIR=$(ls -td results/aggregation_test_* | head -1)
 
 # Compare final rewards
@@ -1041,7 +1041,7 @@ echo "=== E2E Test Complete ==="
 
 ```bash
 # Full E2E flow works
-$ platform run aggregation_test
+$ margos run aggregation_test
 Running experiment: aggregation_test
 Config: experiments/configs/aggregation_test.yaml
 Iteration 1/10: reward=-150.23
@@ -1064,17 +1064,17 @@ $ head -2 results/aggregation_test_20240115-143022/logs/metrics.jsonl
 {"iteration": 2, "episode_reward_mean": -145.67, ...}
 
 # Reproducibility: same seed → same final reward
-$ platform run aggregation_test  # seed=42
-$ platform run aggregation_test  # seed=42
+$ margos run aggregation_test  # seed=42
+$ margos run aggregation_test  # seed=42
 # Both runs should have identical final episode_reward_mean
 ```
 
 ### Definition of Done
 
 - [ ] ARGoS scenario file created and valid
-- [ ] Training script follows platform convention
+- [ ] Training script follows Margos convention
 - [ ] Config file valid and loads correctly
-- [ ] `platform run aggregation_test` completes successfully
+- [ ] `margos run aggregation_test` completes successfully
 - [ ] Output directory has correct structure
 - [ ] Metrics logged to JSONL
 - [ ] Two runs with same seed produce identical final reward
@@ -1094,7 +1094,7 @@ $ platform run aggregation_test  # seed=42
 | 6 | Training Orchestrator | R2.2 | Must | 1-5 |
 | 7 | Aggregation Test Scenario | - | Must | 1-6 |
 
-**Sprint Goal:** `platform run aggregation_test` executes real training with reproducible results.
+**Sprint Goal:** `margos run aggregation_test` executes real training with reproducible results.
 
 **Critical Path:** Issues 1, 2, 3, 5 can be done in parallel → Issue 4 → Issue 6 → Issue 7
 

@@ -6,11 +6,11 @@ from typing import Callable
 
 import yaml
 
-from marl_platform.utils.errors import PlatformError
-from marl_platform.utils.fingerprint import capture_fingerprint
+from margos.utils.errors import MargosError
+from margos.utils.fingerprint import capture_fingerprint
 
 
-class ImportError(PlatformError):
+class ImportError(MargosError):
     """Raised when bundle import fails."""
 
     def __init__(self, message: str, context: dict | None = None, fix: str | None = None):
@@ -40,7 +40,7 @@ def validate_bundle(bundle_path: Path) -> None:
                     raise ImportError(
                         message=f"Invalid bundle: missing {req_file}",
                         context={"Bundle": str(bundle_path)},
-                        fix="Ensure the bundle was created with `platform export`",
+                        fix="Ensure the bundle was created with `margos export`",
                     )
     except zipfile.BadZipFile:
         raise ImportError(

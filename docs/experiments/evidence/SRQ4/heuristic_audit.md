@@ -23,8 +23,8 @@ For each criterion: record Y/N and evidence (command output, screenshot referenc
 | #   | Criterion                                           | Present?   | Evidence                                                                                                                |
 | --- | --------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------- |
 | 2.1 | Uses MARL/Swarm domain terminology                  | Y          | Config schema uses `experiment`, `scenario`, `training`, `output` — maps directly to MARL workflow concepts             |
-| 2.2 | Follows conventions of similar tools (RLlib, ARGoS) | Y          | YAML config format (like RLlib); `platform run <name>` pattern mirrors `pytest <test>`, `docker run <image>`            |
-| 2.3 | Logical ordering of operations                      | Y          | CLI commands follow natural research lifecycle: run → compare → export → import; `platform show` surfaces current state |
+| 2.2 | Follows conventions of similar tools (RLlib, ARGoS) | Y          | YAML config format (like RLlib); `margos run <name>` pattern mirrors `pytest <test>`, `docker run <image>`            |
+| 2.3 | Logical ordering of operations                      | Y          | CLI commands follow natural research lifecycle: run → compare → export → import; `margos show` surfaces current state |
 
 **Score: 3/3**
 
@@ -156,7 +156,7 @@ For each criterion: record Y/N and evidence (command output, screenshot referenc
 
 ## Notes
 
-**Assessment method:** All 35 criteria assessed from code inspection of `marl_platform/cli.py` and `marl_platform/utils/errors.py`. No behavioral trials conducted (see protocol Limitations section).
+**Assessment method:** All 35 criteria assessed from code inspection of `margos/cli.py` and `margos/utils/errors.py`. No behavioral trials conducted (see protocol Limitations section).
 
 **Pre-determined N (no implementation):**
 - H3.2, H6.3, H7.3, H9.4: Not implemented; maximum achievable score was 31/35 (89%)

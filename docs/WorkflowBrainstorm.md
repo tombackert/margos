@@ -65,11 +65,11 @@ Experiment ready for training
 1. User creates/selects scenario (.argos) - manual
 2. User creates/selects training script (.py) - manual
 3. User creates experiment config (.yaml) - manual (minimal)
-4. Platform validates config (on run or explicit command)
+4. Margos validates config (on run or explicit command)
 
 **Requirements:** R2.1, R4.1
 
-**Note:** Steps 1-2 are the researcher's core work. Step 3 is minimal (just references + seed). Platform value comes from steps 4 onwards.
+**Note:** Steps 1-2 are the researcher's core work. Step 3 is minimal (just references + seed). Margos value comes from steps 4 onwards.
 
 ---
 
@@ -79,7 +79,7 @@ Experiment ready for training
 User wants to run an experiment
     │
     ▼
-[platform run --config exp.yaml]
+[margos run --config exp.yaml]
     │
     ├──► Load & validate config (R4.1)
     ├──► Hash config for integrity (R3.3)
@@ -100,8 +100,8 @@ Training complete → artifacts saved to output dir
 
 **Steps:**
 1. User issues `run` command with config path
-2. Platform validates config, hashes it, sets all seeds
-3. Platform executes training script (which uses ArgosEnv + RLlib)
+2. Margos validates config, hashes it, sets all seeds
+3. Margos executes training script (which uses ArgosEnv + RLlib)
 4. Logging callbacks capture metrics throughout
 5. Training completes, results saved
 
@@ -115,7 +115,7 @@ Training complete → artifacts saved to output dir
 User wants to analyze results
     │
     ▼
-[platform report --experiment exp]
+[margos report --experiment exp]
     │
     ├──► Load experiment logs
     ├──► Generate plots (learning curve, final metrics)
@@ -127,7 +127,7 @@ Report ready (PNG/PDF)
 
 **Steps:**
 1. User issues `report` command
-2. Platform loads logs, generates plots
+2. Margos loads logs, generates plots
 3. (Optional) Compare against reference for reproducibility
 
 **Requirements:** R2.5, R3.2
@@ -140,7 +140,7 @@ Report ready (PNG/PDF)
 Researcher A wants to share experiment
     │
     ▼
-[platform export --experiment exp --output bundle.zip]
+[margos export --experiment exp --output bundle.zip]
     │
     ├──► Package: config, seeds, env-fingerprint, checkpoints
     │
@@ -148,13 +148,13 @@ Researcher A wants to share experiment
 Bundle transferred to Researcher B
     │
     ▼
-[platform import bundle.zip]
+[margos import bundle.zip]
     │
     ├──► Unpack bundle
     ├──► Compare env-fingerprint (warn if mismatch)
     │
     ▼
-[platform run ...] ──► reproduce experiment
+[margos run ...] ──► reproduce experiment
 ```
 
 **Steps:**
@@ -220,18 +220,18 @@ All commands support:
 
 | Command                              | Workflow      | Primary Requirements |
 | ------------------------------------ | ------------- | -------------------- |
-| `platform run --config <file>`       | Training      | R2.2, R2.3, R2.4     |
-| `platform report --experiment <exp>` | Analysis      | R2.5, R3.2           |
-| `platform export --experiment <exp>` | Export/Import | R5.1, R5.3, R5.4     |
-| `platform import <bundle>`           | Export/Import | R5.2                 |
-| `platform <cmd> --help`              | CLI UX        | R4.3                 |
+| `margos run --config <file>`       | Training      | R2.2, R2.3, R2.4     |
+| `margos report --experiment <exp>` | Analysis      | R2.5, R3.2           |
+| `margos export --experiment <exp>` | Export/Import | R5.1, R5.3, R5.4     |
+| `margos import <bundle>`           | Export/Import | R5.2                 |
+| `margos <cmd> --help`              | CLI UX        | R4.3                 |
 
 
 ## Design Notes
 
 - **T2-Modify Resolution:** Initially identified as a potential gap. Resolved: Modify is not a separate workflow—it's the natural cycle back to Setup after Analysis. See "Workflow Cycle" section above.
-- **Reproducibility Evaluation:** The platform enables running experiments; the evaluator orchestrates N repetitions by invoking `run` multiple times. No batch/automation feature needed in MVP.
-- **Env-Fingerprint on Import:** Platform displays fingerprint comparison (match/mismatch). User decides how to proceed—no automated handling required.
-- **Containerization:** Decided against containerization as a platform feature. MVP runs locally (Python venv). May containerize at the end for easy setup/distribution, but not a built-in feature. Rationale: Doesn't directly serve answering an SRQ—scope control.
-- **Experiment Structure (T8):** An experiment consists of three artifacts: scenario (.argos), training script (.py), and experiment config (.yaml). The config only bundles references + seed; hyperparameters stay in training scripts. This is an honest model—researchers still create scenarios and training logic, platform orchestrates and adds reproducibility/logging/export.
-- **Efficiency Baseline Note:** The manual vs platform step counts in EfficiencyBrainstorm need revision to reflect this model. Platform eliminates glue scripting, debugging, log extraction, plotting, and export—but does NOT eliminate scenario/script creation. More rigorous analysis needed before evaluation.
+- **Reproducibility Evaluation:** Margos enables running experiments; the evaluator orchestrates N repetitions by invoking `run` multiple times. No batch/automation feature needed in MVP.
+- **Env-Fingerprint on Import:** Margos displays fingerprint comparison (match/mismatch). User decides how to proceed—no automated handling required.
+- **Containerization:** Decided against containerization as a Margos feature. MVP runs locally (Python venv). May containerize at the end for easy setup/distribution, but not a built-in feature. Rationale: Doesn't directly serve answering an SRQ—scope control.
+- **Experiment Structure (T8):** An experiment consists of three artifacts: scenario (.argos), training script (.py), and experiment config (.yaml). The config only bundles references + seed; hyperparameters stay in training scripts. This is an honest model—researchers still create scenarios and training logic, Margos orchestrates and adds reproducibility/logging/export.
+- **Efficiency Baseline Note:** The manual vs Margos step counts in EfficiencyBrainstorm need revision to reflect this model. Margos eliminates glue scripting, debugging, log extraction, plotting, and export—but does NOT eliminate scenario/script creation. More rigorous analysis needed before evaluation.

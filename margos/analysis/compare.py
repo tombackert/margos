@@ -2,14 +2,14 @@
 
 from pathlib import Path
 
-from marl_platform.config import read_config_hash
-from marl_platform.analysis.report import calculate_auc, read_metrics
-from marl_platform.utils.errors import PlatformError
-from marl_platform.utils.errors import ValidationError
+from margos.config import read_config_hash
+from margos.analysis.report import calculate_auc, read_metrics
+from margos.utils.errors import MargosError
+from margos.utils.errors import ValidationError
 import yaml
 
 
-class ComparisonError(PlatformError):
+class ComparisonError(MargosError):
     """Raised when comparison fails."""
 
     def __init__(self, message: str, context: dict | None = None, fix: str | None = None):

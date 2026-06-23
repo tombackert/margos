@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "marl-platform"
+name = "margos"
 version = "0.1.0"
-description = "Research platform for MARL experiment workflows"
+description = "Margos for MARL experiment workflows"
 requires-python = ">=3.10"
 dependencies = [
     "typer>=0.9.0",
@@ -32,11 +32,12 @@ ml = [
 ]
 
 [project.scripts]
-platform = "marl_platform.cli:app"
-p = "marl_platform.cli:p_app"
+margos = "margos.cli:app"
+p = "margos.cli:p_app"
 
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["margos*"]
 
 [tool.pytest.ini_options]
 addopts = "-m 'not slow'"
@@ -47,4 +48,3 @@ markers = [
 [tool.ruff]
 line-length = 88
 target-version = "py310"
-

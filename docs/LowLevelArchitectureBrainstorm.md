@@ -1,7 +1,7 @@
 # Low-Level Architecture Brainstorm
 
 ## Goal
-Define component internals: module structure, classes, detailed interfaces, and implementation details for each platform component.
+Define component internals: module structure, classes, detailed interfaces, and implementation details for each Margos component.
 
 ## Reference
 - High-level architecture: See DesignBrainstorm.md
@@ -22,13 +22,13 @@ Define component internals: module structure, classes, detailed interfaces, and 
 
 | # | Decision | Choice | Rationale |
 |---|----------|--------|-----------|
-| L1 | CLI command style | Subcommands (`platform run`) | Standard CLI convention; slashes cause shell issues |
+| L1 | CLI command style | Subcommands (`margos run`) | Standard CLI convention; slashes cause shell issues |
 | L2 | Execution model | Dynamic import | Can inject callbacks, shared seed state |
 | L3 | Validation library | pydantic | Modern, good errors, type hints |
 | L4 | Essential metrics | reward_mean, loss, iteration, timestamp | Minimal for M3.1/M3.2 + training diagnostics |
 | L5 | Checkpoints in bundle | Include by default | Simplifies reproduction |
 | L6 | Plotting library | matplotlib | Simple, thesis-ready PNGs |
-| L7 | CLI argument style | Convention over configuration | User provides name, platform resolves path. Serves SRQ2 efficiency |
+| L7 | CLI argument style | Convention over configuration | User provides name, Margos resolves path. Serves SRQ2 efficiency |
 | L8 | Error display format | Structured: message + context + fix | Plain language, actionable. Serves R4.2 |
 
 ---
@@ -36,7 +36,7 @@ Define component internals: module structure, classes, detailed interfaces, and 
 ## Project Structure
 
 ```
-platform/
+margos/
 ├── __init__.py
 ├── cli.py              # CLI entry point (Typer)
 ├── config/
@@ -73,9 +73,9 @@ platform/
 
 ### Commands (Convention Over Configuration - L7)
 
-**Principle:** User provides names, platform resolves paths. Reduces steps (SRQ2) and errors (SRQ4).
+**Principle:** User provides names, Margos resolves paths. Reduces steps (SRQ2) and errors (SRQ4).
 
-| Command             | User Input   | Platform Resolves                          |
+| Command             | User Input   | Margos Resolves                          |
 | ------------------- | ------------ | ------------------------------------------ |
 | `run exp_v1`        | `exp_v1`     | `experiments/configs/exp_v1.yaml`          |
 | `report exp_123`    | `exp_123`    | `results/exp_123/`                         |
@@ -256,11 +256,11 @@ Training scripts must export a `main(config, callbacks, output_dir)` function:
 
 def main(config: dict, callbacks: list, output_dir: str):
     """
-    Training entry point called by platform orchestrator.
+    Training entry point called by Margos orchestrator.
 
     Args:
         config: Full experiment config dict
-        callbacks: List of RLlib callbacks (includes platform's MetricsLogger)
+        callbacks: List of RLlib callbacks (includes Margos' MetricsLogger)
         output_dir: Path for checkpoints (results/exp_<ts>/)
     """
     from zoo.argos_env import ArgosEnv
@@ -279,11 +279,11 @@ def main(config: dict, callbacks: list, output_dir: str):
 
     register_env("argos_env", env_creator)
 
-    # Build algorithm with platform-injected callbacks
+    # Build algorithm with Margos-injected callbacks
     algo = (
         PPOConfig()
         .environment("argos_env")
-        .callbacks(callbacks)  # Platform's MetricsLogger included
+        .callbacks(callbacks)  # Margos' MetricsLogger included
         .framework("torch")
         .build()
     )

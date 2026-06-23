@@ -5,25 +5,25 @@
 | Field                | Value                                                                                                                                                                                                                                                                                              |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Protocol ID**      | P-SRQ3                                                                                                                                                                                                                                                                                             |
-| **SRQ Reference**    | SRQ3: To what extent does the platform's centralized configuration and seed management enable reliable self-reproducibility of MARL experiments?                                                                                                                                                   |
-| **Hypothesis**       | H3: The platform achieves a Reproduce-Success-Rate of at least 90% within ±1% tolerance on final reward and AUC, while preserving configuration identity and runtime config integrity across repeated platform reproductions through centralized config management and deterministic seed control. |
+| **SRQ Reference**    | SRQ3: To what extent does Margos' centralized configuration and seed management enable reliable self-reproducibility of MARL experiments?                                                                                                                                                   |
+| **Hypothesis**       | H3: Margos achieves a Reproduce-Success-Rate of at least 90% within ±1% tolerance on final reward and AUC, while preserving configuration identity and runtime config integrity across repeated Margos reproductions through centralized config management and deterministic seed control. |
 | **Success Criteria** | Reproduce-Success-Rate ≥90%, low and stable Result-Variance across repeated runs                                                                                                                                                                                                                   |
 | **Sample Size**      | N=20 reproduction attempts (raised from N≥10 in EvalPlanOverview to achieve 5% resolution on success rate, making the ≥90% threshold cleanly testable)                                                                                                                                             |
-| **Dependencies**     | Platform implementation complete, reference run established                                                                                                                                                                                                                                        |
+| **Dependencies**     | Margos implementation complete, reference run established                                                                                                                                                                                                                                        |
 
 ---
 
 ## Prerequisites
 
 ### Required Artifacts
-- [x] Platform CLI operational (`run`, `compare`)
+- [x] Margos CLI operational (`run`, `compare`)
 - [x] Test experiment config (`aggregation_v1.yaml`)
 - [x] Comparison script for results (`analysis/compare.py`)
 - [x] Reference run completed and saved
 
 ### Environment Setup
 - [x] Same hardware for all runs
-- [x] Platform installed and accessible
+- [x] Margos installed and accessible
 - [x] Sufficient disk space for N+1 experiment outputs
 - [x] GPU non-determinism documented (if applicable)
 
@@ -78,7 +78,7 @@ A reproduction is **successful** if all conditions are met:
 
 1. **Execute reference experiment**
    ```bash
-   platform run aggregation_v1
+   margos run aggregation_v1
    ```
 
 2. **Record reference metrics**
@@ -91,20 +91,20 @@ A reproduction is **successful** if all conditions are met:
    - Store in `results/reference/`
    - Document as ground truth
 
-### Phase 2: Reproduction Attempts (Platform)
+### Phase 2: Reproduction Attempts (Margos)
 
 For each reproduction attempt (N=20):
 
 1. **Start reproduction**
    ```bash
-   platform run aggregation_v1
+   margos run aggregation_v1
    ```
 
 2. **Wait for completion**
 
 3. **Compare results**
    ```bash
-   platform compare exp_XXX results/reference/
+   margos compare exp_XXX results/reference/
    ```
    Use the reported **SRQ3 strict reproducibility** status for M3.1. The same command also reports an SRQ5-oriented handoff status, but that reward-only judgment is not used in this protocol.
 
@@ -117,7 +117,7 @@ For each reproduction attempt (N=20):
 
 ### Phase 3: By-Design Verification
 
-These are platform controls verified by the finalized implementation and supporting unit tests:
+These are Margos controls verified by the finalized implementation and supporting unit tests:
 
 | Feature          | Verification Method                                      | Expected Outcome   |
 | ---------------- | -------------------------------------------------------- | ------------------ |
@@ -133,7 +133,7 @@ These are platform controls verified by the finalized implementation and support
 | Field           | Value                                                            |
 | --------------- | ---------------------------------------------------------------- |
 | Experiment ID   | aggregation_srq3_20260413-171009                                 |
-| Platform Commit | `ff77ced`                                                        |
+| Margos Commit | `ff77ced`                                                        |
 | Config Hash     | 4bf92694c011b30981974b14e29a53fa69ac8d39cf754820cf04f608ade1aecd |
 | Seed            | 42                                                               |
 | Final Reward    | -46.8277                                                         |
@@ -213,7 +213,7 @@ Reproduce-Success-Rate = (# runs matching reward and AUC within ±1%, with match
 
 | Outcome             | Interpretation                                          |
 | ------------------- | ------------------------------------------------------- |
-| ≥90% success rate   | H3 supported - platform achieves reproducibility target |
+| ≥90% success rate   | H3 supported - Margos achieves reproducibility target |
 | 80-89% success rate | H3 partially supported - investigate failures           |
 | <80% success rate   | H3 not supported - analyze variance sources             |
 

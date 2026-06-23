@@ -1,7 +1,7 @@
 """Analysis and reporting."""
 
-from marl_platform.analysis.compare import compare_runs
-from marl_platform.analysis.report import (
+from margos.analysis.compare import compare_runs
+from margos.analysis.report import (
     calculate_auc,
     format_comparison,
     generate_report,

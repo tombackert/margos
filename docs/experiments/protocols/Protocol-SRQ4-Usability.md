@@ -5,23 +5,23 @@
 | Field            | Value                                                                                                                                                                                                                                                                                                      |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Protocol ID      | P-SRQ4                                                                                                                                                                                                                                                                                                     |
-| SRQ Reference    | SRQ4: To what extent does the platform's design comply with established usability heuristics and reduce predicted interaction complexity?                                                                                                                                                                  |
-| Hypothesis       | H4: The platform demonstrates strong compliance with established usability heuristics (Heuristic-Compliance-Rate ≥80%), including learnability-related criteria (H6, H10) and error-tolerance criteria (H5, H9), and significant reduction in predicted interaction time (KLM-Reduction ≥50% vs baseline). |
+| SRQ Reference    | SRQ4: To what extent does Margos' design comply with established usability heuristics and reduce predicted interaction complexity?                                                                                                                                                                  |
+| Hypothesis       | H4: Margos demonstrates strong compliance with established usability heuristics (Heuristic-Compliance-Rate ≥80%), including learnability-related criteria (H6, H10) and error-tolerance criteria (H5, H9), and significant reduction in predicted interaction time (KLM-Reduction ≥50% vs baseline). |
 | Success Criteria | ≥80% heuristic compliance (28/35 criteria), ≥50% KLM reduction                                                                                                                                                                                                                                             |
 | Sample Size      | 35 heuristic criteria (1 audit session) + 7 KLM task analyses (analytical)                                                                                                                                                                                                                                 |
-| Dependencies     | Platform implementation complete                                                                                                                                                                                                                                                                           |
+| Dependencies     | Margos implementation complete                                                                                                                                                                                                                                                                           |
 
 ---
 
 ## Prerequisites
 
 ### Required Artifacts
-- [x] Platform CLI operational (all commands)
-- [x] Platform documentation/help system
+- [x] Margos CLI operational (all commands)
+- [x] Margos documentation/help system
 - [x] Test experiment configs prepared
 
 ### Environment Setup
-- [x] Platform installed and accessible
+- [x] Margos installed and accessible
 - [x] Documentation accessible
 
 ### Pre-Execution Checklist
@@ -39,7 +39,7 @@
 | ----------------------------- | --------------------------------------------------------------------- |
 | Heuristic-Compliance-Rate     | Criteria met / 35 × 100%                                              |
 | KLM-Predicted-Time            | Predicted task time using Keystroke-Level Model                       |
-| KLM-Reduction                 | (Baseline_KLM - Platform_KLM) / Baseline_KLM × 100%                   |
+| KLM-Reduction                 | (Baseline_KLM - Margos_KLM) / Baseline_KLM × 100%                     |
 
 ### KLM Operator Definitions
 
@@ -60,7 +60,7 @@ Source: Card, Moran, Newell (1983). *The Psychology of Human-Computer Interactio
 
 ### Part 1: Heuristic Compliance Audit
 
-Evaluate platform against Nielsen's 10 heuristics using the 35-criteria checklist below.
+Evaluate Margos against Nielsen's 10 heuristics using the 35-criteria checklist below.
 
 #### H1: Visibility of System Status
 
@@ -76,8 +76,8 @@ Evaluate platform against Nielsen's 10 heuristics using the 35-criteria checklis
 | #   | Criterion                                           | Present? | Evidence                                                                                                                |
 | --- | --------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
 | 2.1 | Uses MARL/Swarm domain terminology                  | Y        | Config schema uses `experiment`, `scenario`, `training`, `output` — maps directly to MARL workflow concepts             |
-| 2.2 | Follows conventions of similar tools (RLlib, ARGoS) | Y        | YAML config format (like RLlib); `platform run <name>` pattern mirrors `pytest <test>`, `docker run <image>`            |
-| 2.3 | Logical ordering of operations                      | Y        | CLI commands follow natural research lifecycle: run → compare → export → import; `platform show` surfaces current state |
+| 2.2 | Follows conventions of similar tools (RLlib, ARGoS) | Y        | YAML config format (like RLlib); `margos run <name>` pattern mirrors `pytest <test>`, `docker run <image>`            |
+| 2.3 | Logical ordering of operations                      | Y        | CLI commands follow natural research lifecycle: run → compare → export → import; `margos show` surfaces current state |
 
 #### H3: User Control and Freedom
 
@@ -91,7 +91,7 @@ Evaluate platform against Nielsen's 10 heuristics using the 35-criteria checklis
 
 | #   | Criterion                     | Present? | Evidence                                                                                                                                  |
 | --- | ----------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| 4.1 | Consistent command syntax     | Y        | All commands follow `platform <verb> [name]` pattern; optional `--flag value` overrides consistent across commands                        |
+| 4.1 | Consistent command syntax     | Y        | All commands follow `margos <verb> [name]` pattern; optional `--flag value` overrides consistent across commands                        |
 | 4.2 | Consistent config file format | Y        | All experiments use same YAML schema: `experiment / scenario / training / output` keys                                                    |
 | 4.3 | Consistent naming conventions | Y        | snake_case config keys; `exp_YYYYMMDD-HHMMss` output dir naming; short flags `-c/-d/-b/-i` consistent                                     |
 | 4.4 | Consistent output formatting  | Y        | Rich tables throughout (Training Complete, Comparison, Fingerprint, List tables); error format always "Error: … Fix: …" (errors.py:76-83) |
@@ -109,7 +109,7 @@ Evaluate platform against Nielsen's 10 heuristics using the 35-criteria checklis
 
 | #   | Criterion                          | Present? | Evidence                                                                                                |
 | --- | ---------------------------------- | -------- | ------------------------------------------------------------------------------------------------------- |
-| 6.1 | Help/usage available for commands  | Y        | `platform --help` and `platform <cmd> --help` available via typer for all 5 commands                    |
+| 6.1 | Help/usage available for commands  | Y        | `margos --help` and `margos <cmd> --help` available via typer for all 5 commands                    |
 | 6.2 | Available options visible          | Y        | `--help` shows all flags; interactive menus enumerate all available experiments/configs/bundles by name |
 | 6.3 | Recent commands/configs accessible | N        | No command history or recent-files feature implemented                                                  |
 
@@ -142,14 +142,14 @@ Evaluate platform against Nielsen's 10 heuristics using the 35-criteria checklis
 
 | #    | Criterion                   | Present? | Evidence                                                                                             |
 | ---- | --------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| 10.1 | Built-in help command       | Y        | `platform --help` and `platform <cmd> --help` via typer; lists all commands and flags                |
+| 10.1 | Built-in help command       | Y        | `margos --help` and `margos <cmd> --help` via typer; lists all commands and flags                |
 | 10.2 | Examples provided           | Y        | `compare`, `export`, `import`, `show` all have Examples sections in docstrings displayed by `--help` |
 | 10.3 | Documentation accessible    | Y        | `docs/` folder contains ResearchPlan.md, DesignBrainstorm.md, experiment protocols                   |
 | 10.4 | Quick-start guide available | Y        | README.md at repo root; covers install, all 5 commands with short/long aliases and examples          |
 
 ### Part 2: GOMS/KLM Analysis
 
-For each task, document operator sequence for both baseline and platform. Baseline operator sequences must be derived from the pre-documented SRQ2 manual workflow steps - do not redefine them independently.
+For each task, document operator sequence for both baseline and Margos. Baseline operator sequences must be derived from the pre-documented SRQ2 manual workflow steps - do not redefine them independently.
 
 #### Task List
 
@@ -186,7 +186,7 @@ For each task, document operator sequence for both baseline and platform. Baseli
 | 9         | Ctrl+S to save                                                                   | K(2)                    | 0.40                              |
 | **Total** |                                                                                  |                         | **33.70 s**                       |
 
-**Platform (VS Code, YAML config):**
+**Margos (VS Code, YAML config):**
 
 | Step      | Action                                                                           | Operators               | Time (s)                          |
 | --------- | -------------------------------------------------------------------------------- | ----------------------- | --------------------------------- |
@@ -203,7 +203,7 @@ For each task, document operator sequence for both baseline and platform. Baseli
 
 **KLM Calculation:**
 - Baseline: 33.70 seconds
-- Platform: 33.70 seconds
+- Margos: 33.70 seconds
 - Reduction: 0% (workflows structurally equivalent — Explorer file ops and Ctrl+F search are identical; YAML fields and Python constants use same-length 4-char search terms)%
 
 ---
@@ -230,7 +230,7 @@ For each task, document operator sequence for both baseline and platform. Baseli
 
 *Times exclude system response R(t) as per KLM convention (compute wait time is equal in both conditions).*
 
-| Task                 | Baseline (sec) | Platform (sec) | Reduction (%) |
+| Task                 | Baseline (sec) | Margos (sec) | Reduction (%) |
 | -------------------- | -------------- | -------------- | ------------- |
 | T1: Configure        | 33.70          | 33.70          | 0%            |
 | T2: Modify           | 9.95           | 9.95           | 0%            |
@@ -250,7 +250,7 @@ For each task, document operator sequence for both baseline and platform. Baseli
 | Metric                              | Value          | Target       | Met? |
 | ----------------------------------- | -------------- | ------------ | ---- |
 | M4.4: Heuristic-Compliance-Rate     | 30/35 (85.7%)  | ≥80% (28/35) | Yes  |
-| M4.5: KLM-Predicted-Time (platform) | 10.42 s/task   | —            | —    |
+| M4.5: KLM-Predicted-Time (Margos) | 10.42 s/task   | —            | —    |
 | M4.6: KLM-Reduction                 | 56.9%          | ≥50%         | Yes  |
 
 ### Interpretation Guidelines
@@ -293,7 +293,7 @@ For each task, document operator sequence for both baseline and platform. Baseli
 
 | Aspect      | SRQ2: Efficiency                               | SRQ4: Usability                                                                                |
 | ----------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Question    | How much does the platform reduce time/effort? | Does the platform's design comply with usability heuristics and reduce interaction complexity? |
+| Question    | How much does Margos reduce time/effort? | Does Margos' design comply with usability heuristics and reduce interaction complexity? |
 | Perspective | Experienced user (knows system)                | Design-property analysis (analytical + structured audit)                                       |
 | Focus       | Throughput, step reduction                     | Heuristic compliance, interaction complexity (KLM)                                             |
 | Metrics     | Time-to-Complete, Steps-to-Complete            | Heuristic-Compliance-Rate, KLM-Predicted-Time, KLM-Reduction                                   |

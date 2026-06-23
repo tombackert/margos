@@ -1,4 +1,4 @@
-"""End-to-end CLI tests for the MARL platform.
+"""End-to-end CLI tests for Margos.
 
 These tests exercise the full workflow through the CLI entry point,
 validating the complete integration from user command to output.
@@ -11,13 +11,22 @@ from pathlib import Path
 import yaml
 from typer.testing import CliRunner
 
-from marl_platform.cli import app
+from margos.cli import app
 
 runner = CliRunner()
 
 
+def test_cli_uses_margos_name() -> None:
+    """Top-level help presents the renamed Margos CLI."""
+    result = runner.invoke(app, ["--help"], prog_name="margos")
+
+    assert result.exit_code == 0
+    assert "Usage: margos" in result.stdout
+    assert "Margos for MARL experiment workflows." in result.stdout
+
+
 class TestRunCommand:
-    """E2E tests for `platform run` command."""
+    """E2E tests for `margos run` command."""
 
     def test_run_with_valid_experiment(self, tmp_path: Path) -> None:
         """Full pipeline via CLI creates expected outputs."""
@@ -181,7 +190,7 @@ def main(config, callbacks, output_dir):
 
 
 class TestCompareCommand:
-    """E2E tests for `platform compare` command."""
+    """E2E tests for `margos compare` command."""
 
     def test_compare_missing_experiment_shows_error(self, tmp_path: Path) -> None:
         """Missing experiment shows user-friendly error."""
@@ -228,7 +237,7 @@ class TestCompareCommand:
 
 
 class TestExportCommand:
-    """E2E tests for `platform export` command."""
+    """E2E tests for `margos export` command."""
 
     def test_export_missing_experiment_shows_error(self, tmp_path: Path) -> None:
         """Missing experiment shows user-friendly error."""
@@ -242,7 +251,7 @@ class TestExportCommand:
 
 
 class TestImportCommand:
-    """E2E tests for `platform import` command."""
+    """E2E tests for `margos import` command."""
 
     def test_import_missing_bundle_shows_error(self, tmp_path: Path) -> None:
         """Missing bundle shows user-friendly error."""
