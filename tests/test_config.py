@@ -6,14 +6,14 @@ from pathlib import Path
 import pytest
 import yaml
 
-from marl_platform.config import (
-    PlatformConfig,
+from margos.config import (
+    MargosConfig,
     hash_config,
     load_config,
     resolve_paths,
     save_frozen_config,
 )
-from marl_platform.utils.errors import ConfigNotFoundError, ValidationError
+from margos.utils.errors import ConfigNotFoundError, ValidationError
 
 
 class TestLoadConfig:
@@ -134,7 +134,7 @@ class TestResolvePaths:
         training_dir.mkdir()
         (training_dir / "test.py").touch()
 
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment={"name": "test", "seed": 42},
             scenario={"file": "scenarios/test.argos"},
             training={"script": "training/test.py"},
@@ -153,7 +153,7 @@ class TestResolvePaths:
         training_dir.mkdir()
         (training_dir / "test.py").touch()
 
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment={"name": "test", "seed": 42},
             scenario={"file": "scenarios/nonexistent.argos"},
             training={"script": "training/test.py"},
@@ -170,7 +170,7 @@ class TestResolvePaths:
         scenarios_dir.mkdir()
         (scenarios_dir / "test.argos").touch()
 
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment={"name": "test", "seed": 42},
             scenario={"file": "scenarios/test.argos"},
             training={"script": "training/nonexistent.py"},
@@ -187,7 +187,7 @@ class TestHashConfig:
 
     def test_hash_is_deterministic(self) -> None:
         """Same config produces same hash."""
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment={"name": "test", "seed": 42},
             scenario={"file": "scenarios/test.argos"},
             training={"script": "training/test.py"},
@@ -200,13 +200,13 @@ class TestHashConfig:
 
     def test_hash_changes_with_config(self) -> None:
         """Different config produces different hash."""
-        config1 = PlatformConfig(
+        config1 = MargosConfig(
             experiment={"name": "test", "seed": 42},
             scenario={"file": "scenarios/test.argos"},
             training={"script": "training/test.py"},
         )
 
-        config2 = PlatformConfig(
+        config2 = MargosConfig(
             experiment={"name": "test", "seed": 43},  # different seed
             scenario={"file": "scenarios/test.argos"},
             training={"script": "training/test.py"},
@@ -216,7 +216,7 @@ class TestHashConfig:
 
     def test_hash_is_sha256(self) -> None:
         """Hash is a valid SHA256 hex string."""
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment={"name": "test", "seed": 42},
             scenario={"file": "scenarios/test.argos"},
             training={"script": "training/test.py"},
@@ -233,7 +233,7 @@ class TestSaveFrozenConfig:
 
     def test_save_creates_file(self, tmp_path: Path) -> None:
         """Frozen config is saved to file."""
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment={"name": "test", "seed": 42},
             scenario={"file": "scenarios/test.argos"},
             training={"script": "training/test.py"},
@@ -247,7 +247,7 @@ class TestSaveFrozenConfig:
 
     def test_save_creates_output_dir(self, tmp_path: Path) -> None:
         """Output directory is created if it doesn't exist."""
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment={"name": "test", "seed": 42},
             scenario={"file": "scenarios/test.argos"},
             training={"script": "training/test.py"},
@@ -260,7 +260,7 @@ class TestSaveFrozenConfig:
 
     def test_saved_config_is_valid_yaml(self, tmp_path: Path) -> None:
         """Saved config can be loaded back."""
-        config = PlatformConfig(
+        config = MargosConfig(
             experiment={"name": "test", "seed": 42},
             scenario={"file": "scenarios/test.argos"},
             training={"script": "training/test.py", "iterations": 50},

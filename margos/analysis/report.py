@@ -9,13 +9,13 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-from marl_platform.utils.errors import PlatformError
+from margos.utils.errors import MargosError
 
 # Use non-interactive backend for thesis-ready output
 matplotlib.use("Agg")
 
 
-class ReportError(PlatformError):
+class ReportError(MargosError):
     """Raised when report generation fails."""
 
     def __init__(self, message: str, context: dict | None = None, fix: str | None = None):
@@ -198,7 +198,7 @@ def generate_report(
     Returns:
         Path to generated report directory.
     """
-    from marl_platform.analysis.compare import compare_runs
+    from margos.analysis.compare import compare_runs
 
     def update_progress(current: int, total: int, desc: str = "") -> None:
         if progress_callback:

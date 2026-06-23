@@ -3,8 +3,8 @@
 import json
 from pathlib import Path
 
-from marl_platform.logging import MetricsLogger, create_logger
-from marl_platform.logging.callbacks import extract_metrics
+from margos.logging import MetricsLogger, create_logger
+from margos.logging.callbacks import extract_metrics
 
 
 class TestMetricsLogger:

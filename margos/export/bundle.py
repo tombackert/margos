@@ -7,10 +7,10 @@ from typing import Callable
 
 import yaml
 
-from marl_platform.utils.errors import PlatformError
+from margos.utils.errors import MargosError
 
 
-class BundleError(PlatformError):
+class BundleError(MargosError):
     """Raised when bundle creation fails."""
 
     def __init__(self, message: str, context: dict | None = None, fix: str | None = None):
@@ -34,7 +34,7 @@ def create_manifest(experiment_dir: Path) -> dict:
         "version": "1.0",
         "experiment_name": experiment_dir.name,
         "exported_at": datetime.now().isoformat(timespec="seconds"),
-        "platform_version": "0.1.0",
+        "margos_version": "0.1.0",
     }
 
 

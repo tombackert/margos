@@ -1,1 +1,1 @@
-"""Tests for the MARL platform."""
+"""Tests for Margos."""

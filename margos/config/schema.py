@@ -37,7 +37,7 @@ class OutputConfig(BaseModel):
     dir: str = Field(default="results/", description="Output directory for results")
 
 
-class PlatformConfig(BaseModel):
+class MargosConfig(BaseModel):
     """Root configuration schema for experiments."""
 
     experiment: ExperimentConfig

@@ -1,7 +1,7 @@
 """Export and import functionality."""
 
-from marl_platform.export.bundle import create_manifest, export_bundle
-from marl_platform.export.importer import (
+from margos.export.bundle import create_manifest, export_bundle
+from margos.export.importer import (
     compare_fingerprints,
     format_fingerprint_comparison,
     get_bundle_fingerprint,

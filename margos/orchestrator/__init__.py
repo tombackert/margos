@@ -1,6 +1,6 @@
 """Training orchestration."""
 
-from marl_platform.orchestrator.runner import (
+from margos.orchestrator.runner import (
     create_output_dir,
     execute_training_script,
     run_experiment,

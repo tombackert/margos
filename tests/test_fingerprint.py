@@ -4,8 +4,8 @@ from pathlib import Path
 
 import yaml
 
-from marl_platform.utils.fingerprint import capture_fingerprint, save_fingerprint
-from marl_platform.export.importer import compare_fingerprints
+from margos.utils.fingerprint import capture_fingerprint, save_fingerprint
+from margos.export.importer import compare_fingerprints
 
 
 class TestCaptureFingerprint:

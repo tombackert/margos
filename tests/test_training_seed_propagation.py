@@ -89,7 +89,7 @@ def _install_fake_training_stack(monkeypatch, env_ctor_calls: list[dict]) -> Non
     monkeypatch.setitem(sys.modules, "ray.tune", types.ModuleType("ray.tune"))
     monkeypatch.setitem(sys.modules, "ray.tune.registry", registry_module)
 
-    import marl_platform.argos_zoo as argos_zoo
+    import margos.argos_zoo as argos_zoo
 
     def fake_prepare_scenario(path: str) -> str:
         return f"{path}.prepared"

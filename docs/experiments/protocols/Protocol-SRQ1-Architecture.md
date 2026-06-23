@@ -9,7 +9,7 @@
 | **Hypothesis**       | H1: A modular, config-driven CLI architecture enables measurement of efficiency metrics (SRQ2), reproducibility metrics (SRQ3), usability metrics (SRQ4), and collaboration metrics (SRQ5). |
 | **Success Criteria** | All SRQ2-5 evaluation protocols can be executed and produce the specified metrics                                                                                                           |
 | **Sample Size**      | N/A (descriptive, not empirical)                                                                                                                                                            |
-| **Dependencies**     | Platform implementation complete                                                                                                                                                            |
+| **Dependencies**     | Margos implementation complete                                                                                                                                                            |
 
 ---
 
@@ -18,20 +18,20 @@
 These prerequisites are recorded against the completed evaluation runs and evidence captured in-repo, not against the current post-hoc CI state of the repository.
 
 ### Required Artifacts
-- [x] Implemented platform with all components
+- [x] Implemented Margos with all components
 - [x] CLI interface operational (`run`, `compare`, `export`, `import`)
 - [x] Config system functional (load, validate, hash)
 - [x] Logging system producing JSONL metrics
 - [x] Export/import system creating valid bundles
 
 ### Environment Setup
-- [x] Platform installed and accessible via CLI
+- [x] Margos installed and accessible via CLI
 - [x] Test experiment configs prepared
 - [x] ARGoS + RLlib integration working
 
 ### Pre-Execution Checklist
 - [x] Relevant reproducibility unit tests executed and captured (`docs/experiments/evidence/SRQ3/unit_tests_output.txt`)
-- [x] Platform can execute a basic experiment end-to-end
+- [x] Margos can execute a basic experiment end-to-end
 - [x] Documentation exists for all primary CLI commands
 
 ---
@@ -44,7 +44,7 @@ These prerequisites are recorded against the completed evaluation runs and evide
 | ------------------------- | ---------------------------------------------------------------------------------- |
 | **Enablement**            | A feature is "enabled" if its corresponding SRQ protocol can execute without error |
 | **Metric Collection**     | The ability to capture and record the specified measurement                        |
-| **Architectural Feature** | A designed component of the platform (CLI, config system, etc.)                    |
+| **Architectural Feature** | A designed component of Margos (CLI, config system, etc.)                    |
 
 ### Controlled Variables
 - N/A (descriptive evaluation)
@@ -60,20 +60,20 @@ SRQ1 is validated **indirectly**: If SRQ2-5 evaluations can be executed and prod
 
 For each SRQ, verify the architectural feature enables the required metric collection.
 
-| SRQ   | Required Data                         | Platform Feature                                                | Enables Metric   |
+| SRQ   | Required Data                         | Margos Feature                                                | Enables Metric   |
 | ----- | ------------------------------------- | --------------------------------------------------------------- | ---------------- |
-| SRQ2  | Time-to-Complete                      | Single CLI entry point via `platform run`                       | M2.1             |
+| SRQ2  | Time-to-Complete                      | Single CLI entry point via `margos run`                       | M2.1             |
 | SRQ2  | Steps-to-Complete                     | Config-driven end-to-end execution from one command             | M2.2             |
-| SRQ3  | Reproduce-Success-Rate                | Deterministic seed control + `platform compare`                 | M3.1             |
+| SRQ3  | Reproduce-Success-Rate                | Deterministic seed control + `margos compare`                 | M3.1             |
 | SRQ3  | Result-Variance                       | JSONL metrics logging and comparison tooling                    | M3.2             |
 | SRQ3  | Config-Integrity                      | Frozen config + SHA256 config hash                              | M3.3             |
 | SRQ3  | Seed-Determinism                      | Centralized RNG propagation before dynamic import               | M3.4             |
 | SRQ4  | Heuristic-Compliance-Rate             | Consistent CLI structure, help text, and structured errors      | M4.4             |
 | SRQ4  | KLM-Predicted-Time / KLM-Reduction    | Compressed workflows via `run`, `compare`, `export`, `import`   | M4.5-M4.6        |
-| SRQ5  | Steps-to-Share                        | `platform export` bundle creation                               | M5.1             |
-| SRQ5  | Time-to-Share                         | `platform export` bundle creation                               | M5.2             |
-| SRQ5  | Time-to-First-Run                     | `platform import` + imported-config execution path              | M5.3             |
-| SRQ5  | Time-to-Reproduce                     | `platform import` + `platform run` / `platform compare`         | M5.4             |
+| SRQ5  | Steps-to-Share                        | `margos export` bundle creation                               | M5.1             |
+| SRQ5  | Time-to-Share                         | `margos export` bundle creation                               | M5.2             |
+| SRQ5  | Time-to-First-Run                     | `margos import` + imported-config execution path              | M5.3             |
+| SRQ5  | Time-to-Reproduce                     | `margos import` + `margos run` / `margos compare`         | M5.4             |
 | SRQ5  | Handoff-Success-Rate                  | Bundle validation and import/export flow                        | M5.5             |
 | SRQ5  | Bundle-Completeness                   | Manifest + bundled config/logs/scenario/script/checkpoints      | M5.6             |
 | SRQ5  | Setup-Divergence                      | Environment fingerprint capture and comparison                  | M5.7             |
@@ -112,12 +112,12 @@ Verify all architectural decisions are documented:
 
 | Component              | Required For           | Functional?   | Notes                                                                                 |
 | ---------------------- | ---------------------- | ------------- | ------------------------------------------------------------------------------------- |
-| CLI `run` command      | SRQ2, SRQ4, SRQ5       | [x]           | Implemented in `marl_platform/cli.py`; used to execute configs and imported bundles   |
-| CLI `compare` command  | SRQ3, SRQ5             | [x]           | Implemented in `marl_platform/cli.py`; reports SRQ5 handoff success from reward matching and SRQ3 strict reproducibility from reward, AUC, and config checks |
-| CLI `export` command   | SRQ5                   | [x]           | Implemented in `marl_platform/cli.py` + `marl_platform/export/bundle.py`              |
-| CLI `import` command   | SRQ5                   | [x]           | Implemented in `marl_platform/cli.py` + `marl_platform/export/importer.py`            |
-| Config loader          | SRQ2, SRQ3, SRQ4, SRQ5 | [x]           | `load_config()` resolves YAML into validated platform config                          |
-| Config validator       | SRQ2, SRQ3, SRQ4, SRQ5 | [x]           | Pydantic schema in `marl_platform/config/schema.py` with structured validation errors |
+| CLI `run` command      | SRQ2, SRQ4, SRQ5       | [x]           | Implemented in `margos/cli.py`; used to execute configs and imported bundles   |
+| CLI `compare` command  | SRQ3, SRQ5             | [x]           | Implemented in `margos/cli.py`; reports SRQ5 handoff success from reward matching and SRQ3 strict reproducibility from reward, AUC, and config checks |
+| CLI `export` command   | SRQ5                   | [x]           | Implemented in `margos/cli.py` + `margos/export/bundle.py`              |
+| CLI `import` command   | SRQ5                   | [x]           | Implemented in `margos/cli.py` + `margos/export/importer.py`            |
+| Config loader          | SRQ2, SRQ3, SRQ4, SRQ5 | [x]           | `load_config()` resolves YAML into validated Margos config                          |
+| Config validator       | SRQ2, SRQ3, SRQ4, SRQ5 | [x]           | Pydantic schema in `margos/config/schema.py` with structured validation errors |
 | Config hasher          | SRQ3, SRQ5             | [x]           | `hash_config()` writes `config_hash.txt` for integrity checks                         |
 | Seed propagation       | SRQ3                   | [x]           | `set_all_seeds()` runs before training-script import                                  |
 | Metrics logger (JSONL) | SRQ2, SRQ3             | [x]           | `MetricsLogger` writes `logs/metrics.jsonl` per iteration                             |
@@ -129,13 +129,13 @@ Verify all architectural decisions are documented:
 
 | Requirement                | Why (Data Purpose)                            | From SRQ   | Implemented?   | Implemented Behavior                                                                                       |
 | -------------------------- | --------------------------------------------- | ---------- | -------------- | ---------------------------------------------------------------------------------------------------------- |
-| Single CLI entry point     | Measure Steps-to-Complete                     | SRQ2       | [x]            | Typer app exposes a single `platform` entry point with subcommands in `marl_platform/cli.py`               |
-| Unified config file        | Measure step reduction, enable config hashing | SRQ2, SRQ3 | [x]            | `load_config()` + `PlatformConfig` validate one YAML file; `save_frozen_config()` stores the executed copy |
+| Single CLI entry point     | Measure Steps-to-Complete                     | SRQ2       | [x]            | Typer app exposes a single `margos` entry point with subcommands in `margos/cli.py`               |
+| Unified config file        | Measure step reduction, enable config hashing | SRQ2, SRQ3 | [x]            | `load_config()` + `MargosConfig` validate one YAML file; `save_frozen_config()` stores the executed copy |
 | Deterministic seed control | Measure Reproduce-Success-Rate                | SRQ3       | [x]            | `set_all_seeds()` seeds Python, NumPy, and Torch before dynamic import in `run_experiment()`               |
 | Config hash at runtime     | Verify Config-Integrity                       | SRQ3       | [x]            | `hash_config()` computes SHA256 and writes `config_hash.txt` into the result bundle                        |
-| Clear error messages       | Measure Error-Rate, Recovery-Time             | SRQ4       | [x]            | `PlatformError` + `display_error()` emit `message`, contextual fields, and a concrete fix                  |
-| Export command             | Measure Steps-to-Share, Time-to-Share         | SRQ5       | [x]            | `platform export` packages the experiment into a validated shareable ZIP bundle                            |
-| Import command             | Measure Time-to-First-Run, Time-to-Reproduce  | SRQ5       | [x]            | `platform import` extracts the bundle, rewrites config paths, and enables direct rerun / comparison        |
+| Clear error messages       | Measure Error-Rate, Recovery-Time             | SRQ4       | [x]            | `MargosError` + `display_error()` emit `message`, contextual fields, and a concrete fix                  |
+| Export command             | Measure Steps-to-Share, Time-to-Share         | SRQ5       | [x]            | `margos export` packages the experiment into a validated shareable ZIP bundle                            |
+| Import command             | Measure Time-to-First-Run, Time-to-Reproduce  | SRQ5       | [x]            | `margos import` extracts the bundle, rewrites config paths, and enables direct rerun / comparison        |
 
 ---
 
@@ -145,7 +145,7 @@ Verify all architectural decisions are documented:
 
 H1 is validated if:
 1. **All SRQ2-5 protocols execute** without architectural blockers
-2. **All specified metrics are collectable** via platform features
+2. **All specified metrics are collectable** via Margos features
 3. **ADRs are documented** for all design decisions
 
 ### Interpretation

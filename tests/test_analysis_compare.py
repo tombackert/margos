@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from marl_platform.analysis.compare import ComparisonError, compare_runs
+from margos.analysis.compare import ComparisonError, compare_runs
 
 
 def create_experiment_with_metrics(
@@ -41,9 +41,9 @@ def create_experiment_with_metrics(
 
     if write_hash:
         if config_hash is None:
-            from marl_platform.config import PlatformConfig, hash_config
+            from margos.config import MargosConfig, hash_config
 
-            config_hash = hash_config(PlatformConfig(**config))
+            config_hash = hash_config(MargosConfig(**config))
         (path / "config_hash.txt").write_text(config_hash)
 
     (path / "config_integrity.yaml").write_text(

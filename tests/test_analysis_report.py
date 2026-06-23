@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from marl_platform.analysis.report import (
+from margos.analysis.report import (
     ReportError,
     calculate_auc,
     calculate_duration,

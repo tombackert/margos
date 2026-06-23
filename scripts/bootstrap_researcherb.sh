@@ -3,7 +3,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PLATFORM_DIR="${PLATFORM_DIR:-$REPO_ROOT}"
+MARGOS_DIR="${MARGOS_DIR:-$REPO_ROOT}"
 ATZ_DIR="${ATZ_DIR:-$HOME/Repos/ArgosToZoo}"
 VENV_DIR="${VENV_DIR:-$HOME/.venvs/srq5}"
 TRANSFER_DIR="${TRANSFER_DIR:-/Users/Shared/srq5-transfer}"
@@ -22,8 +22,8 @@ if [[ "$NORMALIZED_USER" != "$EXPECTED_USER" ]]; then
   exit 1
 fi
 
-if [[ ! -d "$PLATFORM_DIR" ]]; then
-  echo "Platform repo not found: $PLATFORM_DIR"
+if [[ ! -d "$MARGOS_DIR" ]]; then
+  echo "Margos repo not found: $MARGOS_DIR"
   exit 1
 fi
 
@@ -100,8 +100,8 @@ source "$VENV_DIR/bin/activate"
 
 python -m pip install --upgrade pip setuptools wheel
 
-echo "Installing marl-platform dependencies..."
-cd "$PLATFORM_DIR"
+echo "Installing margos dependencies..."
+cd "$MARGOS_DIR"
 pip install -e '.[ml]'
 
 echo "Installing ArgosToZoo dependencies..."
@@ -109,10 +109,10 @@ cd "$ATZ_DIR"
 pip install -r requirements.txt
 pip install numpy gymnasium
 
-echo "Building marl-platform ARGoS plugins..."
-mkdir -p "$PLATFORM_DIR/argos_plugins/build"
-ensure_fresh_cmake_build_dir "$PLATFORM_DIR/argos_plugins/build" "$PLATFORM_DIR/argos_plugins"
-cd "$PLATFORM_DIR/argos_plugins/build"
+echo "Building margos ARGoS plugins..."
+mkdir -p "$MARGOS_DIR/argos_plugins/build"
+ensure_fresh_cmake_build_dir "$MARGOS_DIR/argos_plugins/build" "$MARGOS_DIR/argos_plugins"
+cd "$MARGOS_DIR/argos_plugins/build"
 "$CMAKE_BIN" ..
 "$MAKE_BIN" -j4
 
@@ -128,7 +128,7 @@ if ! grep -Fq '# SRQ5 researcherb setup' "$ZSHRC" 2>/dev/null; then
 
 # SRQ5 researcherb setup
 export SRQ5_TRANSFER="$TRANSFER_DIR"
-alias srq5-platform='cd "$PLATFORM_DIR" && source "$VENV_DIR/bin/activate"'
+alias srq5-margos='cd "$MARGOS_DIR" && source "$VENV_DIR/bin/activate"'
 alias srq5-manual='cd "$ATZ_DIR" && source "$VENV_DIR/bin/activate"'
 EOF
 fi
@@ -137,5 +137,5 @@ echo
 echo "Bootstrap complete."
 echo "Verification commands:"
 echo "  source \"$VENV_DIR/bin/activate\""
-echo "  cd \"$PLATFORM_DIR\" && platform show configs"
+echo "  cd \"$MARGOS_DIR\" && margos show configs"
 echo "  cd \"$ATZ_DIR\" && PYTHONPATH=src python -c \"from zoo.argos_env import ArgosEnv; print('ArgosToZoo OK')\""

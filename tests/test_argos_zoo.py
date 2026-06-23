@@ -7,8 +7,8 @@ and will be skipped if ARGoS is not installed.
 import numpy as np
 import pytest
 
-from marl_platform.argos_zoo import ArgosEnv, aggregation_reward
-from marl_platform.argos_zoo.scenarios.aggregation import aggregation_reward as agg_reward_direct
+from margos.argos_zoo import ArgosEnv, aggregation_reward
+from margos.argos_zoo.scenarios.aggregation import aggregation_reward as agg_reward_direct
 
 
 class TestArgosZooImports:

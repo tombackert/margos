@@ -1,14 +1,14 @@
 """E2E tests for the aggregation scenario (Issue #15).
 
 These tests validate the full pipeline from CLI to trained model:
-1. `platform run aggregation_test` completes successfully
+1. `margos run aggregation_test` completes successfully
 2. Output directory has correct structure
 3. Metrics logged to JSONL
 4. Two runs with same seed produce identical final reward
 
 Requirements:
 - ARGoS3 installed and accessible via `argos3` command
-- Platform plugins built in argos_plugins/build/
+- Margos plugins built in argos_plugins/build/
 
 Run with: pytest tests/test_e2e_aggregation.py -v
 Skip with: pytest -m "not argos"
@@ -23,7 +23,7 @@ import pytest
 import yaml
 from typer.testing import CliRunner
 
-from marl_platform.cli import app
+from margos.cli import app
 
 
 def argos_available() -> bool:
@@ -40,8 +40,8 @@ def argos_available() -> bool:
         return False
 
 
-def platform_plugins_available() -> bool:
-    """Check if platform plugins are built."""
+def margos_plugins_available() -> bool:
+    """Check if Margos plugins are built."""
     repo_root = Path(__file__).parent.parent
     controller = repo_root / "argos_plugins/build/controllers/libmy_ipc_controller.dylib"
     loop_fn = repo_root / "argos_plugins/build/loop_functions/libzoo_loop_functions.dylib"
@@ -50,8 +50,8 @@ def platform_plugins_available() -> bool:
 
 # Skip marker for tests requiring ARGoS
 requires_argos = pytest.mark.skipif(
-    not (argos_available() and platform_plugins_available()),
-    reason="ARGoS or platform plugins not available",
+    not (argos_available() and margos_plugins_available()),
+    reason="ARGoS or Margos plugins not available",
 )
 
 runner = CliRunner()
@@ -102,7 +102,7 @@ class TestAggregationScenarioE2E:
 
     def test_config_valid_and_loads(self, aggregation_config_path: Path) -> None:
         """Config file is valid and loads correctly."""
-        from marl_platform.config import load_config
+        from margos.config import load_config
 
         assert aggregation_config_path.exists(), (
             f"Config not found: {aggregation_config_path}"
@@ -136,8 +136,8 @@ class TestAggregationScenarioE2E:
         assert "callbacks" in content
         assert "output_dir" in content
 
-    def test_platform_run_completes(self, experiment_setup: dict[str, Path]) -> None:
-        """Full pipeline: `platform run aggregation_test` completes successfully."""
+    def test_margos_run_completes(self, experiment_setup: dict[str, Path]) -> None:
+        """Full pipeline: `margos run aggregation_test` completes successfully."""
         config_path = experiment_setup["config_path"]
         results_dir = experiment_setup["results_dir"]
 
@@ -257,14 +257,14 @@ class TestAggregationRewardFunction:
     """Tests for aggregation reward function."""
 
     def test_reward_function_importable(self) -> None:
-        """Aggregation reward can be imported from platform."""
-        from marl_platform.argos_zoo import aggregation_reward
+        """Aggregation reward can be imported from Margos."""
+        from margos.argos_zoo import aggregation_reward
 
         assert callable(aggregation_reward)
 
     def test_reward_function_returns_expected_format(self) -> None:
         """Reward function returns (team_reward, per_agent, metrics)."""
-        from marl_platform.argos_zoo import aggregation_reward
+        from margos.argos_zoo import aggregation_reward
         import numpy as np
 
         # Simulate data

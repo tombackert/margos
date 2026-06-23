@@ -4,7 +4,7 @@ from .loader import hash_config, load_config, read_config_hash, resolve_paths, s
 from .schema import (
     ExperimentConfig,
     OutputConfig,
-    PlatformConfig,
+    MargosConfig,
     ScenarioConfig,
     TrainingConfig,
 )
@@ -15,7 +15,7 @@ __all__ = [
     "hash_config",
     "read_config_hash",
     "save_frozen_config",
-    "PlatformConfig",
+    "MargosConfig",
     "ExperimentConfig",
     "ScenarioConfig",
     "TrainingConfig",

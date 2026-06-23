@@ -8,8 +8,8 @@
 ## Risk
 Risk: Building MVP to enable predefined hypothesis testing could be perceived as "steering results" rather than conducting novel research
 Key Insights: 
-- You're building an architecture that enables fair testing, not one that guarantees passing. The platform could easily fail to meet thresholds - that's what makes it science.
-- Objective Comparison: Platform vs Manual baseline is an objective empirical test - the data will show the truth regardless of hopes
+- You're building an architecture that enables fair testing, not one that guarantees passing. Margos could easily fail to meet thresholds - that's what makes it science.
+- Objective Comparison: Margos vs Manual baseline is an objective empirical test - the data will show the truth regardless of hopes
 - SRQ1 explicitly asks "What architecture enables measurement?" not "What architecture maximizes results?"
 - Even if all thresholds are missed, you've answered: "To what extent does integration improve workflow?" The answer might be "very little" - that's still a valid research contribution.
 
@@ -81,14 +81,14 @@ Condition A (Manual - 11 steps):
 | Analysis | 10   | Create plots                        |
 | Analysis | 11   | Export results                      |
 
-Condition B (Platform - 4 steps):
+Condition B (Margos - 4 steps):
 
 | Phase    | Step | Action                             |
 | -------- | ---- | ---------------------------------- |
 | Setup    | 1    | Create unified config              |
-| Training | 2    | `platform run --config exp.yaml`   |
+| Training | 2    | `margos run --config exp.yaml`   |
 | Training | 3    | (Auto-logging during training)     |
-| Analysis | 4    | `platform report --experiment exp` |
+| Analysis | 4    | `margos report --experiment exp` |
 
 ### Derived Requirements for SRQ2
 
@@ -271,7 +271,7 @@ From ResearchPlan.md, E5 (Collaboration) measures:
 1. Machine A: Run experiment → export bundle
 2. Transfer bundle to Machine B (simulated via container/VM)
 3. Machine B: Import bundle → run → verify results match
-4. Compare baseline (8 manual steps) vs platform (4 steps)
+4. Compare baseline (8 manual steps) vs Margos (4 steps)
 
 Baseline (Manual - 8 steps): Identify files → Copy → Write README → List deps → Document seeds → Document env → Package → Transfer
 
@@ -502,7 +502,7 @@ output:
   dir: "results/"
 ```
 
-**Platform's job:** Read config → inject seed → run training script with scenario → capture logs.
+**Margos' job:** Read config → inject seed → run training script with scenario → capture logs.
 
 ### ArgosToZoo Integration
 
@@ -525,9 +525,9 @@ ARGoS (C++) <--ZMQ REQ/REP--> ArgosEnv (PettingZoo) <--> RLlib
 | `zoo_loop_functions` | C++ plugin | Batches observations, applies actions |
 | `reward_fn` | `zoo/scenarios/` | External callback for task-specific rewards |
 
-**Platform Integration Points:**
+**Margos Integration Points:**
 
-| Platform Component | Integrates With | How |
+| Margos Component | Integrates With | How |
 |--------------------|-----------------|-----|
 | **Config System** | `ArgosEnv` constructor | Pass: `argos_file`, `max_steps`, `reward_fn`, `quiet` |
 | **Config System** | `.argos` file | Reference path in unified config |
@@ -539,16 +539,16 @@ ARGoS (C++) <--ZMQ REQ/REP--> ArgosEnv (PettingZoo) <--> RLlib
 | **Seed Propagation** | RLlib config | `config.debugging(seed=X)` |
 | **Seed Propagation** | PyTorch | `torch.manual_seed(X)` before training |
 
-**What Platform Does NOT Touch:**
+**What Margos Does NOT Touch:**
 - ZMQ bridge internals (ATZ handles)
 - ARGoS subprocess management (ATZ handles)
 - Observation/action encoding (ATZ handles)
 - Reward computation (ATZ callback handles)
 
 **Architecture Implication:**
-- Platform wraps ATZ, doesn't modify it
+- Margos wraps ATZ, doesn't modify it
 - R2.3 satisfied by using `ArgosEnv` as-is
-- Platform's job: unified config → split to ATZ params + RLlib params → orchestrate
+- Margos' job: unified config → split to ATZ params + RLlib params → orchestrate
 
 ### Seed Propagation Strategy
 
@@ -630,7 +630,7 @@ Note: CLI does NOT directly call Config System or Logging System.
 - Config System is used internally by Training Orchestrator
 - Logging System receives data from Training Orchestrator (not CLI)
 
-### Data Flow: `platform run --config exp.yaml`
+### Data Flow: `margos run --config exp.yaml`
 
 ```
 CLI ──► Training Orchestrator
@@ -658,7 +658,7 @@ CLI ──► Training Orchestrator
                         └─► Checkpoints → results/checkpoints/
 ```
 
-### Data Flow: `platform report --experiment <dir>`
+### Data Flow: `margos report --experiment <dir>`
 
 ```
 CLI ──► Analysis System
@@ -671,7 +671,7 @@ CLI ──► Analysis System
               └─► Write to results/<dir>/report/
 ```
 
-### Data Flow: `platform export --experiment <dir>`
+### Data Flow: `margos export --experiment <dir>`
 
 ```
 CLI ──► Export System
@@ -689,7 +689,7 @@ CLI ──► Export System
               └─► Write bundles/bundle.zip
 ```
 
-### Data Flow: `platform import <bundle.zip>`
+### Data Flow: `margos import <bundle.zip>`
 
 ```
 CLI ──► Export System
@@ -700,7 +700,7 @@ CLI ──► Export System
               │
               ├─► Compare env_fingerprint (display match/mismatch)
               │
-              └─► Return path (ready for `platform run`)
+              └─► Return path (ready for `margos run`)
 ```
 
 ### Component Interfaces
@@ -736,7 +736,7 @@ results/
     ├── logs/
     │   └── metrics.jsonl     # Per-iteration metrics
     ├── checkpoints/          # RLlib checkpoints
-    └── report/               # After `platform report`
+    └── report/               # After `margos report`
         ├── learning_curve.png
         └── summary.txt
 ```

@@ -41,7 +41,7 @@ Reward Deviation (%) = |run_reward - ref_reward| / ref_reward × 100
 AUC Deviation (%) = |run_AUC - ref_AUC| / ref_AUC × 100
 ```
 
-`platform compare` also reports an SRQ5-oriented reward-only handoff status, but SRQ3 uses the stricter reproducibility judgment above.
+`margos compare` also reports an SRQ5-oriented reward-only handoff status, but SRQ3 uses the stricter reproducibility judgment above.
 
 ## Interpretation
 

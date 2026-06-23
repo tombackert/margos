@@ -1,20 +1,20 @@
-"""CLI entry point for the MARL platform."""
+"""CLI entry point for Margos."""
 
 from pathlib import Path
 from typing import Optional
 
 import typer
 
-from marl_platform.analysis import compare_runs
-from marl_platform.analysis.report import calculate_auc, calculate_duration, read_metrics
-from marl_platform.export import (
+from margos.analysis import compare_runs
+from margos.analysis.report import calculate_auc, calculate_duration, read_metrics
+from margos.export import (
     compare_fingerprints,
     export_bundle,
     get_bundle_fingerprint,
     import_bundle,
 )
-from marl_platform.orchestrator import run_experiment
-from marl_platform.utils import (
+from margos.orchestrator import run_experiment
+from margos.utils import (
     console,
     create_comparison_table,
     create_fingerprint_table,
@@ -22,15 +22,15 @@ from marl_platform.utils import (
     create_list_table,
     create_selection_table,
 )
-from marl_platform.utils.errors import (
+from margos.utils.errors import (
     BundleNotFoundError,
     ConfigNotFoundError,
     ExperimentNotFoundError,
-    PlatformError,
+    MargosError,
     display_error,
 )
-from marl_platform.utils.fingerprint import capture_fingerprint
-from marl_platform.utils.progress import OperationProgress
+from margos.utils.fingerprint import capture_fingerprint
+from margos.utils.progress import OperationProgress
 
 
 def list_items(
@@ -206,8 +206,8 @@ def _print_run_summary(output_dir: str) -> None:
 
 
 app = typer.Typer(
-    name="platform",
-    help="Research platform for MARL experiment workflows.\n\nUsage: platform [run | compare | export | import | show]",
+    name="margos",
+    help="Margos for MARL experiment workflows.\n\nUsage: margos [run | compare | export | import | show]",
     add_completion=False,  # Disabled - shell completion install is too slow
 )
 
@@ -219,7 +219,7 @@ _verbose: bool = False
 def main(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Show full traceback on errors"),
 ) -> None:
-    """Research platform for MARL experiment workflows."""
+    """Margos for MARL experiment workflows."""
     global _verbose
     _verbose = verbose
 
@@ -313,7 +313,7 @@ def run(
 
         typer.echo("")
 
-    except PlatformError as e:
+    except MargosError as e:
         display_error(e, verbose=_verbose)
         raise typer.Exit(1)
     finally:
@@ -358,15 +358,15 @@ def compare(
     """Compare two experiments and report SRQ5 and SRQ3 outcomes.
 
     Compares the mean reward over the last 50 logged values, or all available
-    values if fewer than 50 are present, using the platform's default ±1%
+    values if fewer than 50 are present, using Margos' default ±1%
     tolerance. The command reports:
     - SRQ5 handoff success from reward agreement only
     - SRQ3 strict reproducibility from reward, AUC, config identity, and runtime config integrity
 
     Examples:
-        platform compare                           # Interactive selection for both
-        platform compare exp_v1 exp_v2             # Compare exp_v1 against exp_v2
-        platform compare exp_v1                    # Select reference interactively
+        margos compare                           # Interactive selection for both
+        margos compare exp_v1 exp_v2             # Compare exp_v1 against exp_v2
+        margos compare exp_v1                    # Select reference interactively
     """
     group_labels = {"results": "Results (results/):", "imported": "Imported (experiments/imported/):"}
 
@@ -431,7 +431,7 @@ def compare(
         console.print()
         console.print(table)
 
-    except PlatformError as e:
+    except MargosError as e:
         display_error(e, verbose=_verbose)
         raise typer.Exit(1)
 
@@ -448,8 +448,8 @@ def export(
     """Export experiment to shareable bundle.
 
     Examples:
-        platform export exp_v1_20240115
-        platform export exp_v1_20240115 --output my_bundle.zip
+        margos export exp_v1_20240115
+        margos export exp_v1_20240115 --output my_bundle.zip
     """
     try:
         # Interactive selection if no experiment provided
@@ -479,7 +479,7 @@ def export(
             )
 
         typer.echo(f"Bundle created: {bundle_path}")
-    except PlatformError as e:
+    except MargosError as e:
         display_error(e, verbose=_verbose)
         raise typer.Exit(1)
 
@@ -500,8 +500,8 @@ def import_(
     """Import experiment bundle.
 
     Examples:
-        platform import exp_v1.zip
-        platform import /path/to/bundle.zip
+        margos import exp_v1.zip
+        margos import /path/to/bundle.zip
     """
     try:
         # Interactive selection if no bundle provided
@@ -551,7 +551,7 @@ def import_(
                     "Reproduction remains allowed."
                 )
 
-    except PlatformError as e:
+    except MargosError as e:
         display_error(e, verbose=_verbose)
         raise typer.Exit(1)
 
@@ -570,11 +570,11 @@ def show(
     """Show available configs, experiments, or bundles.
 
     Examples:
-        platform show              # Show all categories
-        platform show configs      # Show only config files
-        platform show results      # Show experiment results
-        platform show imported     # Show imported experiments
-        platform show bundles      # Show available bundles
+        margos show              # Show all categories
+        margos show configs      # Show only config files
+        margos show results      # Show experiment results
+        margos show imported     # Show imported experiments
+        margos show bundles      # Show available bundles
     """
     valid_categories = ["configs", "results", "imported", "bundles", "all"]
 

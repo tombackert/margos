@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import torch
 
-from marl_platform.utils.seeds import get_seed_state, set_all_seeds
+from margos.utils.seeds import get_seed_state, set_all_seeds
 
 
 class TestSetAllSeeds:

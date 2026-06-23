@@ -2,7 +2,7 @@
 
 These tests require:
 1. ARGoS3 installed and accessible via `argos3` command
-2. Platform plugins built in argos_plugins/build/
+2. Margos plugins built in argos_plugins/build/
 
 Run with: pytest tests/test_argos_integration.py -v
 Skip with: pytest tests/test_argos_integration.py -v -m "not argos"
@@ -32,8 +32,8 @@ def argos_available() -> bool:
         return False
 
 
-def platform_plugins_available() -> bool:
-    """Check if platform plugins are built."""
+def margos_plugins_available() -> bool:
+    """Check if Margos plugins are built."""
     repo_root = Path(__file__).parent.parent
     controller = repo_root / "argos_plugins/build/controllers/libmy_ipc_controller.dylib"
     loop_fn = repo_root / "argos_plugins/build/loop_functions/libzoo_loop_functions.dylib"
@@ -53,16 +53,16 @@ def prepare_scenario_file(template_path: Path, output_path: Path) -> None:
     controller_lib, loop_lib = get_plugin_paths()
 
     content = template_path.read_text()
-    content = content.replace("MARL_PLATFORM_CONTROLLER_LIB", str(controller_lib))
-    content = content.replace("MARL_PLATFORM_LOOP_LIB", str(loop_lib))
+    content = content.replace("MARGOS_CONTROLLER_LIB", str(controller_lib))
+    content = content.replace("MARGOS_LOOP_LIB", str(loop_lib))
 
     output_path.write_text(content)
 
 
 # Skip marker for tests requiring ARGoS
 requires_argos = pytest.mark.skipif(
-    not (argos_available() and platform_plugins_available()),
-    reason="ARGoS or platform plugins not available",
+    not (argos_available() and margos_plugins_available()),
+    reason="ARGoS or Margos plugins not available",
 )
 
 
@@ -81,7 +81,7 @@ class TestArgosEnvIntegration:
 
     def test_env_creation(self, scenario_file: str) -> None:
         """ArgosEnv can be created with valid scenario."""
-        from marl_platform.argos_zoo import ArgosEnv
+        from margos.argos_zoo import ArgosEnv
 
         env = ArgosEnv(
             argos_file=scenario_file,
@@ -94,7 +94,7 @@ class TestArgosEnvIntegration:
 
     def test_reset_returns_observations(self, scenario_file: str) -> None:
         """Reset returns observations for all agents."""
-        from marl_platform.argos_zoo import ArgosEnv
+        from margos.argos_zoo import ArgosEnv
 
         env = ArgosEnv(
             argos_file=scenario_file,
@@ -120,7 +120,7 @@ class TestArgosEnvIntegration:
 
     def test_step_executes(self, scenario_file: str) -> None:
         """Step executes actions and returns new observations."""
-        from marl_platform.argos_zoo import ArgosEnv
+        from margos.argos_zoo import ArgosEnv
 
         env = ArgosEnv(
             argos_file=scenario_file,
@@ -143,7 +143,7 @@ class TestArgosEnvIntegration:
 
     def test_seeding_determinism(self, scenario_file: str) -> None:
         """Same seed produces same initial observations."""
-        from marl_platform.argos_zoo import ArgosEnv
+        from margos.argos_zoo import ArgosEnv
 
         # Run 1
         env1 = ArgosEnv(
@@ -178,7 +178,7 @@ class TestArgosEnvIntegration:
 
     def test_episode_truncation(self, scenario_file: str) -> None:
         """Episode truncates after max_steps."""
-        from marl_platform.argos_zoo import ArgosEnv
+        from margos.argos_zoo import ArgosEnv
 
         env = ArgosEnv(
             argos_file=scenario_file,

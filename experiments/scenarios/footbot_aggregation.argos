@@ -16,7 +16,7 @@
   <!-- *************** -->
   <controllers>
     <my_ipc_controller id="ipc_ctrl"
-                       library="MARL_PLATFORM_CONTROLLER_LIB">
+                       library="MARGOS_CONTROLLER_LIB">
       <actuators>
         <differential_steering implementation="default" />
         <leds implementation="default" medium="leds" />
@@ -32,7 +32,7 @@
   <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <loop_functions library="MARL_PLATFORM_LOOP_LIB"
+  <loop_functions library="MARGOS_LOOP_LIB"
                   label="zoo_loop_functions" />
 
   <!-- *********************** -->

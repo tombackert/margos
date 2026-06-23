@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-PLATFORM_DIR="${PLATFORM_DIR:-$HOME/Repos/marl-platform}"
+MARGOS_DIR="${MARGOS_DIR:-$HOME/Repos/margos}"
 ATZ_DIR="${ATZ_DIR:-$HOME/Repos/ArgosToZoo}"
 VENV_DIR="${VENV_DIR:-$HOME/.venvs/srq5}"
 CURRENT_USER="$(id -un)"
@@ -15,8 +15,8 @@ if [[ "$NORMALIZED_USER" != "$EXPECTED_USER" ]]; then
   exit 1
 fi
 
-if [[ ! -d "$PLATFORM_DIR" ]]; then
-  echo "Platform repo not found: $PLATFORM_DIR"
+if [[ ! -d "$MARGOS_DIR" ]]; then
+  echo "Margos repo not found: $MARGOS_DIR"
   exit 1
 fi
 
@@ -37,9 +37,9 @@ echo "Using Python: $(python --version 2>&1)"
 echo "Using ARGoS: $(argos3 --version 2>&1 | head -n 1)"
 echo
 
-echo "== Platform dry run =="
-cd "$PLATFORM_DIR"
-printf '\n' | platform run srq5_eval
+echo "== Margos dry run =="
+cd "$MARGOS_DIR"
+printf '\n' | margos run srq5_eval
 
 echo
 echo "== Manual dry run =="

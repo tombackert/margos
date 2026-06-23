@@ -5,7 +5,7 @@ Usage:
     python experiments/run_srq3_batch.py --reference results/<ref_dir> --n 20
 
 The script:
-1. Runs `platform run aggregation_srq3` N times (default 20)
+1. Runs `margos run aggregation_srq3` N times (default 20)
 2. Compares each run against the reference using compare_runs()
 3. Appends rows to docs/experiments/evidence/SRQ3/comparison_results.csv
 4. Prints per-run summary and final statistics
@@ -17,13 +17,13 @@ import signal
 import sys
 from pathlib import Path
 
-# Add project root to path so we can import marl_platform
+# Add project root to path so we can import margos
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
-from marl_platform.analysis.compare import compare_runs
-from marl_platform.analysis.report import calculate_auc, read_metrics
-from marl_platform.orchestrator import run_experiment
+from margos.analysis.compare import compare_runs
+from margos.analysis.report import calculate_auc, read_metrics
+from margos.orchestrator import run_experiment
 
 CONFIG_PATH = str(ROOT / "experiments" / "configs" / "aggregation_srq3.yaml")
 CSV_PATH = ROOT / "docs" / "experiments" / "evidence" / "SRQ3" / "comparison_results.csv"

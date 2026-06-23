@@ -1,13 +1,13 @@
 """SRQ5 training script matching the manual baseline PPO setup.
 
-Platform calls: main(config, callbacks, output_dir, progress=None)
+Margos calls: main(config, callbacks, output_dir, progress=None)
 """
 
 import os
 from pathlib import Path
 from typing import Any, Optional
 
-from marl_platform.utils.ray_logging import init_ray, setup_ray_environment
+from margos.utils.ray_logging import init_ray, setup_ray_environment
 
 # Setup Ray environment before any Ray imports
 setup_ray_environment()
@@ -19,7 +19,7 @@ def main(
     output_dir: str,
     progress: Optional[Any] = None,
 ) -> None:
-    """Training entry point called by platform orchestrator."""
+    """Training entry point called by Margos orchestrator."""
     os.environ.setdefault("RAY_DISABLE_MEMORY_MONITOR", "1")
     init_ray()
 
@@ -27,7 +27,7 @@ def main(
     from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
     from ray.tune.registry import register_env
 
-    from marl_platform.argos_zoo import ArgosEnv, aggregation_reward, prepare_scenario
+    from margos.argos_zoo import ArgosEnv, aggregation_reward, prepare_scenario
 
     scenario_template = config["scenario"]["file"]
     scenario_path = prepare_scenario(scenario_template)

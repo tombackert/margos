@@ -1,4 +1,4 @@
-"""Error types and display utilities for the platform."""
+"""Error types and display utilities for Margos."""
 
 import sys
 import traceback
@@ -6,8 +6,8 @@ import traceback
 import typer
 
 
-class PlatformError(Exception):
-    """Base exception for platform errors."""
+class MargosError(Exception):
+    """Base exception for Margos errors."""
 
     def __init__(self, message: str, context: dict | None = None, fix: str | None = None):
         self.message = message
@@ -16,7 +16,7 @@ class PlatformError(Exception):
         super().__init__(message)
 
 
-class ConfigNotFoundError(PlatformError):
+class ConfigNotFoundError(MargosError):
     """Raised when a config file is not found."""
 
     def __init__(self, path: str):
@@ -27,7 +27,7 @@ class ConfigNotFoundError(PlatformError):
         )
 
 
-class ExperimentNotFoundError(PlatformError):
+class ExperimentNotFoundError(MargosError):
     """Raised when an experiment directory is not found."""
 
     def __init__(self, path: str):
@@ -38,7 +38,7 @@ class ExperimentNotFoundError(PlatformError):
         )
 
 
-class BundleNotFoundError(PlatformError):
+class BundleNotFoundError(MargosError):
     """Raised when a bundle file is not found."""
 
     def __init__(self, path: str):
@@ -49,7 +49,7 @@ class BundleNotFoundError(PlatformError):
         )
 
 
-class ValidationError(PlatformError):
+class ValidationError(MargosError):
     """Raised when validation fails."""
 
     def __init__(self, message: str, context: dict | None = None, fix: str | None = None):
@@ -60,7 +60,7 @@ class ValidationError(PlatformError):
         )
 
 
-class TrainingError(PlatformError):
+class TrainingError(MargosError):
     """Raised when training script execution fails."""
 
     def __init__(self, message: str, context: dict | None = None, fix: str | None = None):
@@ -71,7 +71,7 @@ class TrainingError(PlatformError):
         )
 
 
-def display_error(error: PlatformError, verbose: bool = False) -> None:
+def display_error(error: MargosError, verbose: bool = False) -> None:
     """Format and display error to user."""
     typer.echo(f"Error: {error.message}")
 

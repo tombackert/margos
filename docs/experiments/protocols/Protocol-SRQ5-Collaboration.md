@@ -5,18 +5,18 @@
 | Field                | Value                                                                                                                                                                                                                                                           |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Protocol ID**      | P-SRQ5                                                                                                                                                                                                                                                          |
-| **SRQ Reference**    | SRQ5: To what extent does the platform enable reliable reproduction of experiments across different research environments and by how much does it decrease time-to-reproduce?                                                                                   |
-| **Hypothesis**       | H5: The platform's export/import mechanism significantly reduces sharing effort (Steps-to-Share, Time-to-Share) and receiving effort (Time-to-First-Run, Time-to-Reproduce) compared to manual experiment handoff, while maintaining high Handoff Success Rate. |
+| **SRQ Reference**    | SRQ5: To what extent does Margos enable reliable reproduction of experiments across different research environments and by how much does it decrease time-to-reproduce?                                                                                   |
+| **Hypothesis**       | H5: Margos' export/import mechanism significantly reduces sharing effort (Steps-to-Share, Time-to-Share) and receiving effort (Time-to-First-Run, Time-to-Reproduce) compared to manual experiment handoff, while maintaining high Handoff Success Rate. |
 | **Success Criteria** | Significant reduction in sharing/receiving effort, Handoff-Success-Rate high                                                                                                                                                                                    |
-| **Sample Size**      | N=20 total for Handoff-Success-Rate (10 manual + 10 platform); N=10 per condition for timed trials (N raised to 20 in EvalPlanOverview for consistency with SRQ3; all 10 platform trials include timing automatically)                                          |
-| **Dependencies**     | Platform export/import implemented, isolated environment prepared                                                                                                                                                                                               |
+| **Sample Size**      | N=20 total for Handoff-Success-Rate (10 manual + 10 Margos); N=10 per condition for timed trials (N raised to 20 in EvalPlanOverview for consistency with SRQ3; all 10 Margos trials include timing automatically)                                          |
+| **Dependencies**     | Margos export/import implemented, isolated environment prepared                                                                                                                                                                                               |
 
 ---
 
 ## Prerequisites
 
 ### Required Artifacts
-- [ ] Platform CLI operational (`export`, `import`, `run`)
+- [ ] Margos CLI operational (`export`, `import`, `run`)
 - [ ] Completed experiment ready for export
 - [ ] Isolated environment for "Researcher B" simulation
 - [ ] Screen recording software
@@ -25,19 +25,19 @@
 ### Environment Setup
 
 **Machine A (Researcher A):**
-- [ ] Platform installed
+- [ ] Margos installed
 - [ ] Completed experiment in results directory
 
 **Machine B (Simulated Researcher B):**
 - [ ] Dedicated macOS user account (`researcherb`) prepared once before the study
-- [ ] Fixed base environment available: ARGoS, Python, plugin build capability, `marl-platform`, `ArgosToZoo`, shell config, shared SRQ5 `.venv`
+- [ ] Fixed base environment available: ARGoS, Python, plugin build capability, `margos`, `ArgosToZoo`, shell config, shared SRQ5 `.venv`
 - [ ] No pre-existing SRQ5 experiment artifacts available at trial start
 - [ ] Transfer path restricted to `/Users/Shared/srq5-transfer`
 - [ ] No direct use of Machine A working directories or results
 
 ### Pre-Execution Checklist
 - [ ] Baseline workflow steps documented (8 steps)
-- [ ] Platform workflow steps documented (5 steps)
+- [ ] Margos workflow steps documented (5 steps)
 - [ ] Transfer mechanism decided (e.g., file copy, simulated network transfer)
 - [ ] Researcher B environment specification documented
 
@@ -65,9 +65,9 @@
 A handoff is **successful** if Researcher B's experiment produces a final episode reward mean (averaged over the last 50 episodes of training) within **±1%** of Researcher A's reference value.
 
 - Manual condition: Researcher B exports TensorBoard scalar data to CSV and computes the mean of the last 50 reward values. Compares against the reference value documented in A's README.
-- Platform condition: `platform compare` applies the same ±1% threshold automatically for the reported **SRQ5 handoff** status. The command also reports a stricter SRQ3 reproducibility status, but that stricter judgment is not used for M5.5.
+- Margos condition: `margos compare` applies the same ±1% threshold automatically for the reported **SRQ5 handoff** status. The command also reports a stricter SRQ3 reproducibility status, but that stricter judgment is not used for M5.5.
 
-The initial SRQ5 draft specified a broader success tolerance. Before final analysis, this criterion was standardized to a stricter **±1%** threshold, computed on the mean of the final 50 reward values, and this finalized rule was used consistently in the reported evaluation. Because all successful platform trials showed **0% deviation** under the finalized comparison, this amendment did not affect the study outcome.
+The initial SRQ5 draft specified a broader success tolerance. Before final analysis, this criterion was standardized to a stricter **±1%** threshold, computed on the mean of the final 50 reward values, and this finalized rule was used consistently in the reported evaluation. Because all successful Margos trials showed **0% deviation** under the finalized comparison, this amendment did not affect the study outcome.
 
 ### Measurement Triggers
 
@@ -104,12 +104,12 @@ During timed trials, commands may be pasted verbatim into the terminal. Typing s
 | `ARGOS_PLUGIN_PATH` configured            | Yes      | Base infrastructure, identical on both machines                                 |
 | ZMQ port 5555 available                   | Yes      | Base infrastructure, assumed free and working                                   |
 | ArgosToZoo repo checked out               | Yes      | Provides `src/zoo/*` and `PYTHONPATH=src`                                       |
-| Platform CLI                              | Yes      | Required for Condition B; present in both for symmetry                          |
+| Margos CLI                              | Yes      | Required for Condition B; present in both for symmetry                          |
 | Common packages (numpy, torch, ray, etc.) | Yes      | Base ecosystem, not experiment-pinned                                           |
 | Experiment files / bundle                 | **No**   | This is what the handoff provides                                               |
-| Experiment-specific pinned deps           | **No**   | Manual: B installs from A's `requirements.txt`; Platform: handled automatically |
+| Experiment-specific pinned deps           | **No**   | Manual: B installs from A's `requirements.txt`; Margos: handled automatically |
 
-> **Rationale:** Platform installation is infrastructure cost amortized across all experiments. Both conditions start from the same state; measured friction is purely the experiment handoff itself.
+> **Rationale:** Margos installation is infrastructure cost amortized across all experiments. Both conditions start from the same state; measured friction is purely the experiment handoff itself.
 
 Machine B is simulated by a dedicated prepared macOS account that remains constant across the study. The account's base software environment is installed once and treated as fixed infrastructure, not part of the measured handoff effort. Before each trial, all experiment-specific state from prior trials is removed so that only the prepared base environment persists.
 
@@ -249,15 +249,15 @@ tensorboard --logdir results/aggregation_srq5_<NEW_TIMESTAMP>/tensorboard --port
 --- 
 
 
-### Condition B: Platform Workflow
+### Condition B: Margos Workflow
 
 **Machine A — Researcher A:** Sharing Phase - 1 step
 ```bash
 # Step 0 (pre-trial, NOT counted in Steps-to-Share): Run experiment (produces reference run)
-platform run srq5_eval
+margos run srq5_eval
 
 # Step 1: Export reference run
-platform export srq5_eval_<timestamp> --output /Users/Shared/srq5-transfer/srq5_eval_<timestamp>.zip
+margos export srq5_eval_<timestamp> --output /Users/Shared/srq5-transfer/srq5_eval_<timestamp>.zip
 ```
 
 **Transfer:**
@@ -269,16 +269,16 @@ platform export srq5_eval_<timestamp> --output /Users/Shared/srq5-transfer/srq5_
 **Machine B — Researcher B:** Receiving Phase - 3 steps
 ```bash
 # Step 3: Import bundle
-platform import /Users/Shared/srq5-transfer/srq5_eval_<timestamp>.zip
+margos import /Users/Shared/srq5-transfer/srq5_eval_<timestamp>.zip
 
 # Step 4: Run experiment from imported config
-platform run srq5_eval
+margos run srq5_eval
 
 # Step 5: Verify reproduction
-platform compare <new_result_dir> srq5_eval_<timestamp>
+margos compare <new_result_dir> srq5_eval_<timestamp>
 ```
 
-**Total platform steps: 5 active (+ 1 Step 0 pre-trial, not counted)**
+**Total Margos steps: 5 active (+ 1 Step 0 pre-trial, not counted)**
 
 **Steps-to-Share (M5.1): 1** (step 1 only, from "I want to share" to "bundle ready")
 
@@ -305,7 +305,7 @@ Prepare the dedicated Machine B account once before the study:
 
 ```bash
 # One-time setup (already validated before timed trials)
-cd ~/Repos/marl-platform
+cd ~/Repos/margos
 ./scripts/bootstrap_researcherb.sh
 
 # One-time dry run validation
@@ -315,7 +315,7 @@ cd ~/Repos/marl-platform
 Stable base state that remains fixed across trials:
 - macOS user account `researcherb`
 - Host-native ARGoS, Python, and plugin build capability
-- `~/Repos/marl-platform` checkout
+- `~/Repos/margos` checkout
 - `~/Repos/ArgosToZoo` checkout
 - `~/.venvs/srq5` shared virtualenv
 - Shell configuration and aliases
@@ -325,7 +325,7 @@ Per-trial reset requirement:
 - Remove prior manual handoff directories under `manual_received/`
 - Remove prior manual staging artifacts `srq5_share/` and `bundles/srq5_bundle.zip`
 - Remove prior manually copied SRQ5 handoff files from the `ArgosToZoo` checkout: `scripts/ray_footbot_aggregation_srq5.py` and `experiments/footbot_aggregation_srq5.argos`
-- Remove prior imported experiments under `~/Repos/marl-platform/experiments/imported/`
+- Remove prior imported experiments under `~/Repos/margos/experiments/imported/`
 - Remove prior trial result directories relevant to the next run
 - Verify no previous trial README, requirements, bundle, imported config, or result artifact remains available to the operator
 
@@ -340,8 +340,8 @@ rm -rf \
   "$HOME/Repos/ArgosToZoo/scripts/ray_footbot_aggregation_srq5.py" \
   "$HOME/Repos/ArgosToZoo/experiments/footbot_aggregation_srq5.argos" \
   "$HOME/Repos/ArgosToZoo/results/aggregation_srq5_"* \
-  "$HOME/Repos/marl-platform/experiments/imported/"* \
-  "$HOME/Repos/marl-platform/results/srq5_eval_"*
+  "$HOME/Repos/margos/experiments/imported/"* \
+  "$HOME/Repos/margos/results/srq5_eval_"*
 ```
 
 This command removes only per-trial SRQ5 artifacts. It does not remove the fixed repo checkouts, the shared virtualenv, or any non-SRQ5 experiment assets.
@@ -359,7 +359,7 @@ For each trial:
 **A's Sharing Phase:**
 4. **State trial ID and condition**
 5. **Start timer** (Time-to-Share)
-6. **Perform sharing workflow** (Baseline or Platform)
+6. **Perform sharing workflow** (Baseline or Margos)
 7. **Count steps**
 8. **Stop timer** when bundle ready
 
@@ -395,16 +395,16 @@ For each trial:
 | 8     | Manual    | 8              | 139                 | 59                      | 119                     | Yes              |
 | 9     | Manual    | 8              | 106                 | 54                      | 102                     | Yes              |
 | 10    | Manual    | 8              | 65                  | 50                      | 84                      | Yes              |
-| 1     | Platform  | 1              | 57                  | 70                      | 80                      | Yes              |
-| 2     | Platform  | 1              | 59                  | 39                      | 47                      | Yes              |
-| 3     | Platform  | 1              | 29                  | 60                      | 77                      | Yes              |
-| 4     | Platform  | 1              | 24                  | 55                      | 63                      | Yes              |
-| 5     | Platform  | 1              | 15                  | 58                      | 65                      | Yes              |
-| 6     | Platform  | 1              | 58                  | 73                      | 82                      | Yes              |
-| 7     | Platform  | 1              | 57                  | 37                      | 46                      | Yes              |
-| 8     | Platform  | 1              | 32                  | 63                      | 78                      | Yes              |
-| 9     | Platform  | 1              | 25                  | 54                      | 59                      | Yes              |
-| 10    | Platform  | 1              | 18                  | 56                      | 65                      | Yes              |
+| 1     | Margos  | 1              | 57                  | 70                      | 80                      | Yes              |
+| 2     | Margos  | 1              | 59                  | 39                      | 47                      | Yes              |
+| 3     | Margos  | 1              | 29                  | 60                      | 77                      | Yes              |
+| 4     | Margos  | 1              | 24                  | 55                      | 63                      | Yes              |
+| 5     | Margos  | 1              | 15                  | 58                      | 65                      | Yes              |
+| 6     | Margos  | 1              | 58                  | 73                      | 82                      | Yes              |
+| 7     | Margos  | 1              | 57                  | 37                      | 46                      | Yes              |
+| 8     | Margos  | 1              | 32                  | 63                      | 78                      | Yes              |
+| 9     | Margos  | 1              | 25                  | 54                      | 59                      | Yes              |
+| 10    | Margos  | 1              | 18                  | 56                      | 65                      | Yes              |
 
 ### Raw Timestamp Capture
 
@@ -566,73 +566,73 @@ Use one row per documented protocol step. For manual trials, `Time-to-First-Run`
 | 10    | B       | Receiving | 5    | Run experiment (`PYTHONPATH=src python ...`)           | 0:36  | 1:04 | 28             | First-Run, Reproduce  |       |
 | 10    | B       | Receiving | 6    | Compare results (TensorBoard/manual check)             | 1:05  | 1:39 | 34             | Reproduce             |       |
 
-#### Platform Workflow Raw Command Timestamps
+#### Margos Workflow Raw Command Timestamps
 
-Use one row per documented protocol step. For platform trials, exclude Step 0 from all measured totals, sum Step 1 for `Time-to-Share`, sum Steps 3-4 for `Time-to-First-Run`, and sum Steps 3-5 for `Time-to-Reproduce`.
+Use one row per documented protocol step. For Margos trials, exclude Step 0 from all measured totals, sum Step 1 for `Time-to-Share`, sum Steps 3-4 for `Time-to-First-Run`, and sum Steps 3-5 for `Time-to-Reproduce`.
 
 | Trial | Machine | Phase     | Step | Command / Action                                   | Start | End  | Duration (sec) | Included In           | Notes                                              |
 | ----- | ------- | --------- | ---- | -------------------------------------------------- | ----- | ---- | -------------- | --------------------- | -------------------------------------------------- |
-| 1     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:11  | 0:45 | 34             | No                    |                                                    |
-| 1     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:46  | 1:43 | 57             | Share                 |                                                    |
-| 1     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:11  | 0:47 | 36             | First-Run, Reproduce  |                                                    |
-| 1     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:48  | 1:22 | 34             | First-Run, Reproduce  |                                                    |
-| 1     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:23  | 1:33 | 10             | Reproduce             |                                                    |
-| 2     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:11  | 0:45 | 34             | No                    |                                                    |
-| 2     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:46  | 1:45 | 59             | Share                 |                                                    |
-| 2     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:04  | 0:09 | 5              | First-Run, Reproduce  |                                                    |
-| 2     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:10  | 0:44 | 34             | First-Run, Reproduce  |                                                    |
-| 2     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 0:45  | 0:53 | 8              | Reproduce             |                                                    |
-| 3     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:18  | 0:52 | 34             | No                    |                                                    |
-| 3     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:53  | 1:22 | 29             | Share                 |                                                    |
-| 3     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:03  | 0:29 | 26             | First-Run, Reproduce  |                                                    |
-| 3     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:30  | 1:04 | 34             | First-Run, Reproduce  |                                                    |
-| 3     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:05  | 1:22 | 17             | Reproduce             |                                                    |
-| 4     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:14  | 0:48 | 34             | No                    |                                                    |
-| 4     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:49  | 1:13 | 24             | Share                 |                                                    |
-| 4     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:21 | 21             | First-Run, Reproduce  |                                                    |
-| 4     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:22  | 0:56 | 34             | First-Run, Reproduce  |                                                    |
-| 4     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 0:57  | 1:05 | 8              | Reproduce             |                                                    |
-| 5     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:00  | 0:34 | 34             | No                    |                                                    |
-| 5     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:35  | 0:50 | 15             | Share                 |                                                    |
-| 5     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:24 | 24             | First-Run, Reproduce  |                                                    |
-| 5     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:25  | 0:59 | 34             | First-Run, Reproduce  |                                                    |
-| 5     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:00  | 1:07 | 7              | Reproduce             |                                                    |
-| 6     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:14  | 0:48 | 34             | No                    |                                                    |
-| 6     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:49  | 1:47 | 58             | Share                 |                                                    |
-| 6     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:08  | 0:47 | 39             | First-Run, Reproduce  |                                                    |
-| 6     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:48  | 1:22 | 34             | First-Run, Reproduce  |                                                    |
-| 6     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:23  | 1:32 | 9              | Reproduce             |                                                    |
-| 7     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:08  | 0:42 | 34             | No                    |                                                    |
-| 7     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:43  | 1:40 | 57             | Share                 |                                                    |
-| 7     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:05  | 0:08 | 3              | First-Run, Reproduce  |                                                    |
-| 7     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:09  | 0:43 | 34             | First-Run, Reproduce  |                                                    |
-| 7     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 0:44  | 0:53 | 9              | Reproduce             |                                                    |
-| 8     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:15  | 0:49 | 34             | No                    |                                                    |
-| 8     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:50  | 1:22 | 32             | Share                 |                                                    |
-| 8     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:01  | 0:30 | 29             | First-Run, Reproduce  |                                                    |
-| 8     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:31  | 1:05 | 34             | First-Run, Reproduce  |                                                    |
-| 8     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:06  | 1:21 | 15             | Reproduce             |                                                    |
-| 9     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:17  | 0:51 | 34             | No                    |                                                    |
-| 9     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:52  | 1:17 | 25             | Share                 |                                                    |
-| 9     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:03  | 0:23 | 20             | First-Run, Reproduce  |                                                    |
-| 9     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:24  | 0:58 | 34             | First-Run, Reproduce  |                                                    |
-| 9     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 0:59  | 1:04 | 5              | Reproduce             |                                                    |
-| 10    | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:02  | 0:36 | 34             | No                    |                                                    |
-| 10    | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:37  | 0:55 | 18             | Share                 |                                                    |
-| 10    | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:00  | 0:22 | 22             | First-Run, Reproduce  |                                                    |
-| 10    | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:23  | 0:57 | 34             | First-Run, Reproduce  |                                                    |
-| 10    | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 0:58  | 1:07 | 9              | Reproduce             |                                                    |
-| 0     | A       | Pre-trial | 0    | Reference run (`platform run srq5_eval`)           | 0:07  | 0:41 | 34             | No                    | reference 34s deterministic training run           |
-| 0     | A       | Sharing   | 1    | Export bundle (`platform export ...`)              | 0:42  | 0:59 | 17             | Share                 |                                                    |
-| 0     | B       | Receiving | 3    | Import bundle (`platform import ...`)              | 0:05  | 0:27 | 22             | First-Run, Reproduce  |                                                    |
-| 0     | B       | Receiving | 4    | Run imported experiment (`platform run srq5_eval`) | 0:28  | 1:02 | 34             | First-Run, Reproduce  | reference 34s deterministic training run           |
-| 0     | B       | Receiving | 5    | Verify reproduction (`platform compare ...`)       | 1:03  | 1:17 | 14             | Reproduce             |                                                    |
+| 1     | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:11  | 0:45 | 34             | No                    |                                                    |
+| 1     | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:46  | 1:43 | 57             | Share                 |                                                    |
+| 1     | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:11  | 0:47 | 36             | First-Run, Reproduce  |                                                    |
+| 1     | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:48  | 1:22 | 34             | First-Run, Reproduce  |                                                    |
+| 1     | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 1:23  | 1:33 | 10             | Reproduce             |                                                    |
+| 2     | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:11  | 0:45 | 34             | No                    |                                                    |
+| 2     | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:46  | 1:45 | 59             | Share                 |                                                    |
+| 2     | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:04  | 0:09 | 5              | First-Run, Reproduce  |                                                    |
+| 2     | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:10  | 0:44 | 34             | First-Run, Reproduce  |                                                    |
+| 2     | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 0:45  | 0:53 | 8              | Reproduce             |                                                    |
+| 3     | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:18  | 0:52 | 34             | No                    |                                                    |
+| 3     | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:53  | 1:22 | 29             | Share                 |                                                    |
+| 3     | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:03  | 0:29 | 26             | First-Run, Reproduce  |                                                    |
+| 3     | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:30  | 1:04 | 34             | First-Run, Reproduce  |                                                    |
+| 3     | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 1:05  | 1:22 | 17             | Reproduce             |                                                    |
+| 4     | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:14  | 0:48 | 34             | No                    |                                                    |
+| 4     | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:49  | 1:13 | 24             | Share                 |                                                    |
+| 4     | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:00  | 0:21 | 21             | First-Run, Reproduce  |                                                    |
+| 4     | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:22  | 0:56 | 34             | First-Run, Reproduce  |                                                    |
+| 4     | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 0:57  | 1:05 | 8              | Reproduce             |                                                    |
+| 5     | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:00  | 0:34 | 34             | No                    |                                                    |
+| 5     | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:35  | 0:50 | 15             | Share                 |                                                    |
+| 5     | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:00  | 0:24 | 24             | First-Run, Reproduce  |                                                    |
+| 5     | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:25  | 0:59 | 34             | First-Run, Reproduce  |                                                    |
+| 5     | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 1:00  | 1:07 | 7              | Reproduce             |                                                    |
+| 6     | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:14  | 0:48 | 34             | No                    |                                                    |
+| 6     | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:49  | 1:47 | 58             | Share                 |                                                    |
+| 6     | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:08  | 0:47 | 39             | First-Run, Reproduce  |                                                    |
+| 6     | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:48  | 1:22 | 34             | First-Run, Reproduce  |                                                    |
+| 6     | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 1:23  | 1:32 | 9              | Reproduce             |                                                    |
+| 7     | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:08  | 0:42 | 34             | No                    |                                                    |
+| 7     | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:43  | 1:40 | 57             | Share                 |                                                    |
+| 7     | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:05  | 0:08 | 3              | First-Run, Reproduce  |                                                    |
+| 7     | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:09  | 0:43 | 34             | First-Run, Reproduce  |                                                    |
+| 7     | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 0:44  | 0:53 | 9              | Reproduce             |                                                    |
+| 8     | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:15  | 0:49 | 34             | No                    |                                                    |
+| 8     | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:50  | 1:22 | 32             | Share                 |                                                    |
+| 8     | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:01  | 0:30 | 29             | First-Run, Reproduce  |                                                    |
+| 8     | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:31  | 1:05 | 34             | First-Run, Reproduce  |                                                    |
+| 8     | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 1:06  | 1:21 | 15             | Reproduce             |                                                    |
+| 9     | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:17  | 0:51 | 34             | No                    |                                                    |
+| 9     | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:52  | 1:17 | 25             | Share                 |                                                    |
+| 9     | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:03  | 0:23 | 20             | First-Run, Reproduce  |                                                    |
+| 9     | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:24  | 0:58 | 34             | First-Run, Reproduce  |                                                    |
+| 9     | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 0:59  | 1:04 | 5              | Reproduce             |                                                    |
+| 10    | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:02  | 0:36 | 34             | No                    |                                                    |
+| 10    | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:37  | 0:55 | 18             | Share                 |                                                    |
+| 10    | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:00  | 0:22 | 22             | First-Run, Reproduce  |                                                    |
+| 10    | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:23  | 0:57 | 34             | First-Run, Reproduce  |                                                    |
+| 10    | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 0:58  | 1:07 | 9              | Reproduce             |                                                    |
+| 0     | A       | Pre-trial | 0    | Reference run (`margos run srq5_eval`)           | 0:07  | 0:41 | 34             | No                    | reference 34s deterministic training run           |
+| 0     | A       | Sharing   | 1    | Export bundle (`margos export ...`)              | 0:42  | 0:59 | 17             | Share                 |                                                    |
+| 0     | B       | Receiving | 3    | Import bundle (`margos import ...`)              | 0:05  | 0:27 | 22             | First-Run, Reproduce  |                                                    |
+| 0     | B       | Receiving | 4    | Run imported experiment (`margos run srq5_eval`) | 0:28  | 1:02 | 34             | First-Run, Reproduce  | reference 34s deterministic training run           |
+| 0     | B       | Receiving | 5    | Verify reproduction (`margos compare ...`)       | 1:03  | 1:17 | 14             | Reproduce             |                                                    |
 
 Trial `0` is the reference baseline showing the deterministic 34s training run reflected in the recorded handoff trials.
 
 ### Bundle Completeness Checklist
 
-For each bundle (Platform condition), audit contents:
+For each bundle (Margos condition), audit contents:
 
 | Component            | Required?   | Present?   |
 | -------------------- | ----------- | ---------- |
@@ -655,7 +655,7 @@ Compare Machine A and Machine B environments:
 | ---------------- | ----------- | ----------- | -------- |
 | Python version   |             |             | Y/N      |
 | OS               |             |             | Y/N      |
-| Platform version |             |             | Y/N      |
+| Margos version |             |             | Y/N      |
 | RLlib version    |             |             | Y/N      |
 | PyTorch version  |             |             | Y/N      |
 | NumPy version    |             |             | Y/N      |
@@ -676,7 +676,7 @@ The timing metrics below are computed from the recorded handoff trials documente
 
 ### Primary Metrics (M5.1-M5.7)
 
-| Metric                     | Manual (Mean ± SD)  | Platform (Mean ± SD)  | Reduction (%)   | Target         |
+| Metric                     | Manual (Mean ± SD)  | Margos (Mean ± SD)  | Reduction (%)   | Target         |
 | -------------------------- | ------------------- | --------------------- | --------------- | -------------- |
 | M5.1: Steps-to-Share       | 8 (fixed)           | 1 (fixed)             | 87.5%           | ≥50% reduction |
 | M5.2: Time-to-Share        | 107.7 ± 24.1 sec    | 37.4 ± 18.2 sec       | 65.3%           | ≥50% reduction |
@@ -702,9 +702,9 @@ A handoff is **successful** if Researcher B's final episode reward mean (last 50
 ### Time Reduction Calculation
 
 ```
-Time-to-Share Reduction = (Manual_mean - Platform_mean) / Manual_mean × 100%
-Time-to-First-Run Reduction = (Manual_mean - Platform_mean) / Manual_mean × 100%
-Time-to-Reproduce Reduction = (Manual_mean - Platform_mean) / Manual_mean × 100%
+Time-to-Share Reduction = (Manual_mean - Margos_mean) / Manual_mean × 100%
+Time-to-First-Run Reduction = (Manual_mean - Margos_mean) / Manual_mean × 100%
+Time-to-Reproduce Reduction = (Manual_mean - Margos_mean) / Manual_mean × 100%
 ```
 
 ### Interpretation Guidelines
@@ -735,7 +735,7 @@ If Handoff-Success-Rate < 100%, categorize failures:
 
 - [x] Screen recordings of all trials
 - [x] Per-trial data complete
-- [x] Bundle completeness audit for platform trials
+- [x] Bundle completeness audit for Margos trials
 - [x] Setup divergence analysis for each trial
 - [x] Error log documented: no failed handoffs or recorded trial errors occurred, so `error_log.csv` is intentionally header-only
 - [x] Environment specifications documented
@@ -748,7 +748,7 @@ All 20 trials completed successfully; no failed handoffs or recorded trial error
 | ------------------------- | ------------------------------------------------------------------------ |
 | `trial_01_manual.mp4` ... | Screen recordings                                                        |
 | `trial_data.csv`          | All timing and step data                                                 |
-| `bundle_audits.csv`       | Bundle completeness for each platform trial                              |
+| `bundle_audits.csv`       | Bundle completeness for each Margos trial                              |
 | `env_comparisons.csv`     | Machine A vs B environment data                                          |
 | `error_log.csv`           | Error log artifact; intentionally empty because no trial errors occurred |
 | `analysis_summary.md`     | Computed statistics                                                      |
@@ -773,7 +773,7 @@ All 20 trials completed successfully; no failed handoffs or recorded trial error
 | Prepared collaborator environment, not cold-start setup | State explicitly that base infrastructure is amortized and outside SRQ5 timing scope                                                                                                                                 |
 | Transfer time not included                              | Focus on preparation and reproduction time                                                                                                                                                                           |
 | Limited trial count                                     | Report confidence intervals                                                                                                                                                                                          |
-| Time metrics measured by platform developer             | Times represent a lower bound - a naive researcher would take longer on the platform condition. Direction of comparison is preserved (same evaluator for both conditions); absolute times should not be generalized. |
+| Time metrics measured by Margos developer             | Times represent a lower bound - a naive researcher would take longer on Margos condition. Direction of comparison is preserved (same evaluator for both conditions); absolute times should not be generalized. |
 
 ### Note on Simulation
 

@@ -6,18 +6,18 @@
 |-----------|-------|
 | Sprint | 3 |
 | Focus | Analysis + Export Systems |
-| Goal | `platform report` and `platform export/import` fully functional |
-| Entry Criteria | Sprint 2 complete - `platform run` produces results with logs |
+| Goal | `margos report` and `margos export/import` fully functional |
+| Entry Criteria | Sprint 2 complete - `margos run` produces results with logs |
 | Target | All 15 Must requirements satisfied |
 
 ---
 
 ## Exit Criteria
 
-- [ ] `platform report <exp>` generates learning curve plot + summary
-- [ ] `platform report <exp> --reference <ref>` compares runs (±1% tolerance)
-- [ ] `platform export <exp>` creates shareable `bundle.zip`
-- [ ] `platform import bundle.zip` unpacks and shows fingerprint comparison
+- [ ] `margos report <exp>` generates learning curve plot + summary
+- [ ] `margos report <exp> --reference <ref>` compares runs (±1% tolerance)
+- [ ] `margos export <exp>` creates shareable `bundle.zip`
+- [ ] `margos import bundle.zip` unpacks and shows fingerprint comparison
 - [ ] All 15 Must requirements satisfied
 
 ---
@@ -205,7 +205,7 @@ def compare_fingerprints(bundle_fp: dict, current_fp: dict) -> dict:
 **Acceptance Criteria:**
 - [ ] `export_bundle(experiment_dir)` creates `bundles/<exp_name>.zip`
 - [ ] Bundle contains:
-  - [ ] `manifest.yaml` with metadata (export timestamp, platform version)
+  - [ ] `manifest.yaml` with metadata (export timestamp, Margos version)
   - [ ] `config.yaml` (frozen copy from experiment)
   - [ ] `scenario.argos` (resolved from config, copied)
   - [ ] `train.py` (resolved from config, copied)
@@ -278,14 +278,14 @@ def compare_fingerprints(bundle_fp: dict, current_fp: dict) -> dict:
 **File:** `cli.py`
 
 **Acceptance Criteria:**
-- [ ] `platform report <exp>` calls `generate_report()`
+- [ ] `margos report <exp>` calls `generate_report()`
   - [ ] `--reference <ref>` option for comparison
   - [ ] Display summary in terminal
   - [ ] Show comparison result if reference provided
-- [ ] `platform export <exp>` calls `export_bundle()`
+- [ ] `margos export <exp>` calls `export_bundle()`
   - [ ] `--output <path>` option for custom output path
   - [ ] Display success message with bundle path
-- [ ] `platform import <bundle>` calls `import_bundle()`
+- [ ] `margos import <bundle>` calls `import_bundle()`
   - [ ] Display fingerprint comparison table
   - [ ] Show path to imported experiment
 - [ ] All commands have `--help` with usage examples (R4.3)
@@ -293,7 +293,7 @@ def compare_fingerprints(bundle_fp: dict, current_fp: dict) -> dict:
 
 **Technical Notes:**
 - Error format: message + context + fix suggestion (Decision L8)
-- Convention over configuration: user provides names, platform resolves paths (L7)
+- Convention over configuration: user provides names, Margos resolves paths (L7)
 
 ---
 
@@ -301,19 +301,19 @@ def compare_fingerprints(bundle_fp: dict, current_fp: dict) -> dict:
 
 ```
 1. Issue 1: Learning curve plot
-   └── Enables basic `platform report`
+   └── Enables basic `margos report`
 
 2. Issue 2: Report summary
-   └── Completes `platform report` without comparison
+   └── Completes `margos report` without comparison
 
 3. Issue 3: Reproducibility comparison
-   └── Enables `platform report --reference`
+   └── Enables `margos report --reference`
 
 4. Issue 4: Export bundle creation
-   └── Enables `platform export`
+   └── Enables `margos export`
 
 5. Issue 5: Import bundle unpacking
-   └── Enables `platform import`
+   └── Enables `margos import`
 
 6. Issue 6: Fingerprint comparison
    └── Completes import with env comparison
@@ -356,13 +356,13 @@ Sprint 3 is complete when:
 
 1. **All 7 issues** have passing acceptance criteria
 2. **Exit criteria** met:
-   - `platform report exp_001` generates `learning_curve.png` + `summary.txt`
-   - `platform report exp_001 --reference exp_000` shows ±1% comparison
-   - `platform export exp_001` creates `bundles/exp_001.zip`
-   - `platform import bundles/exp_001.zip` unpacks and shows fingerprint comparison
+   - `margos report exp_001` generates `learning_curve.png` + `summary.txt`
+   - `margos report exp_001 --reference exp_000` shows ±1% comparison
+   - `margos export exp_001` creates `bundles/exp_001.zip`
+   - `margos import bundles/exp_001.zip` unpacks and shows fingerprint comparison
 3. **All 15 Must requirements** satisfied
 4. **Integration test**: Full workflow runs without manual intervention
-   - `platform run` → `platform report` → `platform export` → `platform import`
+   - `margos run` → `margos report` → `margos export` → `margos import`
 
 ---
 

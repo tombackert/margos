@@ -13,18 +13,18 @@ from typing import Any
 
 import yaml
 
-from marl_platform.config import (
-    PlatformConfig,
+from margos.config import (
+    MargosConfig,
     hash_config,
     load_config,
     resolve_paths,
     save_frozen_config,
 )
-from marl_platform.logging import create_logger, create_tensorboard_logger
-from marl_platform.utils.errors import ConfigNotFoundError, TrainingError, ValidationError
-from marl_platform.utils.fingerprint import capture_fingerprint, save_fingerprint
-from marl_platform.utils.progress import TrainingProgress
-from marl_platform.utils.seeds import set_all_seeds
+from margos.logging import create_logger, create_tensorboard_logger
+from margos.utils.errors import ConfigNotFoundError, TrainingError, ValidationError
+from margos.utils.fingerprint import capture_fingerprint, save_fingerprint
+from margos.utils.progress import TrainingProgress
+from margos.utils.seeds import set_all_seeds
 
 
 def _kill_port(port: int) -> None:
@@ -144,7 +144,7 @@ def verify_config_integrity(output_dir: Path, expected_hash: str) -> Path:
     try:
         with open(config_path) as f:
             raw_config = yaml.safe_load(f)
-        config = PlatformConfig(**raw_config)
+        config = MargosConfig(**raw_config)
     except Exception as e:
         raise TrainingError(
             message="Frozen config could not be re-validated after training",
@@ -188,7 +188,7 @@ def create_output_dir(config: Any) -> Path:
     - checkpoints/
 
     Args:
-        config: Validated PlatformConfig
+        config: Validated MargosConfig
 
     Returns:
         Path to created output directory
@@ -224,7 +224,7 @@ def execute_training_script(
 
     Args:
         script_path: Path to training script
-        config: PlatformConfig object
+        config: MargosConfig object
         callbacks: List of RLlib callbacks
         output_dir: Path for checkpoints/logs
 
