@@ -102,6 +102,8 @@
   .brand .title { font-weight: 700; font-size: 20px; letter-spacing: -.3px; }
   .brand .ver { font-size: 11px; color: var(--text-faint); font-weight: 500;
     border: 1px solid var(--border); border-radius: 20px; padding: 1px 8px; margin-left: auto; }
+  .logo-link { display: inline-flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+  .logo-link:hover .title { color: var(--accent-text); }
 
   nav { padding: 14px 12px 0; }
   .nav-group { margin-bottom: 18px; }
@@ -249,8 +251,10 @@
 
 <div class="topbar">
   <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
-  <img class="mark" src="assets/margos-mark.svg" alt="" />
-  <span class="title">MARGoS</span>
+  <a class="logo-link" href="https://github.com/tombackert/margos" title="View the MARGoS repository on GitHub">
+    <img class="mark" src="assets/margos-mark.svg" alt="" />
+    <span class="title">MARGoS</span>
+  </a>
   <button class="icon-btn" id="themeBtnMobile" aria-label="Toggle theme">◐</button>
 </div>
 
@@ -259,8 +263,10 @@
 <div class="layout">
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <img class="mark" src="assets/margos-mark.svg" alt="MARGoS logo" />
-      <span class="title">MARGoS</span>
+      <a class="logo-link" href="https://github.com/tombackert/margos" title="View the MARGoS repository on GitHub">
+        <img class="mark" src="assets/margos-mark.svg" alt="MARGoS logo" />
+        <span class="title">MARGoS</span>
+      </a>
       <span class="ver">v0.1.0</span>
     </div>
     <nav id="nav">
@@ -295,6 +301,7 @@
         <h4>Reference</h4>
         <a class="nav-link" data-target="project-layout">Project Layout</a>
         <a class="nav-link" data-target="testing">Testing</a>
+        <a class="nav-link" href="https://github.com/tombackert/margos">GitHub Repository ↗</a>
         <a class="nav-link" id="themeToggle">Toggle theme ◐</a>
       </div>
     </nav>
