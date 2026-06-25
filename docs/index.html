@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MARGoS — Documentation</title>
+<meta name="description" content="Documentation for MARGoS: research infrastructure for reproducible Multi-Agent Reinforcement Learning experiments with ARGoS and RLlib." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='15'%20fill='%234f46e5'/%3E%3Cg%20fill='%23fff'%3E%3Ccircle%20cx='49'%20cy='32'%20r='3.4'/%3E%3Ccircle%20cx='40.5'%20cy='46.7'%20r='3.4'/%3E%3Ccircle%20cx='23.5'%20cy='46.7'%20r='3.4'/%3E%3Ccircle%20cx='15'%20cy='32'%20r='3.4'/%3E%3Ccircle%20cx='23.5'%20cy='17.3'%20r='3.4'/%3E%3Ccircle%20cx='40.5'%20cy='17.3'%20r='3.4'/%3E%3C/g%3E%3Ccircle%20cx='32'%20cy='32'%20r='6'%20fill='%2322d3ee'/%3E%3C/svg%3E" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f7f8fa;
+    --sidebar-bg: #fbfbfd;
+    --text: #1f2430;
+    --text-soft: #5b6472;
+    --text-faint: #8a93a3;
+    --border: #e7e9ee;
+    --border-soft: #eef0f4;
+    --accent: #4f46e5;
+    --accent-soft: #eef0fe;
+    --accent-text: #4338ca;
+    --code-bg: #f6f8fa;
+    --code-text: #1f2430;
+    --inline-code-bg: #eef0f4;
+    --table-head: #f3f4f8;
+    --note-bg: #eff6ff;     --note-border: #3b82f6;
+    --tip-bg: #ecfdf5;      --tip-border: #10b981;
+    --warn-bg: #fff7ed;     --warn-border: #f59e0b;
+    --shadow: 0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.06);
+    /* diagram tokens */
+    --d-box: #ffffff;
+    --d-box-accent: #eef0fe;
+    --d-box-sim: #ecfeff;
+    --d-stroke: #c9cedb;
+    --d-text: #1f2430;
+    --d-sub: #6b7280;
+    --d-accent: #4f46e5;
+    --d-life: #cbd5e1;
+  }
+  html[data-theme="dark"] {
+    --bg: #0f1117;
+    --bg-soft: #161922;
+    --sidebar-bg: #12141b;
+    --text: #e6e9ef;
+    --text-soft: #aab2c0;
+    --text-faint: #6f7889;
+    --border: #232733;
+    --border-soft: #1c202a;
+    --accent: #818cf8;
+    --accent-soft: #1e2030;
+    --accent-text: #a5b4fc;
+    --code-bg: #161922;
+    --code-text: #e6e9ef;
+    --inline-code-bg: #232733;
+    --table-head: #181b24;
+    --note-bg: #11203a;     --note-border: #3b82f6;
+    --tip-bg: #0f2a22;      --tip-border: #10b981;
+    --warn-bg: #2a200f;     --warn-border: #f59e0b;
+    --shadow: none;
+    --d-box: #1a1d27;
+    --d-box-accent: #21243a;
+    --d-box-sim: #112630;
+    --d-stroke: #3a4150;
+    --d-text: #e6e9ef;
+    --d-sub: #9aa3b2;
+    --d-accent: #818cf8;
+    --d-life: #3a4150;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent-text); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ---------- Layout ---------- */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 290px; flex: 0 0 290px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    height: 100vh; position: sticky; top: 0;
+    overflow-y: auto; padding: 0 0 40px;
+  }
+  .content { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; }
+  .content-inner { width: 100%; max-width: 860px; padding: 44px 56px 96px; }
+
+  /* ---------- Sidebar ---------- */
+  .brand {
+    display: flex; align-items: center; gap: 12px;
+    padding: 22px 22px 18px; border-bottom: 1px solid var(--border-soft);
+    position: sticky; top: 0; background: var(--sidebar-bg); z-index: 2;
+  }
+  .brand .mark { width: 38px; height: 38px; border-radius: 10px; flex: 0 0 38px; }
+  .brand .title { font-weight: 700; font-size: 20px; letter-spacing: -.3px; }
+  .brand .ver { font-size: 11px; color: var(--text-faint); font-weight: 500;
+    border: 1px solid var(--border); border-radius: 20px; padding: 1px 8px; margin-left: auto; }
+
+  nav { padding: 14px 12px 0; }
+  .nav-group { margin-bottom: 18px; }
+  .nav-group h4 {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--text-faint); margin: 0 0 6px; padding: 0 12px; font-weight: 700;
+  }
+  .nav-link {
+    display: block; padding: 7px 12px; border-radius: 8px;
+    color: var(--text-soft); font-size: 14.5px; cursor: pointer; line-height: 1.3;
+    border: 1px solid transparent;
+  }
+  .nav-link:hover { background: var(--bg-soft); color: var(--text); text-decoration: none; }
+  .nav-link.active { background: var(--accent-soft); color: var(--accent-text); font-weight: 600; }
+
+  /* ---------- Topbar (mobile) ---------- */
+  .topbar {
+    display: none; align-items: center; gap: 12px;
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--bg); z-index: 20;
+  }
+  .topbar .mark { width: 30px; height: 30px; border-radius: 8px; }
+  .topbar .title { font-weight: 700; font-size: 17px; }
+  .icon-btn {
+    margin-left: auto; background: var(--bg-soft); border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px; padding: 7px 10px; cursor: pointer; font-size: 14px;
+  }
+  .menu-btn { display: none; }
+
+  /* ---------- Content typography ---------- */
+  .page { display: none; }
+  .page.active { display: block; animation: fade .2s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px);} to {opacity:1; transform: none;} }
+
+  .eyebrow { color: var(--accent-text); font-weight: 700; font-size: 12.5px;
+    text-transform: uppercase; letter-spacing: .09em; margin: 0 0 6px; }
+  h1 { font-size: 33px; line-height: 1.2; letter-spacing: -.6px; margin: 0 0 14px; }
+  h2 { font-size: 22px; letter-spacing: -.3px; margin: 38px 0 12px; padding-top: 8px; }
+  h3 { font-size: 17px; margin: 26px 0 8px; }
+  p { color: var(--text); margin: 12px 0; }
+  .lead { font-size: 18px; color: var(--text-soft); margin: 0 0 8px; }
+  .hero { display: flex; flex-direction: column; align-items: center; text-align: center;
+    margin: 2px 0 28px; padding: 42px 28px; border-radius: 18px; border: 1px solid var(--border);
+    background: radial-gradient(120% 150% at 50% 0%, var(--accent-soft), transparent 62%), var(--bg-soft); }
+  .hero .logo { width: 390px; max-width: 100%; height: auto; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0 0; }
+  .badges img { height: 20px; }
+  .hero .logo-dark { display: none; }
+  html[data-theme="dark"] .hero .logo-light { display: none; }
+  html[data-theme="dark"] .hero .logo-dark { display: block; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0;
+    margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  ul, ol { padding-left: 22px; }
+  li { margin: 5px 0; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 34px 0; }
+  strong { font-weight: 650; }
+
+  code {
+    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13.5px; background: var(--inline-code-bg);
+    padding: 2px 6px; border-radius: 5px; color: var(--code-text);
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px; overflow-x: auto; margin: 14px 0;
+  }
+  pre code { background: none; padding: 0; font-size: 13px; line-height: 1.6; }
+
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--table-head); font-weight: 650; font-size: 13px; }
+  td code, th code { font-size: 12.5px; white-space: nowrap; }
+
+  .callout { border-left: 4px solid; border-radius: 8px; padding: 12px 16px; margin: 16px 0; font-size: 14.5px; }
+  .callout p { margin: 4px 0; }
+  .callout .label { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; display: block; margin-bottom: 2px; }
+  .callout.note { background: var(--note-bg); border-color: var(--note-border); }
+  .callout.tip  { background: var(--tip-bg);  border-color: var(--tip-border); }
+  .callout.warn { background: var(--warn-bg); border-color: var(--warn-border); }
+
+  .pill { display: inline-block; font-size: 11.5px; font-weight: 650; padding: 1px 9px;
+    border-radius: 20px; background: var(--accent-soft); color: var(--accent-text); margin-left: 4px; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 18px 0; }
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; background: var(--bg); box-shadow: var(--shadow); }
+  .card h3 { margin: 0 0 6px; font-size: 15.5px; }
+  .card p { margin: 0; color: var(--text-soft); font-size: 14px; }
+  .card .k { font-size: 12px; color: var(--accent-text); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+
+  /* steps */
+  .steps { counter-reset: step; margin: 18px 0; padding: 0; list-style: none; }
+  .steps > li { position: relative; padding: 4px 0 18px 46px; border-left: 2px solid var(--border); margin-left: 14px; }
+  .steps > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+  .steps > li::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; left: -16px; top: 0; width: 30px; height: 30px;
+    background: var(--accent); color: #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
+  }
+  .steps > li h3 { margin: 2px 0 4px; }
+  .steps > li p { margin: 2px 0; color: var(--text-soft); font-size: 14.5px; }
+
+  /* diagram */
+  figure.diagram { margin: 22px 0; }
+  figure.diagram svg { width: 100%; height: auto; display: block; }
+  figure.diagram figcaption { text-align: center; color: var(--text-faint); font-size: 13px; margin-top: 8px; }
+  .d-box { fill: var(--d-box); stroke: var(--d-stroke); }
+  .d-box-accent { fill: var(--d-box-accent); stroke: var(--d-accent); }
+  .d-box-sim { fill: var(--d-box-sim); stroke: var(--d-stroke); }
+  .d-title { fill: var(--d-text); font: 600 14px -apple-system, "Segoe UI", sans-serif; }
+  .d-sub { fill: var(--d-sub); font: 400 11.5px -apple-system, "Segoe UI", sans-serif; }
+  .d-lbl { fill: var(--d-text); font: 600 12px -apple-system, "Segoe UI", sans-serif; }
+  .d-edge { stroke: var(--d-stroke); stroke-width: 1.6; fill: none; }
+  .d-edge-accent { stroke: var(--d-accent); stroke-width: 1.8; fill: none; }
+  .d-life { stroke: var(--d-life); stroke-width: 1.6; stroke-dasharray: 4 4; }
+  .d-msg { fill: var(--d-sub); font: 500 11.5px "SF Mono", Menlo, monospace; }
+
+  /* prev/next */
+  .pager { display: flex; gap: 14px; margin-top: 48px; }
+  .pager a { flex: 1; border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px;
+    display: block; background: var(--bg); box-shadow: var(--shadow); }
+  .pager a:hover { border-color: var(--accent); text-decoration: none; }
+  .pager .dir { font-size: 12px; color: var(--text-faint); }
+  .pager .ttl { font-weight: 650; color: var(--text); margin-top: 2px; }
+  .pager a.next { text-align: right; }
+  .pager a.disabled { visibility: hidden; }
+
+  .footer-note { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border);
+    color: var(--text-faint); font-size: 13px; }
+
+  @media (max-width: 920px) {
+    .menu-btn { display: inline-flex; }
+    .topbar { display: flex; }
+    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 30;
+      transform: translateX(-100%); transition: transform .22s ease; box-shadow: 0 0 40px rgba(0,0,0,.18); }
+    .sidebar.open { transform: none; }
+    .scrim { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 25; }
+    .scrim.show { display: block; }
+    .content-inner { padding: 26px 20px 80px; }
+    h1 { font-size: 27px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+  <img class="mark" src="assets/margos-mark.svg" alt="" />
+  <span class="title">MARGoS</span>
+  <button class="icon-btn" id="themeBtnMobile" aria-label="Toggle theme">◐</button>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img class="mark" src="assets/margos-mark.svg" alt="MARGoS logo" />
+      <span class="title">MARGoS</span>
+      <span class="ver">v0.1.0</span>
+    </div>
+    <nav id="nav">
+      <div class="nav-group">
+        <h4>Getting Started</h4>
+        <a class="nav-link" data-target="overview">Overview</a>
+        <a class="nav-link" data-target="install">Installation &amp; Setup</a>
+        <a class="nav-link" data-target="quickstart">Quickstart</a>
+      </div>
+      <div class="nav-group">
+        <h4>Concepts &amp; Architecture</h4>
+        <a class="nav-link" data-target="architecture">Architecture</a>
+        <a class="nav-link" data-target="configuration">Configuration</a>
+        <a class="nav-link" data-target="reproducibility">Reproducibility</a>
+        <a class="nav-link" data-target="errors">Error Handling</a>
+      </div>
+      <div class="nav-group">
+        <h4>CLI &amp; Workflow</h4>
+        <a class="nav-link" data-target="cli">Command Reference</a>
+        <a class="nav-link" data-target="workflow">Experiment Lifecycle</a>
+        <a class="nav-link" data-target="comparison">Comparison &amp; Validation</a>
+        <a class="nav-link" data-target="analysis">Analysis &amp; Reporting</a>
+        <a class="nav-link" data-target="export-import">Export &amp; Import</a>
+      </div>
+      <div class="nav-group">
+        <h4>Simulation Layer</h4>
+        <a class="nav-link" data-target="argos-bridge">ArgosToZoo Bridge</a>
+        <a class="nav-link" data-target="training-scripts">Training Scripts</a>
+        <a class="nav-link" data-target="logging">Logging &amp; Metrics</a>
+      </div>
+      <div class="nav-group">
+        <h4>Reference</h4>
+        <a class="nav-link" data-target="project-layout">Project Layout</a>
+        <a class="nav-link" data-target="testing">Testing</a>
+        <a class="nav-link" id="themeToggle">Toggle theme ◐</a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="content">
+    <div class="content-inner" id="content">
+
+      <!-- ============================ OVERVIEW ============================ -->
+      <section class="page" id="overview">
+        <div class="hero">
+          <img class="logo logo-light" src="assets/margos-logo.svg" alt="MARGoS" />
+          <img class="logo logo-dark" src="assets/margos-logo-dark.svg" alt="MARGoS" />
+          <p class="badges">
+            <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white" />
+            <img alt="RL: Ray RLlib · PyTorch" src="https://img.shields.io/badge/RL-Ray%20RLlib%20%C2%B7%20PyTorch-EE4C2C" />
+            <img alt="Simulator: ARGoS 3" src="https://img.shields.io/badge/simulator-ARGoS%203-4f46e5" />
+            <img alt="Status: research MVP" src="https://img.shields.io/badge/status-research%20MVP-7c3aed" />
+            <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-22c55e" />
+          </p>
+        </div>
+        <h1 class="visually-hidden">MARGoS</h1>
+        <p class="lead">MARGoS is research infrastructure that runs, validates, compares, and shares
+        Multi-Agent Reinforcement Learning (MARL) experiments built on <strong>ARGoS</strong> and
+        <strong>Ray RLlib</strong> — through a single, convention-driven command-line interface.</p>
+
+        <p>A typical MARL workflow is fragmented across a simulator, an RL framework, ad-hoc training
+        scripts, manual seeding, scattered log files, and hand-built archives for sharing results.
+        MARGoS unifies that workflow behind five commands. You provide <em>names</em>; MARGoS resolves
+        paths, freezes configuration, captures the environment, propagates seeds, logs metrics, and
+        packages everything needed to reproduce a run on another machine.</p>
+
+        <h2>What MARGoS does</h2>
+        <div class="card-grid">
+          <div class="card"><span class="k">Run</span><h3>Orchestrated training</h3><p>One command loads a config, freezes it, seeds every RNG, launches the simulator, and runs RLlib training with live metrics.</p></div>
+          <div class="card"><span class="k">Reproduce</span><h3>Deterministic by design</h3><p>Centralized seeding, config hashing, integrity checks, and an environment fingerprint make runs verifiable.</p></div>
+          <div class="card"><span class="k">Compare</span><h3>Validate outcomes</h3><p>Compare a run against a reference for handoff success and strict reproducibility within a tolerance.</p></div>
+          <div class="card"><span class="k">Share</span><h3>Portable bundles</h3><p>Export a run to a single ZIP and import it elsewhere — config, logs, scenario, script, and checkpoints included.</p></div>
+        </div>
+
+        <h2>The five commands</h2>
+        <table>
+          <thead><tr><th>Command</th><th>Alias</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>margos run</code></td><td><code>p r</code></td><td>Run an experiment from a config file</td></tr>
+            <tr><td><code>margos show</code></td><td><code>p s</code></td><td>List configs, results, imported runs, and bundles</td></tr>
+            <tr><td><code>margos compare</code></td><td><code>p c</code></td><td>Compare two runs for reproducibility / handoff</td></tr>
+            <tr><td><code>margos export</code></td><td><code>p e</code></td><td>Package a run into a shareable bundle</td></tr>
+            <tr><td><code>margos import</code></td><td><code>p i</code></td><td>Unpack a bundle and check the environment</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout note">
+          <span class="label">Scope</span>
+          <p>MARGoS is the <em>software platform</em>. This site documents how the software is built and
+          used. Research questions, hypotheses, and the evaluation protocol are intentionally out of
+          scope here and are described in the accompanying thesis/paper.</p>
+        </div>
+
+        <h2>Technology stack</h2>
+        <ul>
+          <li><strong>CLI:</strong> Typer + Rich (tables, progress, colored output)</li>
+          <li><strong>Config:</strong> Pydantic schema + PyYAML</li>
+          <li><strong>RL:</strong> Ray RLlib (PPO) on PyTorch</li>
+          <li><strong>Simulation:</strong> ARGoS 3 with custom C++ controller &amp; loop-functions plugins</li>
+          <li><strong>Bridge:</strong> ArgosToZoo — a PettingZoo <code>ParallelEnv</code> talking to ARGoS over ZeroMQ</li>
+          <li><strong>Analysis:</strong> NumPy + Matplotlib; TensorBoard for live curves</li>
+        </ul>
+      </section>
+
+      <!-- ============================ INSTALL ============================ -->
+      <section class="page" id="install">
+        <p class="eyebrow">Getting Started</p>
+        <h1>Installation &amp; Setup</h1>
+        <p class="lead">MARGoS has a pure-Python core and an optional simulation layer. Install only the
+        core to explore the CLI, or the full stack to run training against ARGoS.</p>
+
+        <h2>1 · Install the Python package</h2>
+        <pre><code># core CLI (Typer, Pydantic, PyYAML, Matplotlib, Rich)
+pip install -e .
+
+# add the ML / simulation stack (RLlib, PyTorch, PettingZoo, ZeroMQ, …)
+pip install -e ".[ml]"
+
+# add developer tooling (pytest, ruff, type stubs)
+pip install -e ".[dev]"</code></pre>
+        <p>This registers two console scripts: <code>margos</code> and its short alias <code>p</code>.
+        Requires Python <code>&gt;= 3.10</code>.</p>
+
+        <h3>Dependency groups</h3>
+        <table>
+          <thead><tr><th>Group</th><th>Packages</th></tr></thead>
+          <tbody>
+            <tr><td><code>core</code></td><td>typer, pyyaml, pydantic, matplotlib, rich</td></tr>
+            <tr><td><code>ml</code></td><td>torch, tensorboard, numpy, ray[rllib], pyzmq, pettingzoo, gymnasium</td></tr>
+            <tr><td><code>dev</code></td><td>pytest, ruff, types-PyYAML</td></tr>
+          </tbody>
+        </table>
+
+        <h2>2 · Build the ARGoS plugins</h2>
+        <p>Running actual training requires ARGoS 3 and two compiled C++ plugins (a robot controller and
+        a loop-functions module). Prerequisites: <strong>ARGoS 3</strong> on the <code>argos3</code>
+        path, <strong>CMake ≥ 3.8</strong>, and the <strong>cppzmq</strong> library.</p>
+        <pre><code>argos3 --version            # verify ARGoS is installed
+
+cd argos_plugins
+mkdir -p build &amp;&amp; cd build
+cmake ..
+make -j4</code></pre>
+        <p>This produces the two shared libraries MARGoS loads at runtime:</p>
+        <pre><code>argos_plugins/build/controllers/libmy_ipc_controller.dylib
+argos_plugins/build/loop_functions/libzoo_loop_functions.dylib</code></pre>
+
+        <div class="callout tip">
+          <span class="label">No manual path editing</span>
+          <p>You do not substitute library paths by hand. Scenario files ship with the placeholders
+          <code>MARGOS_CONTROLLER_LIB</code> and <code>MARGOS_LOOP_LIB</code>; the training script calls
+          <code>prepare_scenario()</code>, which writes a temporary scenario with the absolute plugin
+          paths filled in. See <a data-target="argos-bridge" class="xlink">ArgosToZoo Bridge</a>.</p>
+        </div>
+
+        <h2>3 · Verify the installation</h2>
+        <pre><code>margos --help                 # CLI help
+margos show                   # list configs / results / bundles
+pytest                        # fast unit tests (slow e2e excluded by default)</code></pre>
+
+        <div class="callout note">
+          <span class="label">Platform note</span>
+          <p>The build paths and fingerprint use the macOS <code>.dylib</code> extension. On Linux the
+          compiled artifacts are <code>.so</code>; adjust plugin paths accordingly for your platform.</p>
+        </div>
+      </section>
+
+      <!-- ============================ QUICKSTART ============================ -->
+      <section class="page" id="quickstart">
+        <p class="eyebrow">Getting Started</p>
+        <h1>Quickstart</h1>
+        <p class="lead">MARGoS follows <em>convention over configuration</em>: you type names, MARGoS
+        resolves the paths. Here is the full loop, from training to sharing.</p>
+
+        <h2>Run an experiment</h2>
+        <pre><code># resolves experiments/configs/aggregation_v1.yaml
+margos run aggregation_v1
+p r aggregation_v1            # short alias
+
+# no name? pick interactively from configs + imported runs
+margos run</code></pre>
+        <p>Training launches the ARGoS simulator, runs RLlib PPO, streams a live progress bar, and (by
+        default) starts TensorBoard at <a href="http://localhost:6006">http://localhost:6006</a>. When
+        it finishes you get a summary table with final/best reward, AUC, duration, iterations, the
+        config hash, and the output directory.</p>
+
+        <h2>Inspect what you have</h2>
+        <pre><code>margos show                   # everything
+margos show results           # just completed runs
+p s configs                   # just configs</code></pre>
+
+        <h2>Compare two runs</h2>
+        <pre><code>margos compare aggregation_v1_20260101-101010 aggregation_v1_20260101-120000
+p c                           # pick both runs interactively</code></pre>
+        <p>You get a reproducibility table: <strong>SRQ5 handoff</strong> (reward agreement) and
+        <strong>SRQ3 strict</strong> (reward + AUC + config hash + integrity), each within a ±1% tolerance.</p>
+
+        <h2>Share a run</h2>
+        <pre><code># results/&lt;run&gt;/  ->  bundles/&lt;run&gt;.zip
+margos export aggregation_v1_20260101-101010
+
+# on another machine
+margos import bundles/aggregation_v1_20260101-101010.zip</code></pre>
+        <p>Import unpacks into <code>experiments/imported/&lt;name&gt;/</code>, rewrites paths to the
+        bundled scenario and training script, and prints an environment comparison so you know whether
+        the run can be faithfully reproduced.</p>
+
+        <div class="callout tip">
+          <span class="label">Tip</span>
+          <p>Every command accepts <code>--help</code>, and a global <code>--verbose / -v</code> flag
+          prints full tracebacks when something fails.</p>
+        </div>
+      </section>
+
+      <!-- ============================ ARCHITECTURE ============================ -->
+      <section class="page" id="architecture">
+        <p class="eyebrow">Concepts &amp; Architecture</p>
+        <h1>Architecture</h1>
+        <p class="lead">A thin CLI sits on top of four core subsystems that share a single artifact
+        store, plus a simulation stack that bridges Python RL to the ARGoS C++ simulator.</p>
+
+        <figure class="diagram">
+          <svg viewBox="0 0 720 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MARGoS system architecture diagram">
+            <defs>
+              <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+                <path d="M0,0 L7,3.2 L0,6.4 Z" fill="var(--d-stroke)"/>
+              </marker>
+              <marker id="arrowA" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+                <path d="M0,0 L7,3.2 L0,6.4 Z" fill="var(--d-accent)"/>
+              </marker>
+            </defs>
+
+            <!-- Interface layer -->
+            <rect class="d-box-accent" x="16" y="14" width="688" height="58" rx="10"/>
+            <text class="d-title" x="32" y="40">Command-Line Interface — Typer</text>
+            <text class="d-sub" x="32" y="58">margos / p  ·  run · show · compare · export · import  ·  Rich tables &amp; progress</text>
+
+            <!-- connectors to core -->
+            <path class="d-edge" d="M120,72 L120,104" marker-end="url(#arrow)"/>
+            <path class="d-edge" d="M296,72 L296,104" marker-end="url(#arrow)"/>
+            <path class="d-edge" d="M472,72 L472,104" marker-end="url(#arrow)"/>
+            <path class="d-edge" d="M620,72 L620,104" marker-end="url(#arrow)"/>
+
+            <!-- Core subsystems -->
+            <rect class="d-box" x="40" y="106" width="160" height="62" rx="10"/>
+            <text class="d-title" x="56" y="134">Config System</text>
+            <text class="d-sub" x="56" y="152">load · validate · hash</text>
+
+            <rect class="d-box" x="216" y="106" width="160" height="62" rx="10"/>
+            <text class="d-title" x="232" y="134">Orchestrator</text>
+            <text class="d-sub" x="232" y="152">run pipeline</text>
+
+            <rect class="d-box" x="392" y="106" width="160" height="62" rx="10"/>
+            <text class="d-title" x="408" y="134">Analysis</text>
+            <text class="d-sub" x="408" y="152">report · compare</text>
+
+            <rect class="d-box" x="540" y="106" width="164" height="62" rx="10"/>
+            <text class="d-title" x="556" y="134">Export / Import</text>
+            <text class="d-sub" x="556" y="152">bundle · unpack</text>
+
+            <!-- artifacts store -->
+            <path class="d-edge" d="M296,168 L296,206" marker-end="url(#arrow)"/>
+            <path class="d-edge" d="M472,206 L472,168" marker-end="url(#arrow)"/>
+            <path class="d-edge" d="M622,206 L622,168" marker-end="url(#arrow)"/>
+            <path class="d-edge" d="M120,168 L120,206" marker-end="url(#arrow)"/>
+            <rect class="d-box-sim" x="40" y="208" width="664" height="56" rx="10"/>
+            <text class="d-title" x="56" y="234">results/ — shared artifact store</text>
+            <text class="d-sub" x="56" y="252">config.yaml · config_hash.txt · config_integrity.yaml · env_fingerprint.yaml · logs/metrics.jsonl · checkpoints/</text>
+
+            <!-- simulation stack -->
+            <path class="d-edge-accent" d="M250,168 L250,300" marker-end="url(#arrowA)"/>
+            <text class="d-sub" x="258" y="290">invokes</text>
+
+            <rect class="d-box" x="40" y="302" width="150" height="62" rx="10"/>
+            <text class="d-title" x="56" y="330">Training Script</text>
+            <text class="d-sub" x="56" y="348">main(config, …)</text>
+
+            <rect class="d-box" x="206" y="302" width="158" height="62" rx="10"/>
+            <text class="d-title" x="222" y="330">Ray RLlib</text>
+            <text class="d-sub" x="222" y="348">PPO · PyTorch</text>
+
+            <rect class="d-box" x="380" y="302" width="158" height="62" rx="10"/>
+            <text class="d-title" x="396" y="330">ArgosToZoo</text>
+            <text class="d-sub" x="396" y="348">PettingZoo env</text>
+
+            <rect class="d-box-sim" x="554" y="302" width="150" height="62" rx="10"/>
+            <text class="d-title" x="570" y="330">ARGoS 3</text>
+            <text class="d-sub" x="570" y="348">C++ plugins</text>
+
+            <path class="d-edge" d="M190,333 L206,333" marker-end="url(#arrow)"/>
+            <path class="d-edge" d="M364,333 L380,333" marker-end="url(#arrow)"/>
+            <path class="d-edge-accent" d="M538,326 L554,326" marker-end="url(#arrowA)"/>
+            <path class="d-edge-accent" d="M554,344 L538,344" marker-end="url(#arrowA)"/>
+            <text class="d-msg" x="500" y="298">ZeroMQ</text>
+          </svg>
+          <figcaption>The CLI drives four subsystems over a shared <code>results/</code> store; the orchestrator invokes the simulation stack.</figcaption>
+        </figure>
+
+        <h2>Components</h2>
+        <table>
+          <thead><tr><th>Module</th><th>Responsibility</th></tr></thead>
+          <tbody>
+            <tr><td><code>margos/cli.py</code></td><td>Typer app, interactive selection, path resolution, output tables</td></tr>
+            <tr><td><code>margos/config/</code></td><td>Pydantic schema, loading, validation, hashing, frozen copies</td></tr>
+            <tr><td><code>margos/orchestrator/</code></td><td>The <code>run_experiment</code> pipeline that ties everything together</td></tr>
+            <tr><td><code>margos/logging/</code></td><td>RLlib callbacks: JSONL metrics + TensorBoard scalars</td></tr>
+            <tr><td><code>margos/analysis/</code></td><td>Learning curves, summaries, AUC, run comparison</td></tr>
+            <tr><td><code>margos/export/</code></td><td>Bundle creation, import, fingerprint comparison</td></tr>
+            <tr><td><code>margos/utils/</code></td><td>Seeds, fingerprint, error types, Rich display, progress</td></tr>
+            <tr><td><code>margos/argos_zoo/</code></td><td>The ArgosToZoo bridge: <code>ArgosEnv</code>, ZMQ client, scenarios</td></tr>
+            <tr><td><code>argos_plugins/</code></td><td>C++ ARGoS controller + loop functions (the simulator side)</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Key design decisions</h2>
+        <table>
+          <thead><tr><th>ID</th><th>Decision</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>A2</td><td>Typer for the CLI</td><td>Declarative commands, free <code>--help</code>, type-checked arguments</td></tr>
+            <tr><td>A5</td><td>Direct function calls between components</td><td>No message bus; simple, debuggable control flow for an MVP</td></tr>
+            <tr><td>A6</td><td>Hybrid write model</td><td>Each subsystem writes its own artifact (config, metrics, fingerprint…)</td></tr>
+            <tr><td>L7</td><td>Convention over configuration</td><td>Users provide names; MARGoS resolves paths — fewer steps, fewer errors</td></tr>
+            <tr><td>L8</td><td>Structured error format</td><td>Every error states what failed, context, and a fix</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ============================ CONFIGURATION ============================ -->
+      <section class="page" id="configuration">
+        <p class="eyebrow">Concepts &amp; Architecture</p>
+        <h1>Configuration</h1>
+        <p class="lead">An experiment is described by a small YAML file that <em>references</em> a scenario
+        and a training script. Hyperparameters live in the training script, not the config — the config
+        only bundles references and the seed.</p>
+
+        <h2>Schema</h2>
+        <pre><code>experiment:
+  name: "aggregation_v1"      # required, non-empty
+  seed: 42                    # required, integer &gt;= 0
+
+scenario:
+  file: "scenarios/footbot_aggregation.argos"   # required
+
+training:
+  script: "training/aggregation.py"   # required
+  iterations: 300             # default 100, integer &gt;= 1
+  tensorboard: true           # default true
+
+output:
+  dir: "results/"             # default "results/"</code></pre>
+
+        <h2>Fields</h2>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Rule</th></tr></thead>
+          <tbody>
+            <tr><td><code>experiment.name</code></td><td>str</td><td>min length 1</td></tr>
+            <tr><td><code>experiment.seed</code></td><td>int</td><td>≥ 0</td></tr>
+            <tr><td><code>scenario.file</code></td><td>str</td><td>path to a <code>.argos</code> file, resolved &amp; checked for existence</td></tr>
+            <tr><td><code>training.script</code></td><td>str</td><td>path to a Python script exporting <code>main()</code></td></tr>
+            <tr><td><code>training.iterations</code></td><td>int</td><td>≥ 1, default <code>100</code></td></tr>
+            <tr><td><code>training.tensorboard</code></td><td>bool</td><td>default <code>true</code></td></tr>
+            <tr><td><code>output.dir</code></td><td>str</td><td>default <code>"results/"</code></td></tr>
+          </tbody>
+        </table>
+
+        <h2>Path resolution</h2>
+        <p>The <code>scenario.file</code> and <code>training.script</code> paths are resolved relative to
+        the <code>experiments/</code> directory (the parent of <code>configs/</code>). If either file does
+        not exist, validation fails with a clear error before any training begins.</p>
+        <table>
+          <thead><tr><th>You type</th><th>MARGoS resolves</th></tr></thead>
+          <tbody>
+            <tr><td><code>margos run exp_v1</code></td><td><code>experiments/configs/exp_v1.yaml</code></td></tr>
+            <tr><td><code>scenario.file: scenarios/x.argos</code></td><td><code>experiments/scenarios/x.argos</code></td></tr>
+            <tr><td><code>training.script: training/x.py</code></td><td><code>experiments/training/x.py</code></td></tr>
+          </tbody>
+        </table>
+
+        <h2>Validation &amp; hashing API</h2>
+        <pre><code>from margos.config import load_config, hash_config, save_frozen_config
+
+config = load_config("experiments/configs/aggregation_v1.yaml")  # -> MargosConfig
+digest = hash_config(config)         # deterministic SHA-256 of the normalized config
+save_frozen_config(config, out_dir)  # writes config.yaml into the run directory</code></pre>
+        <p><code>hash_config</code> serializes the validated config to JSON with sorted keys and compact
+        separators before hashing, so the digest is independent of field order or formatting. This hash
+        is the backbone of reproducibility checks.</p>
+
+        <div class="callout note">
+          <span class="label">Why hyperparameters stay in scripts</span>
+          <p>Keeping learning rates, batch sizes, and network shapes inside the training script means the
+          config stays a tiny, stable reference. The script is itself captured in the run directory and in
+          export bundles, so nothing is lost — but the config you edit by hand never balloons.</p>
+        </div>
+      </section>
+
+      <!-- ============================ REPRODUCIBILITY ============================ -->
+      <section class="page" id="reproducibility">
+        <p class="eyebrow">Concepts &amp; Architecture</p>
+        <h1>Reproducibility</h1>
+        <p class="lead">Reproducibility is the central concern of MARGoS. Four independent mechanisms work
+        together so a run can be re-executed and <em>verified</em> — not just re-launched.</p>
+
+        <div class="card-grid">
+          <div class="card"><span class="k">Layer 1</span><h3>Seed propagation</h3><p>Every RNG is seeded from one value, before the training script is imported.</p></div>
+          <div class="card"><span class="k">Layer 2</span><h3>Config hashing</h3><p>The frozen config is hashed (SHA-256) for identity comparison.</p></div>
+          <div class="card"><span class="k">Layer 3</span><h3>Integrity check</h3><p>The hash is recomputed after training to prove the config never changed.</p></div>
+          <div class="card"><span class="k">Layer 4</span><h3>Environment fingerprint</h3><p>Python, OS, package, runtime, and build versions are captured.</p></div>
+        </div>
+
+        <h2>1 · Centralized seeding <span class="pill">R3.1</span></h2>
+        <p>The orchestrator calls <code>set_all_seeds(seed)</code> <strong>before</strong> dynamically
+        importing the training script, so any module-level RNG initialization is already deterministic.
+        It seeds:</p>
+        <pre><code>random.seed(seed)
+numpy.random.seed(seed)
+torch.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)   # when CUDA is available</code></pre>
+        <p>ARGoS is seeded separately: <code>ArgosEnv.reset(seed=…)</code> rewrites the scenario's
+        <code>&lt;experiment random_seed&gt;</code> attribute and restarts the simulator, because ARGoS
+        fixes its RNG at experiment initialization. Robot start positions and orientations are then drawn
+        from ARGoS's seeded <code>"argos"</code> RNG, making placement deterministic for a given seed.</p>
+
+        <h2>2 · Config hashing <span class="pill">R3.3</span></h2>
+        <p>On every run, the validated config is frozen to <code>config.yaml</code> and its SHA-256 written
+        to <code>config_hash.txt</code>. Two runs with identical configs produce identical hashes.</p>
+
+        <h2>3 · Integrity verification</h2>
+        <p>After training completes, the orchestrator re-reads and re-validates the frozen config,
+        recomputes the hash, and writes <code>config_integrity.yaml</code>:</p>
+        <pre><code>start_hash: 3f8a…           # hash written at run start
+end_hash:   3f8a…           # hash recomputed after training
+match:      true
+source:     config.yaml</code></pre>
+        <p>If the frozen config changed during the run, the run fails loudly — the result cannot be trusted.</p>
+
+        <h2>4 · Environment fingerprint</h2>
+        <p><code>capture_fingerprint()</code> records the surrounding environment into
+        <code>env_fingerprint.yaml</code>:</p>
+        <table>
+          <thead><tr><th>Section</th><th>Captured</th></tr></thead>
+          <tbody>
+            <tr><td><code>python</code> / <code>os</code> / <code>platform</code></td><td>Interpreter version, OS string, full platform</td></tr>
+            <tr><td><code>packages</code></td><td>ray, torch, numpy, pydantic, gymnasium, pettingzoo, pyzmq, tensorboard</td></tr>
+            <tr><td><code>runtime</code></td><td>machine, processor, GPU availability, ARGoS version</td></tr>
+            <tr><td><code>build</code></td><td>git commit + SHA-256 of each compiled ARGoS plugin</td></tr>
+          </tbody>
+        </table>
+        <p>The fingerprint travels inside export bundles, so an importer can see exactly how far their
+        environment diverges from the original. See <a data-target="export-import" class="xlink">Export &amp; Import</a>.</p>
+
+        <div class="callout tip">
+          <span class="label">Verified, not assumed</span>
+          <p>Together these layers let <code>margos compare</code> report not only “did we get the same
+          reward?” but “is this the same experiment, run unchanged, in a compatible environment?”</p>
+        </div>
+      </section>
+
+      <!-- ============================ ERRORS ============================ -->
+      <section class="page" id="errors">
+        <p class="eyebrow">Concepts &amp; Architecture</p>
+        <h1>Error Handling</h1>
+        <p class="lead">Every user-facing error follows one structured format (decision L8): what went
+        wrong, the relevant context, and an actionable fix.</p>
+
+        <h2>Format</h2>
+        <pre><code>Error: &lt;what went wrong&gt;
+  &lt;Key&gt;: &lt;value&gt;
+  &lt;Key&gt;: &lt;value&gt;
+  Fix: &lt;actionable suggestion&gt;</code></pre>
+
+        <h3>Example</h3>
+        <pre><code>Error: Config file not found
+  Path: experiments/configs/nonexistent.yaml
+  Fix: Create the config file or check the experiment name</code></pre>
+
+        <h2>Error types</h2>
+        <p>All errors derive from <code>MargosError</code> (message + context dict + fix). The CLI catches
+        them and renders the format above; <code>--verbose / -v</code> additionally prints the full
+        traceback.</p>
+        <table>
+          <thead><tr><th>Exception</th><th>Raised when</th></tr></thead>
+          <tbody>
+            <tr><td><code>ConfigNotFoundError</code></td><td>A config file path does not exist</td></tr>
+            <tr><td><code>ValidationError</code></td><td>Config fails schema validation or a referenced file is missing</td></tr>
+            <tr><td><code>ExperimentNotFoundError</code></td><td>A results / imported directory cannot be found</td></tr>
+            <tr><td><code>BundleNotFoundError</code></td><td>A bundle file cannot be found</td></tr>
+            <tr><td><code>TrainingError</code></td><td>The training script is missing, malformed, or raises at runtime</td></tr>
+            <tr><td><code>ReportError</code> / <code>ComparisonError</code></td><td>Analysis fails (missing or empty metrics logs)</td></tr>
+            <tr><td><code>BundleError</code> / <code>ImportError</code></td><td>Export or import validation fails</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout note">
+          <span class="label">Design intent</span>
+          <p>The fix line is mandatory. An error that tells you only what broke — but not what to do —
+          is treated as incomplete.</p>
+        </div>
+      </section>
+
+      <!-- ============================ CLI ============================ -->
+      <section class="page" id="cli">
+        <p class="eyebrow">CLI &amp; Workflow</p>
+        <h1>Command Reference</h1>
+        <p class="lead">Two entry points are installed: <code>margos</code> and the short alias
+        <code>p</code>. A global <code>--verbose / -v</code> flag applies to every command.</p>
+
+        <h2>Aliases</h2>
+        <table>
+          <thead><tr><th>Full</th><th>Alias</th></tr></thead>
+          <tbody>
+            <tr><td><code>margos run</code></td><td><code>p r</code></td></tr>
+            <tr><td><code>margos show</code></td><td><code>p s</code></td></tr>
+            <tr><td><code>margos compare</code></td><td><code>p c</code></td></tr>
+            <tr><td><code>margos export</code></td><td><code>p e</code></td></tr>
+            <tr><td><code>margos import</code></td><td><code>p i</code></td></tr>
+          </tbody>
+        </table>
+
+        <h2><code>run</code></h2>
+        <p>Run an experiment from a config file. With no name, MARGoS shows an interactive list grouped
+        by <em>configs</em> and <em>imported</em> runs. TensorBoard auto-launches when enabled.</p>
+        <pre><code>margos run [EXPERIMENT] [OPTIONS]
+
+  EXPERIMENT             config name -> experiments/configs/&lt;name&gt;.yaml
+  -c, --config-dir       override config directory (default experiments/configs)
+  -i, --imported-dir     imported experiments dir (default experiments/imported)</code></pre>
+
+        <h2><code>show</code></h2>
+        <p>List configs, results, imported runs, and bundles as Rich tables.</p>
+        <pre><code>margos show [CATEGORY] [OPTIONS]
+
+  CATEGORY               configs | results | imported | bundles | all  (default all)
+  -c, --config-dir       config directory
+  -d, --results-dir      results directory
+  -i, --imported-dir     imported experiments directory
+  -b, --bundles-dir      bundles directory</code></pre>
+
+        <h2><code>compare</code></h2>
+        <p>Compare a run against a reference and report SRQ5 handoff success and SRQ3 strict
+        reproducibility. Either argument may be omitted to select interactively.</p>
+        <pre><code>margos compare [EXPERIMENT] [REFERENCE] [OPTIONS]
+
+  EXPERIMENT             run to evaluate
+  REFERENCE              reference run
+  -d, --results-dir      results directory
+  -i, --imported-dir     imported experiments directory</code></pre>
+        <p>The reward metric is the mean of the last 50 logged reward values (or all values if fewer),
+        compared within a ±1% tolerance. Details in <a data-target="comparison" class="xlink">Comparison &amp; Validation</a>.</p>
+
+        <h2><code>export</code></h2>
+        <p>Package a completed run into a portable ZIP bundle.</p>
+        <pre><code>margos export [EXPERIMENT] [OPTIONS]
+
+  EXPERIMENT             run id under results/
+  -o, --output           output path (default bundles/&lt;experiment&gt;.zip)
+  -d, --results-dir      results directory</code></pre>
+
+        <h2><code>import</code></h2>
+        <p>Unpack a bundle into <code>experiments/imported/</code> and print an environment comparison.</p>
+        <pre><code>margos import [BUNDLE] [OPTIONS]
+
+  BUNDLE                 bundle file -> bundles/&lt;file&gt;
+  -b, --bundles-dir      bundles directory</code></pre>
+
+        <h2>Interactive selection</h2>
+        <p>When an argument is omitted, commands present a numbered Rich table. Imported items are tagged
+        <code>(imported)</code>. Enter the number to choose, or <code>q</code> / <code>0</code> to cancel.</p>
+      </section>
+
+      <!-- ============================ WORKFLOW ============================ -->
+      <section class="page" id="workflow">
+        <p class="eyebrow">CLI &amp; Workflow</p>
+        <h1>Experiment Lifecycle</h1>
+        <p class="lead">A single call to <code>run_experiment(config_path)</code> drives the whole
+        pipeline. Each step writes its own artifact into a fresh, timestamped run directory.</p>
+
+        <ol class="steps">
+          <li><h3>Load &amp; validate config</h3><p>Parse YAML, validate against the Pydantic schema, and resolve the scenario &amp; script paths relative to <code>experiments/</code>. Missing files fail here.</p></li>
+          <li><h3>Create the output directory</h3><p><code>results/&lt;name&gt;_YYYYMMDD-HHMMSS/</code> with <code>logs/</code> and <code>checkpoints/</code> subfolders.</p></li>
+          <li><h3>Freeze config + write hash</h3><p>Copy the validated config to <code>config.yaml</code> and write its SHA-256 to <code>config_hash.txt</code>.</p></li>
+          <li><h3>Capture environment fingerprint</h3><p>Record Python / OS / packages / runtime / build into <code>env_fingerprint.yaml</code>.</p></li>
+          <li><h3>Seed everything</h3><p><code>set_all_seeds(seed)</code> runs <em>before</em> the training script is imported.</p></li>
+          <li><h3>Wire up logging</h3><p>Attach the JSONL <code>MetricsLogger</code> and, if enabled, the <code>TensorBoardLogger</code>; auto-launch TensorBoard on port 6006.</p></li>
+          <li><h3>Execute the training script</h3><p>Dynamically import the script and call <code>main(config, callbacks, output_dir, progress=…)</code>.</p></li>
+          <li><h3>Verify integrity</h3><p>Recompute the config hash and write <code>config_integrity.yaml</code>; raise if it changed.</p></li>
+        </ol>
+
+        <h2>Output directory structure</h2>
+        <pre><code>results/&lt;name&gt;_YYYYMMDD-HHMMSS/
+├── config.yaml             # frozen copy of the validated config
+├── config_hash.txt         # SHA-256 of the frozen config
+├── config_integrity.yaml   # start vs end hash + match flag
+├── env_fingerprint.yaml    # Python / OS / packages / runtime / build
+├── logs/
+│   └── metrics.jsonl       # one JSON object per training iteration
+├── tensorboard/            # TensorBoard event files (if enabled)
+├── checkpoints/
+│   └── final/              # RLlib checkpoint
+└── report/                 # created by the analysis system
+    ├── learning_curve.png
+    └── summary.txt</code></pre>
+
+        <h2>Run summary</h2>
+        <p>When <code>margos run</code> finishes it prints a Rich table summarizing the run: final reward,
+        best reward, AUC, duration, iteration count, the (truncated) config hash, and the output path.</p>
+
+        <div class="callout note">
+          <span class="label">Return value</span>
+          <p><code>run_experiment</code> returns <code>(output_dir, tensorboard_process)</code>. The CLI
+          owns the TensorBoard process lifetime and terminates it on exit.</p>
+        </div>
+      </section>
+
+      <!-- ============================ COMPARISON ============================ -->
+      <section class="page" id="comparison">
+        <p class="eyebrow">CLI &amp; Workflow</p>
+        <h1>Comparison &amp; Validation</h1>
+        <p class="lead"><code>compare_runs(run_dir, reference_dir, tolerance=0.01, reward_window=50)</code>
+        evaluates two runs along two distinct success criteria.</p>
+
+        <h2>Two verdicts</h2>
+        <table>
+          <thead><tr><th>Verdict</th><th>Passes when</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SRQ5 handoff</strong></td><td>Tail reward mean agrees within tolerance</td><td>“Can someone else reproduce my <em>result</em>?”</td></tr>
+            <tr><td><strong>SRQ3 strict</strong></td><td>Reward <em>and</em> AUC <em>and</em> config hash <em>and</em> integrity all match</td><td>“Is this the <em>same</em> experiment, bit-for-bit?”</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Metrics compared</h2>
+        <ul>
+          <li><strong>Tail reward mean</strong> — mean of the last <code>reward_window</code> (default 50) logged <code>episode_reward_mean</code> values, or all values if fewer were logged.</li>
+          <li><strong>AUC</strong> — area under the reward curve via trapezoidal integration over iterations.</li>
+          <li><strong>Config hash</strong> — equality of the two SHA-256 config digests.</li>
+          <li><strong>Config integrity</strong> — both runs must report a clean start-vs-end hash match.</li>
+        </ul>
+        <p>Each numeric metric is compared as a relative deviation against the reference, and counts as a
+        match when the deviation is within <code>tolerance</code> (default ±1%).</p>
+
+        <h2>Result table</h2>
+        <p>The CLI renders a Rich table with both verdicts in the title and one row per metric — run value,
+        reference value, deviation (and tolerance), and a Yes/No match. Zero-valued references are handled
+        gracefully (a non-zero run against a zero reference yields infinite deviation rather than a crash).</p>
+
+        <div class="callout note">
+          <span class="label">Batch reproducibility</span>
+          <p><code>experiments/run_srq3_batch.py</code> re-runs an experiment N times against a reference,
+          appends per-run pass/fail rows to a CSV, and reports a success rate and reward standard
+          deviation — the data-collection harness behind the reproducibility study.</p>
+        </div>
+      </section>
+
+      <!-- ============================ ANALYSIS ============================ -->
+      <section class="page" id="analysis">
+        <p class="eyebrow">CLI &amp; Workflow</p>
+        <h1>Analysis &amp; Reporting</h1>
+        <p class="lead">The analysis system turns a run's <code>metrics.jsonl</code> into thesis-ready
+        artifacts and summary statistics.</p>
+
+        <h2>Generating a report</h2>
+        <pre><code>from margos.analysis.report import generate_report
+
+# writes report/learning_curve.png and report/summary.txt
+report_dir = generate_report("results/aggregation_v1_20260101-101010")
+
+# optionally include a reference comparison in the summary
+generate_report(run_dir, reference_dir="results/&lt;reference&gt;")</code></pre>
+
+        <h2>What it produces</h2>
+        <ul>
+          <li><strong>learning_curve.png</strong> — reward-mean vs iteration, rendered with Matplotlib's non-interactive <code>Agg</code> backend (no display needed).</li>
+          <li><strong>summary.txt</strong> — name, config hash, iteration count, final reward, best reward, AUC, and training duration; plus a reproducibility table when a reference is supplied.</li>
+        </ul>
+
+        <h2>Building blocks</h2>
+        <table>
+          <thead><tr><th>Function</th><th>Returns</th></tr></thead>
+          <tbody>
+            <tr><td><code>read_metrics(path)</code></td><td>List of per-iteration metric dicts (errors on missing/empty logs)</td></tr>
+            <tr><td><code>plot_learning_curve(log, out)</code></td><td>Path to a saved PNG learning curve</td></tr>
+            <tr><td><code>calculate_auc(metrics)</code></td><td>Area under the reward curve (trapezoidal)</td></tr>
+            <tr><td><code>calculate_duration(metrics)</code></td><td>Human-readable wall-clock duration from timestamps</td></tr>
+            <tr><td><code>generate_summary(dir, metrics)</code></td><td>Formatted summary text</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout tip">
+          <span class="label">Live curves</span>
+          <p>For real-time monitoring during training, use the auto-launched TensorBoard at
+          <code>localhost:6006</code> instead of regenerating the static plot. See
+          <a data-target="logging" class="xlink">Logging &amp; Metrics</a>.</p>
+        </div>
+      </section>
+
+      <!-- ============================ EXPORT / IMPORT ============================ -->
+      <section class="page" id="export-import">
+        <p class="eyebrow">CLI &amp; Workflow</p>
+        <h1>Export &amp; Import</h1>
+        <p class="lead">A bundle is a self-contained ZIP that lets another machine reproduce a run. Export
+        packs it; import unpacks it and reports how compatible the new environment is.</p>
+
+        <h2>Bundle contents</h2>
+        <pre><code>&lt;experiment&gt;.zip
+├── manifest.yaml           # version, experiment name, export time, margos version
+├── config.yaml             # frozen config            (required)
+├── config_hash.txt         # config SHA-256
+├── config_integrity.yaml   # integrity record
+├── env_fingerprint.yaml    # environment fingerprint  (required)
+├── logs/metrics.jsonl      # training metrics         (required)
+├── scenario.argos          # the ARGoS scenario used
+├── train.py                # the training script used
+└── checkpoints/…           # RLlib checkpoints</code></pre>
+        <p>Export refuses to build a bundle if any of the three required files is missing — a guard against
+        shipping incomplete runs.</p>
+
+        <h2>Export flow</h2>
+        <ol class="steps">
+          <li><h3>Validate</h3><p>Confirm the run contains <code>config.yaml</code>, <code>env_fingerprint.yaml</code>, and <code>logs/metrics.jsonl</code>.</p></li>
+          <li><h3>Write the manifest</h3><p>Record bundle version, experiment name, export timestamp, and MARGoS version.</p></li>
+          <li><h3>Pack artifacts</h3><p>Add config + hashes, fingerprint, logs, the scenario and training script, and checkpoints into the ZIP.</p></li>
+        </ol>
+
+        <h2>Import flow</h2>
+        <ol class="steps">
+          <li><h3>Validate structure</h3><p>The ZIP must contain <code>manifest.yaml</code>, <code>config.yaml</code>, and <code>logs/metrics.jsonl</code>, or import is rejected.</p></li>
+          <li><h3>Extract</h3><p>Unpack into <code>experiments/imported/&lt;experiment_name&gt;/</code> (read from the manifest).</p></li>
+          <li><h3>Rewrite paths</h3><p>Point <code>scenario.file</code> and <code>training.script</code> at the bundled <code>scenario.*</code> and <code>train.py</code> so the run is immediately runnable.</p></li>
+          <li><h3>Compare environments</h3><p>Diff the bundled fingerprint against the local one and print the result.</p></li>
+        </ol>
+
+        <h2>Environment comparison</h2>
+        <p>Import classifies differences into two tiers:</p>
+        <table>
+          <thead><tr><th>Result</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><strong>All match</strong></td><td>Every tracked component is identical.</td></tr>
+            <tr><td><strong>Non-critical differences</strong></td><td>Something differs, but all reproduction-critical components match — a warning, not a block.</td></tr>
+            <tr><td><strong>Critical differences</strong></td><td>A critical component differs: ray, torch, numpy, gymnasium, pettingzoo, pyzmq, tensorboard, the ARGoS version, or a compiled plugin hash.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <span class="label">Permissive by design</span>
+          <p>Import and reproduction are never blocked by a mismatch — MARGoS warns and proceeds. The
+          point is to make divergence <em>visible</em>, so you can judge how much weight a reproduced
+          result carries.</p>
+        </div>
+      </section>
+
+      <!-- ============================ ARGOS BRIDGE ============================ -->
+      <section class="page" id="argos-bridge">
+        <p class="eyebrow">Simulation Layer</p>
+        <h1>ArgosToZoo Bridge</h1>
+        <p class="lead">ArgosToZoo wraps the ARGoS C++ simulator as a PettingZoo <code>ParallelEnv</code>,
+        so RLlib can train against physical-robot simulation. Python and ARGoS communicate over ZeroMQ
+        with a small JSON protocol.</p>
+
+        <h2>The environment</h2>
+        <p><code>ArgosEnv</code> launches <code>argos3</code> as a subprocess and exposes a standard
+        multi-agent RL interface. Agents are discovered at reset (<code>robot_0</code>, <code>robot_1</code>, …).</p>
+        <table>
+          <thead><tr><th>Space</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td>Observation</td><td><code>Dict{ position: Box(3), proximity: Box(24) in [0,1] }</code></td></tr>
+            <tr><td>Action</td><td><code>Discrete(5)</code>: stop · forward · backward · turn&nbsp;left · turn&nbsp;right</td></tr>
+          </tbody>
+        </table>
+        <p>Discrete actions map to controller commands (<code>stop</code>, <code>forward_speed</code>,
+        <code>backward_speed</code>, <code>left_speed</code>, <code>right_speed</code>), which the C++
+        controller translates into differential-steering wheel velocities. Episodes truncate at
+        <code>max_steps</code>.</p>
+
+        <h2>Communication protocol</h2>
+        <figure class="diagram">
+          <svg viewBox="0 0 720 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ZeroMQ request/response sequence between Python and ARGoS">
+            <defs>
+              <marker id="amsg" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+                <path d="M0,0 L7,3.2 L0,6.4 Z" fill="var(--d-accent)"/>
+              </marker>
+              <marker id="amsg2" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+                <path d="M0,0 L7,3.2 L0,6.4 Z" fill="var(--d-stroke)"/>
+              </marker>
+            </defs>
+            <!-- headers -->
+            <rect class="d-box-accent" x="60" y="14" width="220" height="46" rx="9"/>
+            <text class="d-title" x="78" y="40">Python · ArgosEnv</text>
+            <text class="d-sub" x="78" y="55" font-size="10.5">ZMQ REQ client</text>
+            <rect class="d-box-sim" x="440" y="14" width="230" height="46" rx="9"/>
+            <text class="d-title" x="458" y="40">ARGoS · CZooLoopFunctions</text>
+            <text class="d-sub" x="458" y="55" font-size="10.5">ZMQ REP server</text>
+            <!-- lifelines -->
+            <line class="d-life" x1="170" y1="60" x2="170" y2="356"/>
+            <line class="d-life" x1="555" y1="60" x2="555" y2="356"/>
+
+            <!-- reset -->
+            <path class="d-edge-accent" d="M172,92 L553,92" marker-end="url(#amsg)"/>
+            <text class="d-msg" x="180" y="86">reset  (restart simulator with seeded config)</text>
+            <path class="d-edge" d="M553,124 L172,124" marker-end="url(#amsg2)"/>
+            <text class="d-msg" x="200" y="118">observations { schema: compact_v1 }</text>
+
+            <!-- step -->
+            <path class="d-edge-accent" d="M172,166 L553,166" marker-end="url(#amsg)"/>
+            <text class="d-msg" x="180" y="160">step  { payload.actions: {robot_0: "forward_speed", …} }</text>
+            <rect class="d-box" x="455" y="182" width="200" height="40" rx="7"/>
+            <text class="d-sub" x="467" y="200" font-size="10.5">PreStep: apply actions</text>
+            <text class="d-sub" x="467" y="214" font-size="10.5">PostStep: collect observations</text>
+            <path class="d-edge" d="M553,244 L172,244" marker-end="url(#amsg2)"/>
+            <text class="d-msg" x="190" y="238">observations { agents, proximity[][], position[][] }</text>
+            <rect class="d-box-accent" x="40" y="258" width="250" height="38" rx="7"/>
+            <text class="d-sub" x="52" y="276" font-size="10.5">Python computes reward via reward_fn,</text>
+            <text class="d-sub" x="52" y="290" font-size="10.5">truncates at max_steps</text>
+
+            <!-- close -->
+            <path class="d-edge-accent" d="M172,326 L553,326" marker-end="url(#amsg)"/>
+            <text class="d-msg" x="180" y="320">close  (graceful shutdown)</text>
+          </svg>
+          <figcaption>Synchronous JSON-over-ZeroMQ REQ/REP loop. Commands: <code>reset</code>, <code>step</code>, <code>close</code>, <code>ping</code>, <code>set_loop_log_level</code>.</figcaption>
+        </figure>
+
+        <p>The ZMQ client is resilient: each request polls with a timeout and, on failure, recreates the
+        socket and performs a <code>ping</code> handshake before retrying. Ports are chosen dynamically
+        (an OS-assigned free port) and passed to the simulator via environment variables and/or injected
+        into a temporary scenario file, so multiple environments can run concurrently.</p>
+
+        <h2>The C++ plugins</h2>
+        <table>
+          <thead><tr><th>Plugin</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td><code>my_ipc_controller</code></td><td>Per-robot controller: reads the 24-value proximity sensor, applies the current action to the differential-steering actuator.</td></tr>
+            <tr><td><code>zoo_loop_functions</code></td><td>Owns the ZMQ REP server, discovers controllers, randomizes start positions deterministically, applies actions in <code>PreStep</code>, and gathers observations in <code>PostStep</code>.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout note">
+          <span class="label">Separation of concerns</span>
+          <p>The C++ side is deliberately <strong>task-agnostic</strong>: it only ships raw sensor and
+          position data. All MARL logic — rewards, metrics, termination — lives in Python. This keeps the
+          simulator reusable across tasks.</p>
+        </div>
+
+        <h2>Reward functions &amp; scenarios</h2>
+        <p>A task is defined by a single <code>reward_fn</code> callback with the signature
+        <code>(data) -&gt; (team_reward, per_agent | None, metrics)</code>. The bundled
+        <code>aggregation_reward</code> rewards robots for converging toward their shared centroid using
+        distance, alignment, turning, and a perpendicular-movement penalty.</p>
+        <pre><code>from margos.argos_zoo import ArgosEnv, aggregation_reward, prepare_scenario
+
+scenario = prepare_scenario("experiments/scenarios/footbot_aggregation.argos")
+env = ArgosEnv(argos_file=scenario, max_steps=100,
+               reward_fn=aggregation_reward, seed=42)
+obs, infos = env.reset(seed=42)</code></pre>
+        <p>Scenario files are standard ARGoS XML describing the arena, walls, foot-bot distribution,
+        physics, and the controller/loop-functions libraries (via the <code>MARGOS_*_LIB</code>
+        placeholders that <code>prepare_scenario</code> fills in).</p>
+      </section>
+
+      <!-- ============================ TRAINING SCRIPTS ============================ -->
+      <section class="page" id="training-scripts">
+        <p class="eyebrow">Simulation Layer</p>
+        <h1>Training Scripts</h1>
+        <p class="lead">Training scripts are ordinary Python files that the orchestrator imports
+        dynamically. The only contract is a <code>main()</code> function with a fixed signature.</p>
+
+        <h2>The contract</h2>
+        <pre><code>def main(config: dict, callbacks: list, output_dir: str, progress=None):
+    """
+    config     full experiment config (MargosConfig as a dict)
+    callbacks  RLlib callbacks, including MARGoS' MetricsLogger
+    output_dir directory for checkpoints and logs
+    progress   optional TrainingProgress for the live progress bar
+    """
+    ...</code></pre>
+        <p>The orchestrator inspects the signature and passes <code>progress</code> only if the script
+        accepts it. If <code>main()</code> is missing, the script has a syntax error, or it raises at
+        runtime, a structured <code>TrainingError</code> is shown.</p>
+
+        <h2>Reference: the aggregation script</h2>
+        <ul>
+          <li>Calls <code>prepare_scenario()</code> to inject plugin paths into the scenario.</li>
+          <li>Registers an env creator that builds an <code>ArgosEnv</code> wrapped as a <code>ParallelPettingZooEnv</code>, seeded from the config.</li>
+          <li>Builds a PPO algorithm (PyTorch, old API stack), seeded via <code>.debugging(seed=…)</code>, with an entropy bonus and a fixed batch configuration.</li>
+          <li>Runs the training loop, invoking each MARGoS callback's <code>on_train_result</code> manually (which avoids Ray serialization issues), and reports reward to the progress bar.</li>
+          <li>Saves the final checkpoint to <code>&lt;output_dir&gt;/checkpoints/final</code>.</li>
+        </ul>
+
+        <div class="callout note">
+          <span class="label">Why manual callbacks?</span>
+          <p>MARGoS' loggers are called directly in the loop rather than registered with RLlib. This keeps
+          the callback objects out of Ray's worker serialization path while still recording every
+          iteration.</p>
+        </div>
+
+        <h2>Quiet Ray output</h2>
+        <p><code>setup_ray_environment()</code> (called before importing Ray) and <code>init_ray()</code>
+        suppress Ray's deprecation noise and configure minimal logging, keeping the CLI output focused on
+        the progress bar and final summary.</p>
+      </section>
+
+      <!-- ============================ LOGGING ============================ -->
+      <section class="page" id="logging">
+        <p class="eyebrow">Simulation Layer</p>
+        <h1>Logging &amp; Metrics</h1>
+        <p class="lead">Metrics are written two ways at once: a durable JSONL file for analysis, and
+        TensorBoard scalars for live monitoring. Both are RLlib callbacks attached by the orchestrator.</p>
+
+        <h2>Per-iteration metrics</h2>
+        <p><code>MetricsLogger</code> appends one JSON object per training iteration to
+        <code>logs/metrics.jsonl</code>:</p>
+        <pre><code>{"iteration": 1, "timestamp": "2026-01-01T10:10:11",
+ "episode_reward_mean": -2.13, "episode_reward_min": -9.8, "episode_reward_max": 4.1}</code></pre>
+        <table>
+          <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><code>iteration</code></td><td>Training iteration number</td></tr>
+            <tr><td><code>timestamp</code></td><td>ISO-8601 time the iteration finished</td></tr>
+            <tr><td><code>episode_reward_mean</code></td><td>Mean episode reward</td></tr>
+            <tr><td><code>episode_reward_min / max</code></td><td>Reward spread across episodes</td></tr>
+          </tbody>
+        </table>
+        <p>Metric extraction tolerates RLlib's varying result layouts, checking the top level,
+        <code>env_runners</code>, and <code>sampler_results</code> for reward keys.</p>
+
+        <h2>TensorBoard</h2>
+        <p>When <code>training.tensorboard</code> is enabled, <code>TensorBoardLogger</code> writes
+        <code>reward/mean</code>, <code>reward/min</code>, and <code>reward/max</code> scalars under
+        <code>&lt;run&gt;/tensorboard/</code>, and the orchestrator launches a TensorBoard server:</p>
+        <pre><code>tensorboard --logdir results/&lt;run&gt;/tensorboard   # auto-started on http://localhost:6006</code></pre>
+        <p>The orchestrator frees port 6006 before launching and tears the server down when the CLI exits.
+        If <code>tensorboard</code> is not installed, training proceeds and only the JSONL log is written.</p>
+
+        <div class="callout tip">
+          <span class="label">JSONL vs TensorBoard</span>
+          <p>The JSONL log is the source of truth for reports, AUC, and comparisons; TensorBoard is for
+          watching a run as it happens. They record the same metrics.</p>
+        </div>
+      </section>
+
+      <!-- ============================ PROJECT LAYOUT ============================ -->
+      <section class="page" id="project-layout">
+        <p class="eyebrow">Reference</p>
+        <h1>Project Layout</h1>
+        <p class="lead">Where everything lives.</p>
+        <pre><code>margos/
+├── margos/                  # Python package
+│   ├── cli.py               # Typer CLI (margos / p)
+│   ├── config/              # schema.py, loader.py
+│   ├── orchestrator/        # runner.py — the run pipeline
+│   ├── logging/             # callbacks.py — metrics + TensorBoard
+│   ├── analysis/            # report.py, compare.py
+│   ├── export/              # bundle.py, importer.py
+│   ├── argos_zoo/           # ArgosEnv, zmq_client, scenarios/
+│   └── utils/               # seeds, fingerprint, errors, display, progress
+├── argos_plugins/           # ARGoS C++ plugins
+│   ├── controllers/         # my_ipc_controller
+│   ├── loop_functions/      # zoo_loop_functions
+│   └── build/               # compiled .dylib / .so
+├── experiments/
+│   ├── configs/             # experiment configs (.yaml)
+│   ├── scenarios/           # ARGoS scenarios (.argos)
+│   ├── training/            # training scripts (.py)
+│   └── imported/            # bundles unpacked by `margos import`
+├── results/                 # run outputs (timestamped directories)
+├── bundles/                 # exported .zip bundles
+├── tests/                   # pytest suite
+└── docs/                    # this documentation</code></pre>
+
+        <h2>Where the CLI looks by default</h2>
+        <table>
+          <thead><tr><th>Concept</th><th>Default location</th></tr></thead>
+          <tbody>
+            <tr><td>Configs</td><td><code>experiments/configs/&lt;name&gt;.yaml</code></td></tr>
+            <tr><td>Scenarios</td><td><code>experiments/scenarios/</code></td></tr>
+            <tr><td>Training scripts</td><td><code>experiments/training/</code></td></tr>
+            <tr><td>Run results</td><td><code>results/&lt;name&gt;_&lt;timestamp&gt;/</code></td></tr>
+            <tr><td>Imported runs</td><td><code>experiments/imported/&lt;name&gt;/</code></td></tr>
+            <tr><td>Bundles</td><td><code>bundles/&lt;name&gt;.zip</code></td></tr>
+          </tbody>
+        </table>
+        <p>Every default location can be overridden with a flag (e.g. <code>--results-dir</code>), but the
+        defaults are the intended path.</p>
+      </section>
+
+      <!-- ============================ TESTING ============================ -->
+      <section class="page" id="testing">
+        <p class="eyebrow">Reference</p>
+        <h1>Testing</h1>
+        <p class="lead">The suite uses <code>pytest</code>. Fast unit tests run by default; slow
+        end-to-end tests that require ARGoS and RLlib are opt-in.</p>
+
+        <h2>Running tests</h2>
+        <pre><code>pytest                    # fast tests (slow marker excluded via pyproject)
+pytest -m slow            # only the slow end-to-end tests
+pytest tests/test_config.py -v</code></pre>
+        <p>The <code>slow</code> marker is configured in <code>pyproject.toml</code>; by default
+        <code>-m 'not slow'</code> is applied, so a plain <code>pytest</code> skips the heavy
+        simulation/training tests.</p>
+
+        <h2>Coverage map</h2>
+        <table>
+          <thead><tr><th>Area</th><th>Tests</th></tr></thead>
+          <tbody>
+            <tr><td>Config</td><td><code>test_config.py</code></td></tr>
+            <tr><td>Orchestrator</td><td><code>test_orchestrator.py</code>, <code>test_training_seed_propagation.py</code></td></tr>
+            <tr><td>Seeds &amp; fingerprint</td><td><code>test_seeds.py</code>, <code>test_fingerprint.py</code></td></tr>
+            <tr><td>Logging</td><td><code>test_logging.py</code></td></tr>
+            <tr><td>Analysis</td><td><code>test_analysis_report.py</code>, <code>test_analysis_compare.py</code></td></tr>
+            <tr><td>Export / import</td><td><code>test_export_bundle.py</code>, <code>test_export_importer.py</code></td></tr>
+            <tr><td>ArgosToZoo</td><td><code>test_argos_zoo.py</code>, <code>test_argos_integration.py</code></td></tr>
+            <tr><td>CLI &amp; e2e</td><td><code>test_cli_e2e.py</code>, <code>test_e2e_aggregation.py</code></td></tr>
+            <tr><td>Batch runner</td><td><code>test_run_srq3_batch.py</code></td></tr>
+          </tbody>
+        </table>
+
+        <h2>Linting</h2>
+        <pre><code>ruff check .              # line length 88, target py310</code></pre>
+        <div class="footer-note">
+          MARGoS v0.1.0 · Research infrastructure for reproducible MARL experiments.
+          This documentation covers the software only; research design is described in the thesis.
+        </div>
+      </section>
+
+      <!-- pager -->
+      <div class="pager" id="pager"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-link[data-target]'));
+  var order = navLinks.map(function (a) { return a.getAttribute('data-target'); });
+  var titles = {};
+  navLinks.forEach(function (a) { titles[a.getAttribute('data-target')] = a.textContent.trim(); });
+
+  var sidebar = document.getElementById('sidebar');
+  var scrim = document.getElementById('scrim');
+
+  function closeMenu() { sidebar.classList.remove('open'); scrim.classList.remove('show'); }
+
+  function show(id, push) {
+    if (order.indexOf(id) === -1) { id = order[0]; }
+    document.querySelectorAll('.page').forEach(function (s) { s.classList.remove('active'); });
+    var page = document.getElementById(id);
+    if (page) { page.classList.add('active'); }
+    navLinks.forEach(function (a) {
+      a.classList.toggle('active', a.getAttribute('data-target') === id);
+    });
+    buildPager(id);
+    if (push) { history.replaceState(null, '', '#' + id); }
+    window.scrollTo(0, 0);
+    var c = document.querySelector('.content'); if (c) { c.scrollTop = 0; }
+    document.title = 'MARGoS — ' + (titles[id] || 'Documentation');
+  }
+
+  function buildPager(id) {
+    var i = order.indexOf(id);
+    var prev = i > 0 ? order[i - 1] : null;
+    var next = i < order.length - 1 ? order[i + 1] : null;
+    var html = '';
+    html += prev
+      ? '<a class="prev" data-go="' + prev + '"><div class="dir">← Previous</div><div class="ttl">' + titles[prev] + '</div></a>'
+      : '<a class="prev disabled"></a>';
+    html += next
+      ? '<a class="next" data-go="' + next + '"><div class="dir">Next →</div><div class="ttl">' + titles[next] + '</div></a>'
+      : '<a class="next disabled"></a>';
+    document.getElementById('pager').innerHTML = html;
+  }
+
+  // nav clicks
+  document.getElementById('nav').addEventListener('click', function (e) {
+    var a = e.target.closest('.nav-link[data-target]');
+    if (!a) return;
+    e.preventDefault();
+    show(a.getAttribute('data-target'), true);
+    closeMenu();
+  });
+
+  // pager + in-content cross links
+  document.body.addEventListener('click', function (e) {
+    var p = e.target.closest('[data-go]');
+    if (p) { e.preventDefault(); show(p.getAttribute('data-go'), true); return; }
+    var x = e.target.closest('.xlink[data-target]');
+    if (x) { e.preventDefault(); show(x.getAttribute('data-target'), true); }
+  });
+
+  // mobile menu
+  var menuBtn = document.getElementById('menuBtn');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', function () {
+      sidebar.classList.toggle('open'); scrim.classList.toggle('show');
+    });
+  }
+  scrim.addEventListener('click', closeMenu);
+
+  // theme
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    try { localStorage.setItem('margos-theme', t); } catch (e) {}
+  }
+  function toggleTheme() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  }
+  try {
+    var saved = localStorage.getItem('margos-theme');
+    if (saved) { applyTheme(saved); }
+    else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) { applyTheme('dark'); }
+  } catch (e) {}
+  var tt = document.getElementById('themeToggle');
+  if (tt) { tt.addEventListener('click', function (e) { e.preventDefault(); toggleTheme(); }); }
+  var ttm = document.getElementById('themeBtnMobile');
+  if (ttm) { ttm.addEventListener('click', toggleTheme); }
+
+  window.addEventListener('hashchange', function () { show(location.hash.replace('#', ''), false); });
+
+  // initial
+  show(location.hash ? location.hash.replace('#', '') : 'overview', false);
+})();
+</script>
+</body>
+</html>
