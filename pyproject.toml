@@ -35,7 +35,7 @@ ml = [
 
 [project.scripts]
 margos = "margos.cli:app"
-p = "margos.cli:p_app"
+m = "margos.cli:m_app"
 
 [tool.setuptools.packages.find]
 where = ["."]

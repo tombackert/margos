@@ -346,11 +346,11 @@
         <table>
           <thead><tr><th>Command</th><th>Alias</th><th>Purpose</th></tr></thead>
           <tbody>
-            <tr><td><code>margos run</code></td><td><code>p r</code></td><td>Run an experiment from a config file</td></tr>
-            <tr><td><code>margos show</code></td><td><code>p s</code></td><td>List configs, results, imported runs, and bundles</td></tr>
-            <tr><td><code>margos compare</code></td><td><code>p c</code></td><td>Compare two runs for reproducibility / handoff</td></tr>
-            <tr><td><code>margos export</code></td><td><code>p e</code></td><td>Package a run into a shareable bundle</td></tr>
-            <tr><td><code>margos import</code></td><td><code>p i</code></td><td>Unpack a bundle and check the environment</td></tr>
+            <tr><td><code>margos run</code></td><td><code>m r</code></td><td>Run an experiment from a config file</td></tr>
+            <tr><td><code>margos show</code></td><td><code>m s</code></td><td>List configs, results, imported runs, and bundles</td></tr>
+            <tr><td><code>margos compare</code></td><td><code>m c</code></td><td>Compare two runs for reproducibility / handoff</td></tr>
+            <tr><td><code>margos export</code></td><td><code>m e</code></td><td>Package a run into a shareable bundle</td></tr>
+            <tr><td><code>margos import</code></td><td><code>m i</code></td><td>Unpack a bundle and check the environment</td></tr>
           </tbody>
         </table>
 
@@ -445,7 +445,7 @@ pytest                        # fast unit tests (slow e2e excluded by default)</
         <h2>Run an experiment</h2>
         <pre><code># resolves experiments/configs/aggregation_v1.yaml
 margos run aggregation_v1
-p r aggregation_v1            # short alias
+m r aggregation_v1            # short alias
 
 # no name? pick interactively from configs + imported runs
 margos run</code></pre>
@@ -457,11 +457,11 @@ margos run</code></pre>
         <h2>Inspect what you have</h2>
         <pre><code>margos show                   # everything
 margos show results           # just completed runs
-p s configs                   # just configs</code></pre>
+m s configs                   # just configs</code></pre>
 
         <h2>Compare two runs</h2>
         <pre><code>margos compare aggregation_v1_20260101-101010 aggregation_v1_20260101-120000
-p c                           # pick both runs interactively</code></pre>
+m c                           # pick both runs interactively</code></pre>
         <p>You get a reproducibility table: <strong>SRQ5 handoff</strong> (reward agreement) and
         <strong>SRQ3 strict</strong> (reward + AUC + config hash + integrity), each within a ±1% tolerance.</p>
 
@@ -503,7 +503,7 @@ margos import bundles/aggregation_v1_20260101-101010.zip</code></pre>
             <!-- Interface layer -->
             <rect class="d-box-accent" x="16" y="14" width="688" height="58" rx="10"/>
             <text class="d-title" x="32" y="40">Command-Line Interface — Typer</text>
-            <text class="d-sub" x="32" y="58">margos / p  ·  run · show · compare · export · import  ·  Rich tables &amp; progress</text>
+            <text class="d-sub" x="32" y="58">margos / m  ·  run · show · compare · export · import  ·  Rich tables &amp; progress</text>
 
             <!-- connectors to core -->
             <path class="d-edge" d="M120,72 L120,104" marker-end="url(#arrow)"/>
@@ -779,11 +779,11 @@ source:     config.yaml</code></pre>
         <table>
           <thead><tr><th>Full</th><th>Alias</th></tr></thead>
           <tbody>
-            <tr><td><code>margos run</code></td><td><code>p r</code></td></tr>
-            <tr><td><code>margos show</code></td><td><code>p s</code></td></tr>
-            <tr><td><code>margos compare</code></td><td><code>p c</code></td></tr>
-            <tr><td><code>margos export</code></td><td><code>p e</code></td></tr>
-            <tr><td><code>margos import</code></td><td><code>p i</code></td></tr>
+            <tr><td><code>margos run</code></td><td><code>m r</code></td></tr>
+            <tr><td><code>margos show</code></td><td><code>m s</code></td></tr>
+            <tr><td><code>margos compare</code></td><td><code>m c</code></td></tr>
+            <tr><td><code>margos export</code></td><td><code>m e</code></td></tr>
+            <tr><td><code>margos import</code></td><td><code>m i</code></td></tr>
           </tbody>
         </table>
 
@@ -1211,7 +1211,7 @@ obs, infos = env.reset(seed=42)</code></pre>
         <p class="lead">Where everything lives.</p>
         <pre><code>margos/
 ├── margos/                  # Python package
-│   ├── cli.py               # Typer CLI (margos / p)
+│   ├── cli.py               # Typer CLI (margos / m)
 │   ├── config/              # schema.py, loader.py
 │   ├── orchestrator/        # runner.py — the run pipeline
 │   ├── logging/             # callbacks.py — metrics + TensorBoard

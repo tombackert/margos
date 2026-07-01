@@ -614,26 +614,26 @@ def show(
         show_table("Bundles", bundles, bundles_dir)
 
 
-p_app = typer.Typer(
-    name="p",
-    help="Short aliases: p r=run, p s=show, p c=compare, p e=export, p i=import",
+m_app = typer.Typer(
+    name="m",
+    help="Short aliases: m r=run, m s=show, m c=compare, m e=export, m i=import",
     add_completion=False,
 )
 
 
-@p_app.callback()
-def p_main(
+@m_app.callback()
+def m_main(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Show full traceback on errors"),
 ) -> None:
     global _verbose
     _verbose = verbose
 
 
-p_app.command("r")(run)
-p_app.command("s")(show)
-p_app.command("c")(compare)
-p_app.command("e")(export)
-p_app.command("i")(import_)
+m_app.command("r")(run)
+m_app.command("s")(show)
+m_app.command("c")(compare)
+m_app.command("e")(export)
+m_app.command("i")(import_)
 
 
 if __name__ == "__main__":

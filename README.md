@@ -78,15 +78,15 @@ See the [Installation & Setup](https://htmlpreview.github.io/?https://github.com
 ```bash
 # Run an experiment (resolves experiments/configs/<name>.yaml)
 margos run aggregation_v1
-p r aggregation_v1          # short alias
+m r aggregation_v1          # short alias
 
 # Show configs, results, imported runs, and bundles
 margos show
-p s results
+m s results
 
 # Compare two runs for reproducibility
 margos compare run_a run_b
-p c                         # pick both runs interactively
+m c                         # pick both runs interactively
 
 # Export a run as a portable bundle, then import it elsewhere
 margos export run_a         # -> bundles/run_a.zip
@@ -97,16 +97,16 @@ Every command accepts `--help`; a global `--verbose / -v` prints full tracebacks
 
 | Command | Alias | Purpose |
 |---|---|---|
-| `margos run` | `p r` | Run an experiment from a config file |
-| `margos show` | `p s` | List configs, results, imported runs, and bundles |
-| `margos compare` | `p c` | Compare two runs for reproducibility / handoff |
-| `margos export` | `p e` | Package a run into a shareable bundle |
-| `margos import` | `p i` | Unpack a bundle and check the environment |
+| `margos run` | `m r` | Run an experiment from a config file |
+| `margos show` | `m s` | List configs, results, imported runs, and bundles |
+| `margos compare` | `m c` | Compare two runs for reproducibility / handoff |
+| `margos export` | `m e` | Package a run into a shareable bundle |
+| `margos import` | `m i` | Unpack a bundle and check the environment |
 
 ## Architecture
 
 ```
-Command-Line Interface · Typer (margos / p)
+Command-Line Interface · Typer (margos / m)
         │
         ├─ Config System ─┐
         ├─ Orchestrator ──┤   shared store:  results/
