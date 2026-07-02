@@ -7,7 +7,7 @@ from typing import Callable
 import yaml
 
 from margos.utils.errors import MargosError
-from margos.utils.fingerprint import capture_fingerprint
+from margos.utils.fingerprint import capture_fingerprint, strip_ansi
 
 
 class ImportError(MargosError):
@@ -207,8 +207,11 @@ def compare_fingerprints(bundle_fp: dict, current_fp: dict) -> dict:
     runtime_keys = set(bundle_fp.get("runtime", {}).keys()) | set(current_fp.get("runtime", {}).keys())
     all_runtime_match = True
     for key in sorted(runtime_keys):
-        bundle_val = bundle_fp.get("runtime", {}).get(key, "unknown")
-        current_val = current_fp.get("runtime", {}).get(key, "unknown")
+        # Normalize ANSI escapes and surrounding whitespace so bundles captured
+        # before the strip-at-capture fix compare and render correctly against a
+        # clean current environment.
+        bundle_val = strip_ansi(str(bundle_fp.get("runtime", {}).get(key, "unknown"))).strip()
+        current_val = strip_ansi(str(current_fp.get("runtime", {}).get(key, "unknown"))).strip()
         match = bundle_val == current_val
         runtime[key] = (bundle_val, current_val, match)
         if not match:

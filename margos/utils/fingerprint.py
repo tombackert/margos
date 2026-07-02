@@ -2,6 +2,7 @@
 
 import hashlib
 import platform
+import re
 import subprocess
 from datetime import datetime
 from importlib.metadata import PackageNotFoundError, version
@@ -21,6 +22,14 @@ TRACKED_PACKAGES = [
     "pyzmq",
     "tensorboard",
 ]
+
+# Matches ANSI CSI escape sequences (e.g. color codes) for stripping.
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def strip_ansi(text: str) -> str:
+    """Remove ANSI color/style escape sequences from a string."""
+    return _ANSI_ESCAPE.sub("", text)
 
 
 def capture_fingerprint() -> dict[str, Any]:
@@ -101,7 +110,10 @@ def _detect_argos_version() -> str:
     except (FileNotFoundError, subprocess.SubprocessError, OSError):
         return "not installed"
 
-    output = (result.stdout or result.stderr or "").strip()
+    output = (result.stdout or result.stderr or "")
+    # argos3 -v colorizes its output with ANSI escapes; strip them so the
+    # stored fingerprint is plain text and renders correctly in tables.
+    output = strip_ansi(output).strip()
     return output or "unknown"
 
 
