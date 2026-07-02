@@ -23,6 +23,12 @@
   <a href="#architecture">Architecture</a>
 </p>
 
+<br>
+
+<img src="docs/assets/aggregation-demo.gif" alt="Foot-bot swarm aggregating in the ARGoS simulator" width="640">
+
+<sub><em>Foot-bots learning to aggregate in ARGoS 3 (sped up 3×)</em></sub>
+
 </div>
 
 ---
