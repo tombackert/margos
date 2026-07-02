@@ -23,26 +23,17 @@
   <a href="#architecture">Architecture</a>
 </p>
 
-<br>
-
-<img src="docs/assets/aggregation-demo.gif" alt="Foot-bot swarm aggregating in the ARGoS simulator" width="640">
-
-<sub><em>Foot-bots learning to aggregate in ARGoS 3 (sped up 3×)</em></sub>
-
 </div>
-
----
 
 ## Overview
 
-A typical MARL workflow is fragmented across a simulator, an RL framework, ad-hoc training scripts,
-manual seeding, scattered logs, and hand-built archives for sharing results. **MARGoS** unifies that
-workflow behind five commands: you provide *names*, and MARGoS resolves paths, freezes configuration,
-captures the environment, propagates seeds, logs metrics, and packages everything needed to reproduce
-a run on another machine.
+<img src="docs/assets/aggregation-demo.gif" alt="Foot-bots aggregating in the ARGoS 3 simulator (sped up 3×)" title="Foot-bots aggregating in ARGoS 3 (sped up 3×)" align="right" width="340">
 
-It is built on **ARGoS 3** (swarm-robotics simulation) and **Ray RLlib** (PPO on PyTorch), connected
-by **ArgosToZoo**, a PettingZoo environment that bridges the two over ZeroMQ.
+A typical MARL workflow is fragmented across a simulator, an RL framework, ad-hoc training scripts, manual seeding, scattered logs, and hand-built archives for sharing results. **MARGoS** unifies that workflow behind five commands: you provide *names*, and MARGoS resolves paths, freezes configuration, captures the environment, propagates seeds, logs metrics, and packages everything needed to reproduce a run on another machine.
+
+It is built on **ARGoS 3** (swarm-robotics simulation) and **Ray RLlib** (PPO on PyTorch), connected by **ArgosToZoo**, a PettingZoo environment that bridges the two over ZeroMQ.
+
+<br clear="right">
 
 | Capability | What it gives you |
 |---|---|
