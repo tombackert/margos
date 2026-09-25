@@ -21,6 +21,8 @@
   <a href="#quickstart">Quickstart</a>
   &nbsp;·&nbsp;
   <a href="#architecture">Architecture</a>
+  &nbsp;·&nbsp;
+  <a href="#paper">Paper</a>
 </p>
 
 </div>
@@ -29,7 +31,7 @@
 
 <img src="docs/assets/aggregation-demo.gif" alt="Foot-bots aggregating in the ARGoS 3 simulator (sped up 3×)" title="Foot-bots aggregating in ARGoS 3 (sped up 3×)" align="right" width="340">
 
-A typical MARL workflow is fragmented across a simulator, an RL framework, ad-hoc training scripts, manual seeding, scattered logs, and hand-built archives for sharing results. **MARGoS** unifies that workflow behind five commands: you provide *names*, and MARGoS resolves paths, freezes configuration, captures the environment, propagates seeds, logs metrics, and packages everything needed to reproduce a run on another machine.
+A typical MARL workflow is fragmented across a simulator, an RL framework, ad-hoc training scripts, manual seeding, scattered logs, and hand-built archives for sharing results. **MARGoS** unifies that workflow behind five commands: you provide *names*, and MARGoS resolves paths, freezes configuration, captures the environment, propagates seeds, logs metrics, and packages each run into an exportable bundle for sharing, replay, and verification between prepared environments.
 
 It is built on **ARGoS 3** (swarm-robotics simulation) and **Ray RLlib** (PPO on PyTorch), connected by **ArgosToZoo**, a PettingZoo environment that bridges the two over ZeroMQ.
 
@@ -41,6 +43,32 @@ It is built on **ARGoS 3** (swarm-robotics simulation) and **Ray RLlib** (PPO on
 | **Reproduce** | Centralized seeding, config hashing, integrity checks, and an environment fingerprint |
 | **Compare** | Validate a run against a reference for handoff success and strict reproducibility |
 | **Share** | Export a run to a single portable ZIP and import it elsewhere with an environment diff |
+
+## Paper
+
+**MARGoS: A Configuration-Driven Platform for Reproducible MARL Experiments in ARGoS**<br>
+Tom Philipp Backert, Mohammad D. Soorati, Javad Ghofrani<br>
+VARIABILITY 2026, Projects Showcase Track · Limassol, Cyprus<br>
+To appear in the VARIABILITY 2026 Companion Proceedings. DOI: added once the proceedings are published.
+
+The paper describes the research questions, the five-dimension evaluation (architecture, efficiency,
+reproducibility, usability, collaboration), and its limits. Reproducibility was evaluated on the same
+hardware (macOS, CPU-only); cross-hardware and cross-lab reproduction remain open.
+
+<details>
+<summary>BibTeX</summary>
+
+```bibtex
+@inproceedings{backert2026margos,
+  title     = {{MARGoS}: A Configuration-Driven Platform for Reproducible {MARL} Experiments in {ARGoS}},
+  author    = {Backert, Tom Philipp and Soorati, Mohammad D. and Ghofrani, Javad},
+  booktitle = {VARIABILITY 2026 Companion Proceedings},
+  year      = {2026},
+  note      = {To appear}
+}
+```
+
+</details>
 
 ## Documentation
 
@@ -147,5 +175,5 @@ MIT
 
 <div align="center">
 <sub>MARGoS is research infrastructure built for a small-scale research project. The research questions,
-hypotheses, and evaluation protocol are described in the accompanying paper; this repository documents the software.</sub>
+hypotheses, and evaluation protocol are described in the <a href="#paper">accompanying paper</a>; this repository documents the software.</sub>
 </div>

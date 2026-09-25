@@ -332,7 +332,8 @@
         scripts, manual seeding, scattered log files, and hand-built archives for sharing results.
         MARGoS unifies that workflow behind five commands. You provide <em>names</em>; MARGoS resolves
         paths, freezes configuration, captures the environment, propagates seeds, logs metrics, and
-        packages everything needed to reproduce a run on another machine.</p>
+        packages each run into an exportable bundle for sharing, replay, and verification between
+        prepared environments.</p>
 
         <h2>What MARGoS does</h2>
         <div class="card-grid">
@@ -469,7 +470,7 @@ m c                           # pick both runs interactively</code></pre>
         <pre><code># results/&lt;run&gt;/  ->  bundles/&lt;run&gt;.zip
 margos export aggregation_v1_20260101-101010
 
-# on another machine
+# in the receiving environment
 margos import bundles/aggregation_v1_20260101-101010.zip</code></pre>
         <p>Import unpacks into <code>experiments/imported/&lt;name&gt;/</code>, rewrites paths to the
         bundled scenario and training script, and prints an environment comparison so you know whether
@@ -967,7 +968,8 @@ generate_report(run_dir, reference_dir="results/&lt;reference&gt;")</code></pre>
       <section class="page" id="export-import">
         <p class="eyebrow">CLI &amp; Workflow</p>
         <h1>Export &amp; Import</h1>
-        <p class="lead">A bundle is a self-contained ZIP that lets another machine reproduce a run. Export
+        <p class="lead">A bundle is a self-contained ZIP for sharing, replaying, and verifying a run between
+        prepared environments. Export
         packs it; import unpacks it and reports how compatible the new environment is.</p>
 
         <h2>Bundle contents</h2>
