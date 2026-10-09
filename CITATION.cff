@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+message: "If you use MARGoS in your research, please cite the paper below."
+title: "MARGoS"
+type: software
+authors:
+  - family-names: Backert
+    given-names: Tom Philipp
+license: MIT
+repository-code: "https://github.com/tombackert/margos"
+preferred-citation:
+  type: conference-paper
+  title: "MARGoS: A Configuration-Driven Platform for Reproducible MARL Experiments in ARGoS"
+  authors:
+    - family-names: Backert
+      given-names: Tom Philipp
+    - family-names: Soorati
+      given-names: Mohammad D.
+    - family-names: Ghofrani
+      given-names: Javad
+  editors:
+    - family-names: Perrouin
+      given-names: Gilles
+    - family-names: Berger
+      given-names: Thorsten
+    - family-names: Papadopoulos
+      given-names: George A.
+    - family-names: Schaefer
+      given-names: Ina
+    - family-names: Fortz
+      given-names: Sophie
+  collection-title: "Software and Systems Reuse, Product Lines, and Configuration – VARIABILITY 2026 Satellite Events"
+  collection-type: proceedings
+  conference:
+    name: "VARIABILITY 2026"
+    city: Limassol
+    country: CY
+  volume: 17104
+  start: 251
+  end: 261
+  publisher:
+    name: Springer Nature Switzerland
+    city: Cham
+  year: 2027
+  isbn: "978-3-032-40421-3"
+  doi: "10.1007/978-3-032-40421-3_24"

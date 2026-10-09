@@ -13,6 +13,7 @@
   <img alt="Simulator" src="https://img.shields.io/badge/simulator-ARGoS%203-4f46e5">
   <img alt="Status" src="https://img.shields.io/badge/status-research%20MVP-7c3aed">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-22c55e">
+  <a href="https://doi.org/10.1007/978-3-032-40421-3_24"><img alt="DOI" src="https://img.shields.io/badge/DOI-10.1007%2F978--3--032--40421--3__24-0A6EBD"></a>
 </p>
 
 <p>
@@ -48,27 +49,13 @@ It is built on **ARGoS 3** (swarm-robotics simulation) and **Ray RLlib** (PPO on
 
 **MARGoS: A Configuration-Driven Platform for Reproducible MARL Experiments in ARGoS**<br>
 Tom Philipp Backert, Mohammad D. Soorati, Javad Ghofrani<br>
-VARIABILITY 2026, Projects Showcase Track · Limassol, Cyprus<br>
-To appear in the VARIABILITY 2026 Companion Proceedings. DOI: added once the proceedings are published.
+VARIABILITY 2026, Project Showcase Track · Limassol, Cyprus<br>
+*Software and Systems Reuse, Product Lines, and Configuration – VARIABILITY 2026 Satellite Events*,
+LNCS 17104, pp. 251–261, Springer, 2027 · DOI: [10.1007/978-3-032-40421-3_24](https://doi.org/10.1007/978-3-032-40421-3_24)
 
 The paper describes the research questions, the five-dimension evaluation (architecture, efficiency,
 reproducibility, usability, collaboration), and its limits. Reproducibility was evaluated on the same
 hardware (macOS, CPU-only); cross-hardware and cross-lab reproduction remain open.
-
-<details>
-<summary>BibTeX</summary>
-
-```bibtex
-@inproceedings{backert2026margos,
-  title     = {{MARGoS}: A Configuration-Driven Platform for Reproducible {MARL} Experiments in {ARGoS}},
-  author    = {Backert, Tom Philipp and Soorati, Mohammad D. and Ghofrani, Javad},
-  booktitle = {VARIABILITY 2026 Companion Proceedings},
-  year      = {2026},
-  note      = {To appear}
-}
-```
-
-</details>
 
 ## Documentation
 
@@ -165,6 +152,27 @@ pip install -e ".[dev]"
 pytest            # fast unit tests (slow e2e excluded by default)
 pytest -m slow    # end-to-end tests (require ARGoS + RLlib)
 ruff check .
+```
+
+## Citation
+
+If you use MARGoS in your research, please cite the paper:
+
+```bibtex
+@inproceedings{backert2027margos,
+  author    = {Backert, Tom Philipp and Soorati, Mohammad D. and Ghofrani, Javad},
+  editor    = {Perrouin, Gilles and Berger, Thorsten and Papadopoulos, George A. and Schaefer, Ina and Fortz, Sophie},
+  title     = {{MARGoS}: A Configuration-Driven Platform for Reproducible {MARL} Experiments in {ARGoS}},
+  booktitle = {Software and Systems Reuse, Product Lines, and Configuration -- VARIABILITY 2026 Satellite Events},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {17104},
+  pages     = {251--261},
+  publisher = {Springer Nature Switzerland},
+  address   = {Cham},
+  year      = {2027},
+  isbn      = {978-3-032-40421-3},
+  doi       = {10.1007/978-3-032-40421-3_24}
+}
 ```
 
 ## License
