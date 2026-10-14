@@ -14,6 +14,7 @@
   <img alt="Status" src="https://img.shields.io/badge/status-research%20MVP-7c3aed">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-22c55e">
   <a href="https://doi.org/10.1007/978-3-032-40421-3_24"><img alt="DOI" src="https://img.shields.io/badge/DOI-10.1007%2F978--3--032--40421--3__24-0A6EBD"></a>
+  <a href="https://arxiv.org/abs/2610.13772"><img alt="arXiv" src="https://img.shields.io/badge/arXiv-2610.13772-B31B1B"></a>
 </p>
 
 <p>
@@ -51,7 +52,8 @@ It is built on **ARGoS 3** (swarm-robotics simulation) and **Ray RLlib** (PPO on
 Tom Philipp Backert, Mohammad D. Soorati, Javad Ghofrani<br>
 VARIABILITY 2026, Project Showcase Track · Limassol, Cyprus<br>
 *Software and Systems Reuse, Product Lines, and Configuration – VARIABILITY 2026 Satellite Events*,
-LNCS 17104, pp. 251–261, Springer, 2027 · DOI: [10.1007/978-3-032-40421-3_24](https://doi.org/10.1007/978-3-032-40421-3_24)
+LNCS 17104, pp. 251–261, Springer, 2027 · DOI: [10.1007/978-3-032-40421-3_24](https://doi.org/10.1007/978-3-032-40421-3_24)<br>
+Preprint (submitted version): [arXiv:2610.13772](https://arxiv.org/abs/2610.13772)
 
 The paper describes the research questions, the five-dimension evaluation (architecture, efficiency,
 reproducibility, usability, collaboration), and its limits. Reproducibility was evaluated on the same
