@@ -1,0 +1,29 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install MARGoS with test and ML dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # CPU-only PyTorch keeps the install small; no test needs a GPU.
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[dev,ml]"
+
+      # Tests that need the ARGoS simulator skip themselves when argos3 is not installed;
+      # slow end-to-end runs are deselected by the pytest config in pyproject.toml.
+      - name: Run tests
+        run: pytest

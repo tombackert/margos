@@ -8,6 +8,7 @@
 <p><strong>Research infrastructure for reproducible Multi-Agent Reinforcement Learning experiments.</strong></p>
 
 <p>
+  <a href="https://github.com/tombackert/margos/actions/workflows/tests.yml"><img alt="Tests" src="https://github.com/tombackert/margos/actions/workflows/tests.yml/badge.svg"></a>
   <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white">
   <img alt="RL" src="https://img.shields.io/badge/RL-Ray%20RLlib%20%C2%B7%20PyTorch-EE4C2C">
   <img alt="Simulator" src="https://img.shields.io/badge/simulator-ARGoS%203-4f46e5">
