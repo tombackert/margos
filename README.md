@@ -54,7 +54,8 @@ Tom Philipp Backert, Mohammad D. Soorati, Javad Ghofrani<br>
 VARIABILITY 2026, Project Showcase Track · Limassol, Cyprus<br>
 *Software and Systems Reuse, Product Lines, and Configuration – VARIABILITY 2026 Satellite Events*,
 LNCS 17104, pp. 251–261, Springer, 2027 · DOI: [10.1007/978-3-032-40421-3_24](https://doi.org/10.1007/978-3-032-40421-3_24)<br>
-Preprint (submitted version): [arXiv:2610.13772](https://arxiv.org/abs/2610.13772)
+Preprint (submitted version): [arXiv:2610.13772](https://arxiv.org/abs/2610.13772)<br>
+Accepted manuscript and talk slides: [tombackert.pro/research/margos](https://www.tombackert.pro/research/margos/)
 
 The paper describes the research questions, the five-dimension evaluation (architecture, efficiency,
 reproducibility, usability, collaboration), and its limits. Reproducibility was evaluated on the same
