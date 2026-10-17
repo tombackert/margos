@@ -1,7 +1,7 @@
 """E2E tests for the aggregation scenario (Issue #15).
 
 These tests validate the full pipeline from CLI to trained model:
-1. `margos run aggregation_test` completes successfully
+1. `margos run aggregation_smoke` completes successfully
 2. Output directory has correct structure
 3. Metrics logged to JSONL
 4. Two runs with same seed produce identical final reward
@@ -69,8 +69,8 @@ class TestAggregationScenarioE2E:
 
     @pytest.fixture
     def aggregation_config_path(self, repo_root: Path) -> Path:
-        """Path to aggregation_test.yaml config."""
-        return repo_root / "experiments" / "configs" / "aggregation_test.yaml"
+        """Path to aggregation_smoke.yaml config."""
+        return repo_root / "experiments" / "configs" / "aggregation_smoke.yaml"
 
     @pytest.fixture
     def experiment_setup(self, repo_root: Path, tmp_path: Path) -> dict[str, Path]:
@@ -89,7 +89,7 @@ class TestAggregationScenarioE2E:
         results_dir.mkdir()
 
         # Update config to use temp results dir
-        config_path = dst_experiments / "configs" / "aggregation_test.yaml"
+        config_path = dst_experiments / "configs" / "aggregation_smoke.yaml"
         config_data = yaml.safe_load(config_path.read_text())
         config_data["output"]["dir"] = str(results_dir)
         config_path.write_text(yaml.dump(config_data))
@@ -110,7 +110,7 @@ class TestAggregationScenarioE2E:
 
         config = load_config(str(aggregation_config_path))
 
-        assert config.experiment.name == "aggregation_test"
+        assert config.experiment.name == "aggregation_smoke"
         assert config.experiment.seed == 42
         assert "aggregation" in config.scenario.file
         assert "aggregation" in config.training.script
@@ -137,7 +137,7 @@ class TestAggregationScenarioE2E:
         assert "output_dir" in content
 
     def test_margos_run_completes(self, experiment_setup: dict[str, Path]) -> None:
-        """Full pipeline: `margos run aggregation_test` completes successfully."""
+        """Full pipeline: `margos run aggregation_smoke` completes successfully."""
         config_path = experiment_setup["config_path"]
         results_dir = experiment_setup["results_dir"]
 
@@ -150,7 +150,7 @@ class TestAggregationScenarioE2E:
         assert "Output:" in result.stdout
 
         # Verify output created
-        output_dirs = list(results_dir.glob("aggregation_test_*"))
+        output_dirs = list(results_dir.glob("aggregation_smoke_*"))
         assert len(output_dirs) == 1
 
     def test_output_directory_structure(self, experiment_setup: dict[str, Path]) -> None:
@@ -161,7 +161,7 @@ class TestAggregationScenarioE2E:
         runner.invoke(app, ["run", str(config_path)], catch_exceptions=False)
 
         # Find output directory
-        output_dirs = list(results_dir.glob("aggregation_test_*"))
+        output_dirs = list(results_dir.glob("aggregation_smoke_*"))
         assert len(output_dirs) == 1, f"Expected 1 output dir, got {len(output_dirs)}"
 
         output_dir = output_dirs[0]
@@ -181,7 +181,7 @@ class TestAggregationScenarioE2E:
 
         runner.invoke(app, ["run", str(config_path)], catch_exceptions=False)
 
-        output_dir = list(results_dir.glob("aggregation_test_*"))[0]
+        output_dir = list(results_dir.glob("aggregation_smoke_*"))[0]
         metrics_file = output_dir / "logs" / "metrics.jsonl"
 
         assert metrics_file.exists(), "metrics.jsonl not created"
@@ -209,7 +209,7 @@ class TestAggregationScenarioE2E:
         runner.invoke(app, ["run", str(config_path)], catch_exceptions=False)
 
         # Compare results
-        output_dirs = sorted(results_dir.glob("aggregation_test_*"))
+        output_dirs = sorted(results_dir.glob("aggregation_smoke_*"))
         assert len(output_dirs) == 2, f"Expected 2 runs, got {len(output_dirs)}"
 
         # Get final rewards
@@ -244,7 +244,7 @@ class TestAggregationScenarioE2E:
         runner.invoke(app, ["run", str(config_path)], catch_exceptions=False)
         runner.invoke(app, ["run", str(config_path)], catch_exceptions=False)
 
-        output_dirs = sorted(results_dir.glob("aggregation_test_*"))
+        output_dirs = sorted(results_dir.glob("aggregation_smoke_*"))
         hash1 = (output_dirs[0] / "config_hash.txt").read_text().strip()
         hash2 = (output_dirs[1] / "config_hash.txt").read_text().strip()
 
@@ -287,9 +287,9 @@ class TestAggregationFilesExist:
     """Basic checks that required files exist (no ARGoS needed)."""
 
     def test_config_file_exists(self) -> None:
-        """aggregation_test.yaml exists."""
+        """aggregation_smoke.yaml exists."""
         repo_root = Path(__file__).parent.parent
-        config_path = repo_root / "experiments" / "configs" / "aggregation_test.yaml"
+        config_path = repo_root / "experiments" / "configs" / "aggregation_smoke.yaml"
         assert config_path.exists()
 
     def test_scenario_file_exists(self) -> None:
@@ -307,7 +307,7 @@ class TestAggregationFilesExist:
     def test_config_references_correct_files(self) -> None:
         """Config references existing scenario and script."""
         repo_root = Path(__file__).parent.parent
-        config_path = repo_root / "experiments" / "configs" / "aggregation_test.yaml"
+        config_path = repo_root / "experiments" / "configs" / "aggregation_smoke.yaml"
 
         config_data = yaml.safe_load(config_path.read_text())
 
