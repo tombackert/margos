@@ -12,6 +12,7 @@ import yaml
 from typer.testing import CliRunner
 
 from margos.cli import app
+from margos.utils.fingerprint import strip_ansi
 
 runner = CliRunner()
 
@@ -20,9 +21,11 @@ def test_cli_uses_margos_name() -> None:
     """Top-level help presents the renamed Margos CLI."""
     result = runner.invoke(app, ["--help"], prog_name="margos")
 
+    # Typer forces colored help on GitHub Actions, so compare the plain text.
+    output = strip_ansi(result.stdout)
     assert result.exit_code == 0
-    assert "Usage: margos" in result.stdout
-    assert "Margos for MARL experiment workflows." in result.stdout
+    assert "Usage: margos" in output
+    assert "Margos for MARL experiment workflows." in output
 
 
 class TestRunCommand:
